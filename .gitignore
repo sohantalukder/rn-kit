@@ -1,0 +1,10 @@
+lib
+node_modules
+.DS_Store
+.env
+.env.*
+.npmrc
+coverage
+*.tgz
+npm-debug.log*
+yarn-error.log*
