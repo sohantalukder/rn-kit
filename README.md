@@ -112,6 +112,60 @@ npm audit --omit=dev
 npm --cache /private/tmp/rn-kit-npm-cache pack --dry-run
 ```
 
+## Documentation
+
+This package includes a Next.js documentation site and Storybook examples for
+the public component surface.
+
+Run the docs site locally:
+
+```sh
+npm run docs:dev
+```
+
+Build the docs site:
+
+```sh
+npm run docs:build
+```
+
+Run Storybook locally:
+
+```sh
+npm run storybook
+```
+
+Build static Storybook:
+
+```sh
+npm run build-storybook
+```
+
+### Adding Component Documentation
+
+When adding a new public component:
+
+1. Export it from the package surface under `src/components`.
+2. Add a registry entry in `docs/data/componentRegistry.ts`.
+3. Add a dedicated story file under `stories/components/<group>`.
+4. Include default usage, variants, props controls, important states, usage code,
+   and best-practice notes.
+5. Link the component page to its Storybook story by setting the `storyId`.
+
+### Adding Package Documentation
+
+For future packages, add package metadata to the docs data layer and add stories
+under either `stories/packages` or `packages/<name>/stories`. Storybook is
+configured to load both locations.
+
+### Deploying Documentation
+
+- Deploy the Next.js docs site from the output produced by `npm run docs:build`.
+- Deploy Storybook from the `storybook-static` folder produced by
+  `npm run build-storybook`.
+- Keep `npm run build` reserved for the package build (`bob build`) so publishing
+  remains unchanged.
+
 ## Public API
 
 ```ts

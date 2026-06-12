@@ -5,6 +5,9 @@ node_modules
 .env.*
 .npmrc
 coverage
+.next
+storybook-static
+*.tsbuildinfo
 *.tgz
 npm-debug.log*
 yarn-error.log*

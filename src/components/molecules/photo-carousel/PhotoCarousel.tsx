@@ -81,7 +81,7 @@ const PhotoCarousel = memo<Properties>(
     const flatListRef = useRef<Animated.FlatList<Photo>>(null);
     const [carouselWidth, setCarouselWidth] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
-    const autoScrollTimer = useRef<NodeJS.Timeout | null>(null);
+    const autoScrollTimer = useRef<ReturnType<typeof setInterval> | null>(null);
     const userScrolling = useRef(false);
 
     // Calculate current page from scroll position

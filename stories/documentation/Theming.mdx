@@ -1,0 +1,22 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Documentation/Theming" />
+
+# Theming
+
+`ThemeProvider` exposes default, dark, and system-aware variants. Components
+consume theme tokens for colors, typography, gutters, borders, and layout
+helpers.
+
+```tsx
+<ThemeProvider
+  storageAdapter={{
+    getTheme: () => localStore.getTheme(),
+    setTheme: value => localStore.setTheme(value),
+  }}
+>
+  {children}
+</ThemeProvider>
+```
+
+Use the Storybook theme toolbar to preview light and dark states.

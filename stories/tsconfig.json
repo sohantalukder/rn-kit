@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "declaration": false
+  },
+  "include": [
+    "./**/*",
+    "../.storybook/**/*"
+  ],
+  "exclude": [
+    "../lib",
+    "../node_modules",
+    "../.next"
+  ]
+}
