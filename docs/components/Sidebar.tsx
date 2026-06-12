@@ -2,16 +2,14 @@
 
 import Link from 'next/link';
 import { Search } from 'lucide-react';
-import { useMemo } from 'react';
 import { components } from '../data/componentRegistry';
 import { docPages } from '../data/docsContent';
 
 type SidebarProps = {
   isOpen: boolean;
   onNavigate: () => void;
-  onQueryChange: (query: string) => void;
+  onSearchOpen: () => void;
   pathname: string;
-  query: string;
 };
 
 const visibleDocSlugs = new Set(['getting-started', 'installation', 'theming']);
@@ -25,46 +23,50 @@ const primaryLinks = [
     })),
 ];
 
+const resourceLinks = [{ href: '/icons', label: 'Icons' }];
+
 function isActive(pathname: string, href: string) {
   if (href === '/') return pathname === '/';
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export function Sidebar({ isOpen, onNavigate, onQueryChange, pathname, query }: SidebarProps) {
-  const normalizedQuery = query.trim().toLowerCase();
-
-  const filteredComponents = useMemo(
-    () =>
-      components.filter((component) =>
-        [component.name, component.summary, component.importName, component.variants.join(' ')]
-          .join(' ')
-          .toLowerCase()
-          .includes(normalizedQuery)
-      ),
-    [normalizedQuery]
-  );
-
-  const filteredLinks = primaryLinks.filter((item) =>
-    item.label.toLowerCase().includes(normalizedQuery)
-  );
-
+export function Sidebar({
+  isOpen,
+  onNavigate,
+  onSearchOpen,
+  pathname,
+}: SidebarProps) {
   return (
     <aside className={`sidebar${isOpen ? ' is-open' : ''}`}>
       <div className="sidebar-inner">
-        <label className="sidebar-search">
+        <button
+          className="sidebar-search search-trigger"
+          type="button"
+          aria-label="Search documentation"
+          onClick={onSearchOpen}
+        >
           <Search size={15} aria-hidden="true" />
-          <input
-            value={query}
-            onChange={(event) => onQueryChange(event.target.value)}
-            placeholder="Search docs"
-            aria-label="Search documentation"
-          />
-        </label>
+          <span>Search docs</span>
+        </button>
 
         <nav aria-label="Documentation navigation">
           <section className="sidebar-section">
             <h2 className="sidebar-heading">Documentation</h2>
-            {filteredLinks.map((item) => (
+            {primaryLinks.map((item) => (
+              <Link
+                className={`sidebar-link${isActive(pathname, item.href) ? ' active' : ''}`}
+                href={item.href}
+                key={item.href}
+                onClick={onNavigate}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </section>
+
+          <section className="sidebar-section">
+            <h2 className="sidebar-heading">Resources</h2>
+            {resourceLinks.map((item) => (
               <Link
                 className={`sidebar-link${isActive(pathname, item.href) ? ' active' : ''}`}
                 href={item.href}
@@ -79,7 +81,7 @@ export function Sidebar({ isOpen, onNavigate, onQueryChange, pathname, query }: 
           <section className="sidebar-section">
             <h2 className="sidebar-heading">Components</h2>
             <div className="sidebar-component-list">
-              {filteredComponents.map((component) => {
+              {components.map((component) => {
                 const href = `/components/${component.slug}`;
                 return (
                   <Link
@@ -94,10 +96,6 @@ export function Sidebar({ isOpen, onNavigate, onQueryChange, pathname, query }: 
               })}
             </div>
           </section>
-
-          {normalizedQuery && filteredLinks.length === 0 && filteredComponents.length === 0 ? (
-            <p className="sidebar-empty">No matches found.</p>
-          ) : null}
         </nav>
       </div>
     </aside>

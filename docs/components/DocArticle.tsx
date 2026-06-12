@@ -22,8 +22,10 @@ export function DocArticle({ page }: DocArticleProps) {
             <div className="doc-hero-panel-items">
               {page.heroPanel.items.map((item) => (
                 <span key={item.label}>
-                  <small>{item.label}</small>
-                  {item.value}
+                  <span className="doc-hero-panel-step-copy">
+                    <small>{item.label}</small>
+                    <b>{item.value}</b>
+                  </span>
                 </span>
               ))}
             </div>

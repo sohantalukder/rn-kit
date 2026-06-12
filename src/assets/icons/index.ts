@@ -23,6 +23,8 @@ import SendIcon from './Send.icon';
 import ShareIcon from './Share.icon';
 import SuccessIcon from './Success.icon';
 import ThemeIcon from './Theme.icon';
+export { iconNames } from './names';
+export type { IconName } from './names';
 
 export const iconRegistry = {
   cancel: CancelIcon,
@@ -51,5 +53,3 @@ export const iconRegistry = {
   success: SuccessIcon,
   theme: ThemeIcon,
 } as const;
-
-export type IconName = keyof typeof iconRegistry;

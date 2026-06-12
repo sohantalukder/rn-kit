@@ -1,11 +1,9 @@
 import Link from 'next/link';
 import { BookOpen, Boxes, Component, Palette, Rocket } from 'lucide-react';
-import { AppShell } from '../docs/components/AppShell';
 import { CodeBlock } from '../docs/components/CodeBlock';
 import { DocPager } from '../docs/components/DocPager';
 import { PackageCard } from '../docs/components/PackageCard';
 import { components, packageInfo } from '../docs/data/componentRegistry';
-import { docPages } from '../docs/data/docsContent';
 import { getPager } from '../docs/data/navigation';
 
 const quickStartCode = `import { ThemeProvider, UiPortalProvider, Button } from '@sohantalukder/rn-kit';
@@ -20,17 +18,11 @@ export function App() {
   );
 }`;
 
-const toc = [
-  { id: 'overview', title: 'Overview' },
-  { id: 'quick-start', title: 'Quick start' },
-  { id: 'explore', title: 'Explore' },
-];
-
 export default function HomePage() {
   const pager = getPager('/');
 
   return (
-    <AppShell toc={toc}>
+    <>
       <section className="home-hero" id="overview">
         <div>
           <span className="eyebrow">React Native UI documentation</span>
@@ -46,20 +38,6 @@ export default function HomePage() {
               Browse components
             </Link>
           </div>
-        </div>
-        <div className="hero-stats" aria-label="Documentation summary">
-          <span>
-            <strong>{components.length}</strong>
-            components
-          </span>
-          <span>
-            <strong>{docPages.length}</strong>
-            guides
-          </span>
-          <span>
-            <strong>v{packageInfo.version}</strong>
-            package
-          </span>
         </div>
       </section>
 
@@ -103,6 +81,6 @@ export default function HomePage() {
       </section>
 
       <DocPager previous={pager.previous} next={pager.next} />
-    </AppShell>
+    </>
   );
 }

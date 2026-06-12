@@ -351,6 +351,14 @@ import { toast, dialog, bottomSheet } from '@sohantalukder/rn-kit';`,
       'Track releases, notable changes, and migration notes for package consumers.',
     sections: [
       {
+        id: 'v011',
+        title: '0.1.1',
+        list: [
+          'Added CI enforcement for package version bumps before merging to main.',
+          'Added automatic GitHub release note generation after production deploy and npm publish.',
+        ],
+      },
+      {
         id: 'v010',
         title: '0.1.0',
         list: [

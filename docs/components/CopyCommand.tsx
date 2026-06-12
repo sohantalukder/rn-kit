@@ -18,6 +18,9 @@ export function CopyCommand({ command }: CopyCommandProps) {
 
   return (
     <div className="copy-command">
+      <span className="copy-command-prompt" aria-hidden="true">
+        $
+      </span>
       <code>{command}</code>
       <button type="button" onClick={copyCommand} aria-label={copied ? 'Copied command' : 'Copy command'}>
         {copied ? <Check size={14} aria-hidden="true" /> : <Copy size={14} aria-hidden="true" />}

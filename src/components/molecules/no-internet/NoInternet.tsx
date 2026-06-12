@@ -56,10 +56,10 @@ const NoInternet: React.FC<NoInternetProps> = ({
   const { gutters, colors } = useTheme();
 
   // Animation values
-  const fadeAnim = useSharedValue(0);
-  const scaleAnim = useSharedValue(0.8);
+  const fadeAnim = useSharedValue(animated ? 0 : 1);
+  const scaleAnim = useSharedValue(animated ? 0.8 : 1);
   const pulseAnim = useSharedValue(1);
-  const slideAnim = useSharedValue(50);
+  const slideAnim = useSharedValue(animated ? 50 : 0);
 
   useEffect(() => {
     if (animated) {

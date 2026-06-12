@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound, redirect } from 'next/navigation';
 import { Boxes, Component } from 'lucide-react';
-import { AppShell } from '../../../docs/components/AppShell';
 import { CodeBlock } from '../../../docs/components/CodeBlock';
 import { DocPager } from '../../../docs/components/DocPager';
 import {
@@ -17,13 +16,6 @@ type PageProps = {
     slug: string;
   }>;
 };
-
-const toc = [
-  { id: 'install', title: 'Install' },
-  { id: 'usage', title: 'Usage' },
-  { id: 'components', title: 'Components' },
-  { id: 'docs', title: 'Docs' },
-];
 
 const usageCode = `import {
   ThemeProvider,
@@ -73,7 +65,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
   const pager = getPager(`/packages/${packageInfo.slug}`);
 
   return (
-    <AppShell toc={toc}>
+    <>
       <section className="doc-hero">
         <span className="eyebrow">Package overview</span>
         <h1>{packageInfo.name}</h1>
@@ -126,6 +118,6 @@ export default async function PackageDetailPage({ params }: PageProps) {
       </section>
 
       <DocPager previous={pager.previous} next={pager.next} />
-    </AppShell>
+    </>
   );
 }

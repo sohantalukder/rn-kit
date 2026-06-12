@@ -1,27 +1,17 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { AppShell } from '../../../docs/components/AppShell';
 import { CodeBlock } from '../../../docs/components/CodeBlock';
 import { ComponentPreview } from '../../../docs/components/ComponentPreview';
 import { DocPager } from '../../../docs/components/DocPager';
 import { components, findComponent } from '../../../docs/data/componentRegistry';
 import { getPager } from '../../../docs/data/navigation';
+import { getPropMetadata } from '../../../docs/data/propMetadata';
 
 type PageProps = {
   params: Promise<{
     slug: string;
   }>;
 };
-
-const toc = [
-  { id: 'import', title: 'Import' },
-  { id: 'usage', title: 'Usage' },
-  { id: 'preview', title: 'Preview' },
-  { id: 'props', title: 'Props' },
-  { id: 'theme', title: 'Theme' },
-  { id: 'variants', title: 'Variants' },
-  { id: 'best-practices', title: 'Best Practices' },
-];
 
 export function generateStaticParams() {
   return components.map((component) => ({ slug: component.slug }));
@@ -51,26 +41,40 @@ export default async function ComponentDetailPage({ params }: PageProps) {
   const importCode = `import { ${component.importName} } from '@sohantalukder/rn-kit';`;
 
   return (
-    <AppShell toc={toc}>
+    <>
       <article>
-        <header className="doc-hero">
-          <span className="eyebrow">Component</span>
-          <h1>{component.name}</h1>
-          <p>{component.summary}</p>
+        <header className="doc-hero component-doc-hero">
+          <div>
+            <span className="eyebrow">Component</span>
+            <h1>{component.name}</h1>
+            <p>{component.summary}</p>
+          </div>
+          <div className="component-doc-actions" aria-label="Component navigation">
+            {pager.previous ? (
+              <a className="icon-control" href={pager.previous.href} aria-label={`Previous: ${pager.previous.label}`}>
+                ←
+              </a>
+            ) : null}
+            {pager.next ? (
+              <a className="icon-control" href={pager.next.href} aria-label={`Next: ${pager.next.label}`}>
+                →
+              </a>
+            ) : null}
+          </div>
         </header>
 
-        <section className="content-section" id="import">
-          <h2>Import</h2>
-          <CodeBlock code={importCode} language="tsx" />
+        <div className="component-tabs" aria-label="Component implementation">
+          <span className="active">React Native</span>
+        </div>
+
+        <section className="content-section first-section" id="preview">
+          <ComponentPreview component={component} />
         </section>
 
         <section className="content-section" id="usage">
           <h2>Usage</h2>
+          <CodeBlock code={importCode} language="tsx" />
           <CodeBlock code={component.usage} language="tsx" />
-        </section>
-
-        <section className="content-section" id="preview">
-          <ComponentPreview component={component} />
         </section>
 
         <section className="content-section" id="props">
@@ -82,14 +86,22 @@ export default async function ComponentDetailPage({ params }: PageProps) {
           <div className="props-table" role="table" aria-label={`${component.name} props`}>
             <div className="props-row props-head" role="row">
               <span role="columnheader">Prop</span>
-              <span role="columnheader">Purpose</span>
+              <span role="columnheader">Type</span>
+              <span role="columnheader">Default</span>
+              <span role="columnheader">Description</span>
             </div>
-            {component.primaryProps.map((prop) => (
-              <div className="props-row" role="row" key={prop}>
-                <code role="cell">{prop}</code>
-                <span role="cell">Controls core {component.name} behavior or presentation.</span>
-              </div>
-            ))}
+            {component.primaryProps.map((prop) => {
+              const metadata = getPropMetadata(component, prop);
+
+              return (
+                <div className="props-row" role="row" key={prop}>
+                  <code role="cell">{prop}</code>
+                  <code role="cell">{metadata.type}</code>
+                  <code role="cell">{metadata.defaultValue}</code>
+                  <span role="cell">{metadata.description}</span>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -122,6 +134,6 @@ export default async function ComponentDetailPage({ params }: PageProps) {
       </article>
 
       <DocPager previous={pager.previous} next={pager.next} />
-    </AppShell>
+    </>
   );
 }

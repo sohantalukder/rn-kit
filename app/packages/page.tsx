@@ -1,21 +1,15 @@
 import { Boxes, Component } from 'lucide-react';
 import Link from 'next/link';
-import { AppShell } from '../../docs/components/AppShell';
 import { DocPager } from '../../docs/components/DocPager';
 import { PackageCard } from '../../docs/components/PackageCard';
 import { components, packageInfo } from '../../docs/data/componentRegistry';
 import { getPager } from '../../docs/data/navigation';
 
-const toc = [
-  { id: 'packages', title: 'Packages' },
-  { id: 'structure', title: 'Structure' },
-];
-
 export default function PackagesPage() {
   const pager = getPager('/packages');
 
   return (
-    <AppShell toc={toc}>
+    <>
       <section className="doc-hero" id="packages">
         <span className="eyebrow">Package index</span>
         <h1>Packages</h1>
@@ -60,6 +54,6 @@ export default function PackagesPage() {
       </section>
 
       <DocPager previous={pager.previous} next={pager.next} />
-    </AppShell>
+    </>
   );
 }

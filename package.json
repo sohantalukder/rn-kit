@@ -1,6 +1,6 @@
 {
   "name": "@sohantalukder/rn-kit",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Reusable React Native UI components extracted from Sohan Talukder's boilerplate.",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",

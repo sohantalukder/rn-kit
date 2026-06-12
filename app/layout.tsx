@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import Script from 'next/script';
+import { AppShell } from '../docs/components/AppShell';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -17,14 +19,18 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
+        <Script
+          id="rn-kit-docs-theme"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html:
-              "try{var t=localStorage.getItem('rn-kit-docs-theme');if(!t){t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'}document.documentElement.dataset.theme=t}catch(e){}",
+              "try{var t=localStorage.getItem('rn-kit-docs-theme')||'dark';document.documentElement.dataset.theme=t}catch(e){}",
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <AppShell>{children}</AppShell>
+      </body>
     </html>
   );
 }

@@ -8,14 +8,14 @@ type ThemeMode = 'light' | 'dark';
 const storageKey = 'rn-kit-docs-theme';
 
 function resolveInitialTheme(): ThemeMode {
-  if (typeof window === 'undefined') return 'light';
+  if (typeof window === 'undefined') return 'dark';
   const saved = window.localStorage.getItem(storageKey);
   if (saved === 'light' || saved === 'dark') return saved;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return 'dark';
 }
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<ThemeMode>('light');
+  const [theme, setTheme] = useState<ThemeMode>('dark');
 
   useEffect(() => {
     const initial = resolveInitialTheme();

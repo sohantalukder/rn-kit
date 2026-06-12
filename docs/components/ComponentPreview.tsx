@@ -1,8 +1,8 @@
 'use client';
 
-import { Check, Component } from 'lucide-react';
-import React, { useRef, useState } from 'react';
-import { View } from 'react-native';
+import { Check, Component, Copy } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Pressable, View } from 'react-native';
 import Avatar from '../../src/components/molecules/avatar/Avatar';
 import Badge from '../../src/components/atoms/badge/Badge';
 import BottomSheet from '../../src/components/atoms/bottom-sheet/BottomSheet';
@@ -34,7 +34,9 @@ import StatusBar from '../../src/components/atoms/status-bar/StatusBar';
 import Switch from '../../src/components/atoms/switch/Switch';
 import Text from '../../src/components/atoms/text/Text';
 import TextInput from '../../src/components/atoms/text-input/TextInput';
+import { useTheme } from '../../src/theme';
 import ThemeProvider from '../../src/theme/ThemeProvider/ThemeProvider';
+import type { ThemeStorageAdapter } from '../../src/theme/ThemeProvider/ThemeProvider';
 import Toast from '../../src/components/atoms/toast';
 import type { SlideModalRef } from '../../src/components/organisms/slide-modal/SlideModal';
 import { StatusBarStyle } from '../../src/components/atoms/status-bar/StatusBar';
@@ -43,6 +45,8 @@ import type { ComponentDoc } from '../data/componentRegistry';
 type ComponentPreviewProps = {
   component: ComponentDoc;
 };
+
+type DocsTheme = 'light' | 'dark';
 
 const sampleItems = [
   { key: 'design', value: 'Design' },
@@ -74,6 +78,30 @@ const imageUrl =
 const avatarUrl =
   'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80';
 
+function getCurrentDocsTheme(): DocsTheme {
+  if (typeof document === 'undefined') return 'dark';
+  return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
+}
+
+function useDocsTheme() {
+  const [docsTheme, setDocsTheme] = useState<DocsTheme>(getCurrentDocsTheme);
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setDocsTheme(getCurrentDocsTheme());
+    });
+
+    observer.observe(document.documentElement, {
+      attributeFilter: ['data-theme'],
+      attributes: true,
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return docsTheme;
+}
+
 function PreviewFrame({
   title,
   description,
@@ -86,10 +114,20 @@ function PreviewFrame({
   return (
     <View style={{ gap: 16, width: '100%' }}>
       <View style={{ gap: 6 }}>
-        <Text variant="heading3" weight="semibold">
+        <Text
+          variant="heading3"
+          weight="semibold"
+          style={{ fontSize: 22, lineHeight: 28 }}
+        >
           {title}
         </Text>
-        <Text color="secondary">{description}</Text>
+        <Text
+          variant="body2"
+          color="secondary"
+          style={{ fontSize: 14, fontWeight: '400', lineHeight: 20 }}
+        >
+          {description}
+        </Text>
       </View>
       <Card variant="default" padding={18} shadow={false}>
         <View style={{ gap: 14 }}>{children}</View>
@@ -110,6 +148,68 @@ function ComponentExample({ component }: ComponentPreviewProps) {
   const [selectedMany, setSelectedMany] = useState<(string | number)[]>(['design']);
   const [sheetVisible, setSheetVisible] = useState(false);
   const modalRef = useRef<SlideModalRef>(null);
+  const { colors } = useTheme();
+  const isDarkPreview = colors.text.toLowerCase() === '#ffffff';
+  const screenPalette = isDarkPreview
+    ? {
+        phoneBg: '#0f1117',
+        phoneBorder: '#2a2d36',
+        panelBg: '#171a23',
+        panelBorder: '#2a2d36',
+        cardBg: '#080402',
+        heroBg: '#1f2430',
+        heroMuted: '#aeb7c6',
+        heroText: '#ffffff',
+        text: '#f8fafc',
+        muted: '#aeb7c6',
+        buttonSecondary: 'rgba(255,255,255,0.14)',
+        success: '#34d399',
+        shadow: '#000000',
+      }
+    : {
+        phoneBg: '#f7f9fc',
+        phoneBorder: '#d9e0ea',
+        panelBg: '#ffffff',
+        panelBorder: '#e2e8f0',
+        cardBg: '#111827',
+        heroBg: '#111827',
+        heroMuted: '#94a3b8',
+        heroText: '#ffffff',
+        text: '#0f172a',
+        muted: '#64748b',
+        buttonSecondary: 'rgba(255,255,255,0.12)',
+        success: '#059669',
+        shadow: '#0f172a',
+      };
+  const bottomSheetPalette = isDarkPreview
+    ? {
+        wrapperBg: '#111113',
+        wrapperBorder: '#27272a',
+        panelBg: '#18181b',
+        panelBorder: '#3f3f46',
+        cardBg: '#0d0d0f',
+        cardBorder: '#27272a',
+        badgeBg: '#27272a',
+        title: '#fafafa',
+        muted: '#a1a1aa',
+        accent: '#6366f1',
+        accentText: '#c7d2fe',
+        shadow: '#000000',
+      }
+    : {
+        wrapperBg: '#f8fafc',
+        wrapperBorder: '#e2e8f0',
+        panelBg: '#f8fafc',
+        panelBorder: '#e2e8f0',
+        cardBg: '#ffffff',
+        cardBorder: '#e2e8f0',
+        badgeBg: '#eef2ff',
+        title: '#0f172a',
+        muted: '#64748b',
+        accent: '#4f46e5',
+        accentText: '#4f46e5',
+        shadow: '#0f172a',
+      };
 
   switch (component.slug) {
     case 'button':
@@ -190,16 +290,107 @@ function ComponentExample({ component }: ComponentPreviewProps) {
 
     case 'bottom-sheet':
       return (
-        <PreviewFrame title="Bottom sheet" description="Open the sheet to preview modal content.">
-          <Button text="Open sheet" onPress={() => setSheetVisible(true)} />
-          <BottomSheet visible={sheetVisible} onRequestClose={() => setSheetVisible(false)}>
-            <Text variant="heading3" weight="semibold">
-              Payment method
+        <View
+          style={{
+            width: '100%',
+            maxWidth: 520,
+            borderRadius: 24,
+            backgroundColor: bottomSheetPalette.wrapperBg,
+            borderWidth: 1,
+            borderColor: bottomSheetPalette.wrapperBorder,
+            padding: 24,
+            gap: 18,
+          }}
+        >
+          <View style={{ gap: 6 }}>
+            <Text weight="bold" style={{ color: bottomSheetPalette.title, fontSize: 22, lineHeight: 28 }}>
+              Bottom sheet
             </Text>
-            <Text color="secondary">Choose how you want to complete this action.</Text>
-            <Button text="Done" onPress={() => setSheetVisible(false)} />
+            <Text style={{ color: bottomSheetPalette.muted, fontSize: 14, lineHeight: 20 }}>
+              Open a focused panel from the bottom of the screen for contextual tasks.
+            </Text>
+          </View>
+
+          <View
+            style={{
+              borderRadius: 20,
+              backgroundColor: bottomSheetPalette.cardBg,
+              borderWidth: 1,
+              borderColor: bottomSheetPalette.cardBorder,
+              padding: 16,
+              gap: 12,
+              shadowColor: bottomSheetPalette.shadow,
+              shadowOpacity: isDarkPreview ? 0.28 : 0.08,
+              shadowRadius: 18,
+              shadowOffset: { width: 0, height: 10 },
+            }}
+          >
+            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <View style={{ gap: 3 }}>
+                <Text weight="semibold" style={{ color: bottomSheetPalette.title, fontSize: 15 }}>
+                  Payment method
+                </Text>
+                <Text style={{ color: bottomSheetPalette.muted, fontSize: 12 }}>
+                  Change card, wallet, or bank account.
+                </Text>
+              </View>
+              <View
+                style={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: 19,
+                  backgroundColor: bottomSheetPalette.badgeBg,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Text weight="bold" style={{ color: bottomSheetPalette.accentText, fontSize: 14 }}>
+                  BS
+                </Text>
+              </View>
+            </View>
+
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel="Open bottom sheet"
+              onPress={() => setSheetVisible(true)}
+              style={({ pressed }) => ({
+                alignItems: 'center',
+                backgroundColor: bottomSheetPalette.accent,
+                borderRadius: 14,
+                justifyContent: 'center',
+                minHeight: 48,
+                opacity: pressed ? 0.82 : 1,
+              })}
+            >
+              <Text weight="semibold" style={{ color: '#ffffff', fontSize: 16 }}>
+                Open sheet
+              </Text>
+            </Pressable>
+          </View>
+
+          <BottomSheet
+            visible={sheetVisible}
+            onRequestClose={() => setSheetVisible(false)}
+            style={{ backgroundColor: bottomSheetPalette.cardBg, paddingHorizontal: 20, paddingBottom: 24 }}
+          >
+            <View style={{ gap: 14 }}>
+              <Text variant="heading3" weight="semibold" style={{ color: bottomSheetPalette.title }}>
+                Payment method
+              </Text>
+              <Text style={{ color: bottomSheetPalette.muted, lineHeight: 22 }}>
+                Choose a card, wallet, or bank account before completing this action.
+              </Text>
+              <Button
+                text="Done"
+                bgColor={bottomSheetPalette.accent}
+                textColor="#ffffff"
+                borderRadius={14}
+                onPress={() => setSheetVisible(false)}
+              />
+            </View>
           </BottomSheet>
-        </PreviewFrame>
+        </View>
       );
 
     case 'text':
@@ -415,13 +606,16 @@ function ComponentExample({ component }: ComponentPreviewProps) {
 
     case 'no-internet':
       return (
-        <PreviewFrame title="No internet" description="Network failure state with retry action.">
+        <PreviewFrame title="No Internet" description="Network failure state with retry action.">
           <NoInternet
             animated={false}
             text="Connection lost"
             description="Please check your connection and try again."
             onRetry={() => {}}
-            containerStyle={{ minHeight: 360 }}
+            iconSize={88}
+            containerStyle={{ minHeight: 360, paddingVertical: 28 }}
+            textStyle={{ fontSize: 20, lineHeight: 26 }}
+            descriptionStyle={{ fontSize: 14, lineHeight: 22, maxWidth: 300 }}
           />
         </PreviewFrame>
       );
@@ -434,7 +628,8 @@ function ComponentExample({ component }: ComponentPreviewProps) {
             selectedValues={selectedMany}
             setSelected={(values) => setSelectedMany(values ?? [])}
             placeholder="Select teams"
-            dropdownShown
+            maxHeight={220}
+            dropdownStyles={{ position: 'relative', top: 0, marginTop: 8 }}
           />
           <Text color="secondary">Selected: {selectedMany.join(', ') || 'none'}</Text>
         </PreviewFrame>
@@ -448,7 +643,8 @@ function ComponentExample({ component }: ComponentPreviewProps) {
             setSelected={setSelected}
             defaultOption={{ key: 'design', value: 'Design' }}
             placeholder="Select a team"
-            dropdownShown
+            maxHeight={200}
+            dropdownStyles={{ position: 'relative', top: 0, marginTop: 8 }}
           />
           <Text color="secondary">Selected: {selected ?? 'none'}</Text>
         </PreviewFrame>
@@ -472,19 +668,148 @@ function ComponentExample({ component }: ComponentPreviewProps) {
 
     case 'screen-container':
       return (
-        <PreviewFrame title="Screen container" description="Base screen wrapper with status bar handling.">
-          <View style={{ height: 360, overflow: 'hidden', borderRadius: 8 }}>
-            <ScreenContainer containerStyle={{ padding: 20 }}>
-              <View style={{ gap: 12 }}>
-                <Text variant="heading3" weight="semibold">
-                  Dashboard
-                </Text>
-                <Text color="secondary">Consistent screen background and content area.</Text>
-                <Button text="Continue" onPress={() => {}} />
+        <View style={{ alignItems: 'center', width: '100%' }}>
+          <View
+            style={{
+              width: 340,
+              maxWidth: '100%',
+              height: 500,
+              overflow: 'hidden',
+              borderRadius: 28,
+              borderWidth: 1,
+              borderColor: screenPalette.phoneBorder,
+              backgroundColor: screenPalette.phoneBg,
+              shadowColor: screenPalette.shadow,
+              shadowOpacity: isDarkPreview ? 0.28 : 0.12,
+              shadowRadius: 24,
+              shadowOffset: { width: 0, height: 16 },
+            }}
+          >
+            <ScreenContainer
+              bgColor={screenPalette.phoneBg}
+              barBackgroundColor={screenPalette.phoneBg}
+              barStyle={isDarkPreview ? StatusBarStyle.LIGHT : StatusBarStyle.DARK}
+              containerStyle={{ padding: 16 }}
+            >
+              <View style={{ gap: 14 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <View>
+                    <Text style={{ color: screenPalette.muted, fontSize: 12 }}>Today</Text>
+                    <Text variant="heading3" weight="bold" style={{ color: screenPalette.text }}>
+                      Dashboard
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      width: 38,
+                      height: 38,
+                      borderRadius: 19,
+                      backgroundColor: screenPalette.cardBg,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Text weight="bold" style={{ color: '#ffffff', fontSize: 13 }}>
+                      ST
+                    </Text>
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    borderRadius: 22,
+                    backgroundColor: screenPalette.heroBg,
+                    padding: 18,
+                    gap: 12,
+                  }}
+                >
+                  <Text style={{ color: screenPalette.heroMuted, fontSize: 12 }}>Available balance</Text>
+                  <Text weight="bold" style={{ color: screenPalette.heroText, fontSize: 30, lineHeight: 36 }}>
+                    $4,280.00
+                  </Text>
+                  <View style={{ flexDirection: 'row', gap: 8 }}>
+                    {['Send', 'Top up'].map((label) => (
+                      <View
+                        key={label}
+                        style={{
+                          borderRadius: 999,
+                          backgroundColor: label === 'Send' ? '#6366f1' : screenPalette.buttonSecondary,
+                          paddingHorizontal: 13,
+                          paddingVertical: 7,
+                        }}
+                      >
+                        <Text weight="semibold" style={{ color: '#ffffff', fontSize: 12 }}>
+                          {label}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+                <View style={{ flexDirection: 'row', gap: 10 }}>
+                  {[
+                    ['Income', '+12%'],
+                    ['Spend', '-4%'],
+                    ['Saved', '$820'],
+                  ].map(([label, value]) => (
+                    <View
+                      key={label}
+                      style={{
+                        flex: 1,
+                        borderRadius: 16,
+                        backgroundColor: screenPalette.panelBg,
+                        borderWidth: 1,
+                        borderColor: screenPalette.panelBorder,
+                        padding: 10,
+                        gap: 3,
+                      }}
+                    >
+                      <Text style={{ color: screenPalette.muted, fontSize: 11 }}>{label}</Text>
+                      <Text weight="bold" style={{ color: screenPalette.text, fontSize: 15 }}>
+                        {value}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+
+                <View style={{ gap: 8 }}>
+                  <Text weight="semibold" style={{ color: screenPalette.text, fontSize: 14 }}>
+                    Recent activity
+                  </Text>
+                  {[
+                    ['Design subscription', '-$24.00'],
+                    ['Client payment', '+$1,240.00'],
+                  ].map(([label, value]) => (
+                    <View
+                      key={label}
+                      style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderRadius: 14,
+                        backgroundColor: screenPalette.panelBg,
+                        borderWidth: 1,
+                        borderColor: screenPalette.panelBorder,
+                        padding: 11,
+                      }}
+                    >
+                      <Text style={{ color: screenPalette.text, fontSize: 12 }}>{label}</Text>
+                      <Text
+                        weight="semibold"
+                        style={{
+                          color: value.startsWith('+') ? screenPalette.success : screenPalette.text,
+                          fontSize: 12,
+                        }}
+                      >
+                        {value}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
               </View>
             </ScreenContainer>
           </View>
-        </PreviewFrame>
+        </View>
       );
 
     default:
@@ -498,47 +823,85 @@ function ComponentExample({ component }: ComponentPreviewProps) {
 
 export function ComponentPreview({ component }: ComponentPreviewProps) {
   const highlightedVariants = component.variants.slice(0, 4);
+  const [copied, setCopied] = useState(false);
+  const [isCodeVisible, setIsCodeVisible] = useState(false);
+  const docsTheme = useDocsTheme();
+  const previewThemeStorage = useMemo<ThemeStorageAdapter>(
+    () => ({
+      getTheme: () => (docsTheme === 'dark' ? 'dark' : 'default'),
+      setTheme: () => {},
+    }),
+    [docsTheme]
+  );
+
+  const copyPreviewCode = async () => {
+    await navigator.clipboard.writeText(component.usage);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1600);
+  };
+
+  const previewPanelClassName = [
+    'preview-panel',
+    component.slug === 'bottom-sheet' && docsTheme === 'light' ? 'preview-panel-light' : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
 
   return (
-    <div className="preview-panel">
-      <div className="preview-header">
-        <div>
-          <span className="eyebrow">React Native preview</span>
-          <h2>{component.name}</h2>
-        </div>
-        <span className="preview-chip">
-          <Component size={14} aria-hidden="true" />
-          Live component
-        </span>
-      </div>
+    <div className={previewPanelClassName}>
       <div className="preview-stage">
         <div className="preview-canvas">
-          <ThemeProvider>
+          <ThemeProvider key={docsTheme} storageAdapter={previewThemeStorage}>
             <ComponentExample component={component} />
           </ThemeProvider>
         </div>
 
-        <div className="preview-notes">
-          <div>
-            <h3>Common variants</h3>
-            <div className="preview-token-row">
-              {highlightedVariants.map((variant) => (
-                <span key={variant}>{variant}</span>
-              ))}
-            </div>
+        <div
+          className={`preview-code-peek${isCodeVisible ? ' is-expanded' : ''}`}
+          aria-label={`${component.name} usage preview`}
+        >
+          <div className="preview-code-toolbar">
+            <span>tsx</span>
+            <button
+              type="button"
+              aria-label={copied ? 'Preview code copied' : 'Copy preview code'}
+              title={copied ? 'Copied' : 'Copy preview code'}
+              onClick={copyPreviewCode}
+            >
+              <Copy size={14} aria-hidden="true" />
+            </button>
           </div>
-          <div>
-            <h3>Good default</h3>
-            <ul className="preview-checklist">
-              {component.bestPractices.slice(0, 2).map((note) => (
-                <li key={note}>
-                  <Check size={15} aria-hidden="true" />
-                  {note}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <pre>
+            <code>{component.usage}</code>
+          </pre>
+          <button
+            className="preview-code-button"
+            type="button"
+            aria-expanded={isCodeVisible}
+            onClick={() => setIsCodeVisible((value) => !value)}
+          >
+            {isCodeVisible ? 'Hide Code' : 'View Code'}
+          </button>
         </div>
+      </div>
+      <div className="preview-notes">
+        <span className="preview-chip">
+          <Component size={14} aria-hidden="true" />
+          Live component
+        </span>
+        <div className="preview-token-row">
+          {highlightedVariants.map((variant) => (
+            <span key={variant}>{variant}</span>
+          ))}
+        </div>
+        <ul className="preview-checklist">
+          {component.bestPractices.slice(0, 2).map((note) => (
+            <li key={note}>
+              <Check size={15} aria-hidden="true" />
+              {note}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

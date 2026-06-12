@@ -12,7 +12,7 @@ export type ComponentDoc = {
 export const packageInfo = {
   name: '@sohantalukder/rn-kit',
   slug: 'rn-kit',
-  version: '0.1.0',
+  version: '0.1.1',
   summary:
     'A typed React Native UI kit with theme primitives, polished components, and overlay providers.',
   install: 'npm install @sohantalukder/rn-kit',

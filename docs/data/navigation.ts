@@ -13,6 +13,7 @@ export const mainNavigation: NavigationItem[] = [
     label: page.title,
   })),
   { href: '/components', label: 'Components' },
+  { href: '/icons', label: 'Icons' },
   { href: '/packages', label: 'Packages' },
   { href: `/packages/${packageInfo.slug}`, label: packageInfo.name },
   ...components.map((component) => ({

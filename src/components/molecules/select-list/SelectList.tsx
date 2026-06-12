@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, Animated, TextInput, Keyboard, FlatList, Pressable } from 'react-native';
+import { View, TouchableOpacity, Animated, TextInput, Keyboard, FlatList } from 'react-native';
 import { useTheme } from '../../../theme';
 import IconByVariant from '../../atoms/icon-by-variant/IconByVariant';
 import AnimatedLabel from '../../atoms/text-input/AnimatedLabel';
@@ -67,6 +67,8 @@ const SelectList: React.FC<SelectListProps> = ({
   // Memoized style objects to avoid inline styles
   const searchInputStyle = React.useMemo(
     () => ({
+      borderWidth: 0,
+      outlineWidth: 0,
       padding: 0,
       height: SELECT_LIST_CONSTANTS.SEARCH_INPUT_HEIGHT,
       fontFamily,
@@ -77,12 +79,13 @@ const SelectList: React.FC<SelectListProps> = ({
 
   const dropdownContainerStyle = React.useMemo(
     () => ({
-      maxHeight: animatedValue,
+      height: animatedValue,
       position: 'absolute' as const,
       top: SELECT_LIST_CONSTANTS.DROPDOWN_TOP_OFFSET,
       left: 0,
       right: 0,
       zIndex: SELECT_LIST_CONSTANTS.Z_INDEX,
+      overflow: 'hidden' as const,
       backgroundColor: colors.background,
       borderRadius: SELECT_LIST_CONSTANTS.BORDER_RADIUS,
       borderWidth: 1,
@@ -99,19 +102,6 @@ const SelectList: React.FC<SelectListProps> = ({
   const containerStyle = React.useMemo(
     () => [styles.container, { zIndex: dropdown ? SELECT_LIST_CONSTANTS.Z_INDEX + 1 : 1 }],
     [styles.container, dropdown]
-  );
-
-  const backdropStyle = React.useMemo(
-    () => ({
-      position: 'absolute' as const,
-      top: -1000,
-      left: -1000,
-      right: -1000,
-      bottom: -1000,
-      zIndex: SELECT_LIST_CONSTANTS.Z_INDEX - 1,
-      backgroundColor: colors.transparent,
-    }),
-    [colors.transparent]
   );
 
   // Split static and dynamic styles for better performance
@@ -144,6 +134,7 @@ const SelectList: React.FC<SelectListProps> = ({
    * Animates the dropdown to slide down and show
    */
   const slideDown = React.useCallback(() => {
+    animatedValue.stopAnimation();
     setDropdown(true);
     setIsFocused(true);
     Animated.timing(animatedValue, {
@@ -157,6 +148,7 @@ const SelectList: React.FC<SelectListProps> = ({
    * Animates the dropdown to slide up and hide
    */
   const slideUp = React.useCallback(() => {
+    animatedValue.stopAnimation();
     setIsFocused(false);
     Animated.timing(animatedValue, {
       toValue: 0,
@@ -316,13 +308,6 @@ const SelectList: React.FC<SelectListProps> = ({
 
   return (
     <View style={containerStyle}>
-      {dropdown && (
-        <Pressable
-          style={backdropStyle}
-          onPress={slideUp}
-        />
-      )}
-
       {/* AnimatedLabel */}
       <AnimatedLabel
         label={label || placeholder || 'Select option'}
@@ -344,7 +329,10 @@ const SelectList: React.FC<SelectListProps> = ({
             />
 
             <TouchableOpacity
-              onPress={slideUp}
+              onPress={() => {
+                setQuery('');
+                slideUp();
+              }}
               accessibilityRole="button"
               accessibilityLabel="Close"
               style={styles.arrow}
