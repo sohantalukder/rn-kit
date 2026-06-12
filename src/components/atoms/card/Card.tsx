@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ViewProps, ViewStyle } from 'react-native';
+import type { AccessibilityProps, ViewProps, ViewStyle } from 'react-native';
 import { StyleSheet, View, Pressable } from 'react-native';
 import { useTheme } from '../../../theme';
 import type { Colors } from '../../../theme/types/colors';
@@ -18,7 +18,8 @@ export type CardElevation = 0 | 1 | 2 | 3 | 4 | 5;
 /**
  * Properties for the Card component.
  */
-export type CardProps = Pick<ViewProps, 'children' | 'style' | 'testID'> & {
+export type CardProps = AccessibilityProps &
+  Pick<ViewProps, 'children' | 'style' | 'testID'> & {
   /**
    * Visual variant of the card
    * @default 'default'
@@ -140,6 +141,7 @@ const Card: React.FC<CardProps> = ({
         style={cardStyle}
         onPress={onPress}
         testID={testID}
+        accessibilityRole="button"
         {...props}
       >
         {children}

@@ -1,7 +1,7 @@
 import Dialog from '../../components/atoms/dialog/Dialog';
 import React, { memo, useEffect, useState } from 'react';
 import type { DialogManagerProps } from './types';
-import { setDialogManager } from './dialogManager';
+import { getDialogManager, setDialogManager } from './dialogManager';
 
 const DialogContainer: React.FC = memo(() => {
   const [currentDialog, setCurrentDialog] = useState<DialogManagerProps | null>(
@@ -19,7 +19,7 @@ const DialogContainer: React.FC = memo(() => {
     <Dialog
       {...currentDialog}
       visible={!!currentDialog}
-      onDismiss={() => setCurrentDialog(null)}
+      onDismiss={() => getDialogManager().hide()}
     />
   );
 });

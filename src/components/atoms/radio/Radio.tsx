@@ -1,5 +1,6 @@
 import { useTheme } from '../../../theme';
 import { default as React, useEffect, useState } from 'react';
+import type { AccessibilityProps } from 'react-native';
 import { Pressable, StyleSheet } from 'react-native';
 import Animated, {
   Easing,
@@ -19,7 +20,7 @@ const config = {
 /**
  * Properties for the Radio component.
  */
-type Properties = {
+type Properties = AccessibilityProps & {
   /**
    * Whether the radio button is checked.
    */
@@ -38,6 +39,10 @@ const Radio: React.FC<Properties> = ({
   checked = false,
   disabled = false,
   onChange,
+  accessibilityHint,
+  accessibilityLabel,
+  accessibilityRole,
+  accessibilityState,
 }) => {
   const { colors } = useTheme();
   const scale = useSharedValue(1);
@@ -87,6 +92,14 @@ const Radio: React.FC<Properties> = ({
       onPress={handlePress}
       disabled={disabled}
       testID="radio"
+      accessibilityHint={accessibilityHint}
+      accessibilityLabel={accessibilityLabel ?? 'Radio'}
+      accessibilityRole={accessibilityRole ?? 'radio'}
+      accessibilityState={{
+        ...accessibilityState,
+        checked: isChecked,
+        disabled,
+      }}
       style={{
         width: config.size,
         height: config.size,

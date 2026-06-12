@@ -38,21 +38,30 @@ class ToastManager {
   }
 
   setToastSetter(setter: ((toasts: ToastConfig[]) => void) | null) {
+    if (!setter) {
+      this.currentSetToast = null;
+      this.currentToasts = [];
+      this.toastQueue = [];
+      return;
+    }
+
     this.currentSetToast = setter;
     // Process any queued toasts
-    if (setter && this.toastQueue.length > 0) {
+    if (this.toastQueue.length > 0) {
       const queuedToasts = this.toastQueue.map((toast) => ({
         ...toast,
         key: Math.random().toString(),
       }));
       this.currentToasts = [...this.currentToasts, ...queuedToasts];
       this.toastQueue = [];
-      setter(this.currentToasts);
+      this.currentSetToast(this.currentToasts);
     }
   }
 
   clearToastSetter() {
     this.currentSetToast = null;
+    this.currentToasts = [];
+    this.toastQueue = [];
   }
 
   getCurrentToasts() {

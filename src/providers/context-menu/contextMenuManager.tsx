@@ -12,19 +12,30 @@ export type ContextMenuConfigWithKey = ContextMenuConfig & {
 // Create a singleton instance to manage global context menu state
 class ContextMenuManager {
   private menuQueue: ContextMenuConfig[] = [];
+  private pendingFrame: number | null = null;
   private currentSetMenu:
     | ((menu: ContextMenuConfigWithKey | null) => void)
     | null = null;
   private currentMenu: ContextMenuConfigWithKey | null = null;
+
+  private clearPendingFrame() {
+    if (this.pendingFrame !== null) {
+      cancelAnimationFrame(this.pendingFrame);
+      this.pendingFrame = null;
+    }
+  }
 
   show(config: ContextMenuConfig) {
     const key = Math.random().toString(); // NOSONAR S2245,
     const newMenu = { ...config, key };
 
     if (this.currentSetMenu) {
-      requestAnimationFrame(() => {
+      this.clearPendingFrame();
+      this.pendingFrame = requestAnimationFrame(() => {
+        this.pendingFrame = null;
+        if (!this.currentSetMenu) return;
         this.currentMenu = newMenu;
-        this.currentSetMenu!(this.currentMenu);
+        this.currentSetMenu(this.currentMenu);
       });
     } else {
       this.menuQueue.push(config);
@@ -35,9 +46,12 @@ class ContextMenuManager {
 
   hide() {
     if (this.currentSetMenu) {
-      requestAnimationFrame(() => {
+      this.clearPendingFrame();
+      this.pendingFrame = requestAnimationFrame(() => {
+        this.pendingFrame = null;
+        if (!this.currentSetMenu) return;
         this.currentMenu = null;
-        this.currentSetMenu!(this.currentMenu);
+        this.currentSetMenu(this.currentMenu);
       });
     }
   }
@@ -59,6 +73,7 @@ class ContextMenuManager {
   }
 
   clearMenuSetter() {
+    this.clearPendingFrame();
     this.currentSetMenu = null;
   }
 

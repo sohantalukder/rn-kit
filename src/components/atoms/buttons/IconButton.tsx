@@ -19,6 +19,11 @@ const IconButton = React.memo(
     size = 'medium',
     iconColor,
     iconSize,
+    testID,
+    accessibilityHint,
+    accessibilityLabel,
+    accessibilityRole,
+    accessibilityState,
   }: IconButtonProps) => {
     const { colors } = useTheme();
     return (
@@ -26,7 +31,13 @@ const IconButton = React.memo(
         borderRadius={borderRadius}
         disabled={disabled || false}
         onPress={onPress || (() => {})}
-        testID="icon-button"
+        testID={testID ?? 'icon-button'}
+        accessibilityHint={accessibilityHint}
+        accessibilityLabel={
+          accessibilityLabel ?? (typeof icon === 'string' ? icon : 'Icon button')
+        }
+        accessibilityRole={accessibilityRole ?? 'button'}
+        accessibilityState={{ ...accessibilityState, disabled: !!disabled }}
       >
         <View
           style={[

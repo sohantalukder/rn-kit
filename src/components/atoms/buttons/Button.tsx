@@ -25,6 +25,11 @@ const Button: React.FC<ButtonProps> = memo(
     text = '',
     variant = 'primary',
     wrapStyle,
+    testID,
+    accessibilityHint,
+    accessibilityLabel,
+    accessibilityState,
+    accessibilityRole,
   }) => {
     const { colors } = useTheme();
 
@@ -103,6 +108,15 @@ const Button: React.FC<ButtonProps> = memo(
         borderRadius={borderRadius}
         disabled={disabled || isLoading || false}
         onPress={() => handlePress()}
+        testID={testID}
+        accessibilityHint={accessibilityHint}
+        accessibilityLabel={accessibilityLabel ?? text}
+        accessibilityRole={accessibilityRole ?? 'button'}
+        accessibilityState={{
+          ...accessibilityState,
+          busy: isLoading,
+          disabled: disabled || isLoading || false,
+        }}
         {...(rippleColor && { rippleColor })}
       >
         <View style={[styles.container, styles[variant] ?? {}, wrapStyle]}>

@@ -2,6 +2,7 @@ import withOpacity from '../../../utilities/withOpacity';
 import { useTheme } from '../../../theme';
 import type { Colors } from '../../../theme/types/colors';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import type { AccessibilityProps } from 'react-native';
 import { Animated, Pressable, StyleSheet } from 'react-native';
 
 const config = {
@@ -12,7 +13,7 @@ const config = {
 /**
  * Properties for the Switch component.
  */
-type Properties = {
+type Properties = AccessibilityProps & {
   /**
    * The value of the switch.
    */
@@ -41,6 +42,10 @@ const Switch: React.FC<Properties> = ({
   onPress = () => {},
   name,
   bgColor,
+  accessibilityHint,
+  accessibilityLabel,
+  accessibilityRole,
+  accessibilityState,
 }) => {
   const valueRef = useRef(false);
   const { colors } = useTheme();
@@ -100,6 +105,10 @@ const Switch: React.FC<Properties> = ({
     <Pressable
       onPress={handlePress}
       testID="switch"
+      accessibilityHint={accessibilityHint}
+      accessibilityLabel={accessibilityLabel ?? name ?? 'Switch'}
+      accessibilityRole={accessibilityRole ?? 'switch'}
+      accessibilityState={{ ...accessibilityState, checked: show }}
       style={{
         width: config.width,
         height: config.height,

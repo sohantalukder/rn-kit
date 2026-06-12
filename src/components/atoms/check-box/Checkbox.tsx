@@ -1,5 +1,6 @@
 import { useTheme } from '../../../theme';
 import { default as React, useEffect, useState } from 'react';
+import type { AccessibilityProps } from 'react-native';
 import { Pressable, StyleSheet } from 'react-native';
 import Animated, {
   Easing,
@@ -19,7 +20,7 @@ const config = {
 /**
  * Props for the Checkbox component.
  */
-type Properties = {
+type Properties = AccessibilityProps & {
   /**
    * Whether the checkbox is checked.
    * @default false
@@ -51,6 +52,10 @@ const Checkbox: React.FC<Properties> = ({
   disabled = false,
   onPress,
   testID,
+  accessibilityLabel,
+  accessibilityHint,
+  accessibilityRole,
+  accessibilityState,
 }) => {
   const { colors, borders } = useTheme();
   const scale = useSharedValue(1);
@@ -105,6 +110,14 @@ const Checkbox: React.FC<Properties> = ({
       onPress={handlePress}
       disabled={disabled}
       testID={testID}
+      accessibilityHint={accessibilityHint}
+      accessibilityLabel={accessibilityLabel ?? 'Checkbox'}
+      accessibilityRole={accessibilityRole ?? 'checkbox'}
+      accessibilityState={{
+        ...accessibilityState,
+        checked: isChecked,
+        disabled,
+      }}
       style={{
         width: config.size,
         height: config.size,

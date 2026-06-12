@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import type {
   NativeSyntheticEvent,
   StyleProp,
@@ -20,6 +20,7 @@ type OTPInputProps = {
 const OTPInput: React.FC<OTPInputProps> = ({ callback, length = 6, style }) => {
   const { colors, gutters, typographies } = useTheme();
   const inputReferences = useRef<(null | TextInput)[]>([]);
+  const timeoutReferences = useRef<ReturnType<typeof setTimeout>[]>([]);
   // Track focused state for styling
   const [focusedIndex, setFocusedIndex] = useState<null | number>(null);
   // Use state to track OTP values for better reactivity
@@ -27,28 +28,42 @@ const OTPInput: React.FC<OTPInputProps> = ({ callback, length = 6, style }) => {
   const [otpValues, setOtpValues] = useState<string[]>(
     new Array(length).fill('')
   );
+  const otpValuesReference = useRef<string[]>(new Array(length).fill(''));
+
+  const setNextOtpValues = useCallback((nextValues: string[]) => {
+    otpValuesReference.current = nextValues;
+    setOtpValues(nextValues);
+  }, []);
 
   const componentStyles = useMemo(
     () => otpStyles(colors, gutters, typographies),
     [colors, gutters, typographies]
   );
 
-  // Get the complete OTP value
-  const getOtpValue = useCallback(() => otpValues.join(''), [otpValues]);
+  const scheduleTimeout = useCallback((handler: () => void, delay = 0) => {
+    const timeout = setTimeout(() => {
+      timeoutReferences.current = timeoutReferences.current.filter(
+        (item) => item !== timeout
+      );
+      handler();
+    }, delay);
+    timeoutReferences.current.push(timeout);
+  }, []);
 
-  // Check if OTP is complete and call the callback
-  const checkCompletion = useCallback(() => {
-    const otpValue = getOtpValue();
-    if (otpValue.length === length) {
-      callback?.(otpValue);
-    }
-  }, [callback, getOtpValue, length]);
+  useEffect(
+    () => () => {
+      timeoutReferences.current.forEach(clearTimeout);
+      timeoutReferences.current = [];
+    },
+    []
+  );
 
   // Update a specific position in the OTP array
   const updateOtpValue = useCallback((index: number, value: string) => {
     setOtpValues((previous) => {
       const newValues = [...previous];
       newValues[index] = value;
+      otpValuesReference.current = newValues;
       return newValues;
     });
   }, []);
@@ -94,7 +109,7 @@ const OTPInput: React.FC<OTPInputProps> = ({ callback, length = 6, style }) => {
       const cleanText = text.replace(/\D/g, '');
 
       // Create a new array with the pasted values
-      const newValues = [...otpValues];
+      const newValues = [...otpValuesReference.current];
 
       // Update OTP values with pasted digits
       for (
@@ -106,21 +121,24 @@ const OTPInput: React.FC<OTPInputProps> = ({ callback, length = 6, style }) => {
         newValues[targetIndex] = cleanText[index] ?? '';
       }
 
-      setOtpValues(newValues);
+      setNextOtpValues(newValues);
 
       // Focus the next empty input or the last input
       const nextFocusIndex = Math.min(
         currentIndex + cleanText.length,
         length - 1
       );
-      setTimeout(() => {
+      scheduleTimeout(() => {
         inputReferences.current[nextFocusIndex]?.focus();
-      }, 0);
+      });
 
       // Check completion
-      setTimeout(checkCompletion, 50);
+      const otpValue = newValues.join('');
+      if (otpValue.length === length && newValues.every(Boolean)) {
+        callback?.(otpValue);
+      }
     },
-    [length, otpValues, checkCompletion]
+    [length, scheduleTimeout, callback, setNextOtpValues]
   );
 
   const handleTextChange = useCallback(
@@ -137,19 +155,29 @@ const OTPInput: React.FC<OTPInputProps> = ({ callback, length = 6, style }) => {
         return;
       }
 
+      const digit = text.replace(/\D/g, '');
+      if (!digit) {
+        return;
+      }
+
       // Update the OTP value
-      updateOtpValue(index, text);
+      const newValues = [...otpValuesReference.current];
+      newValues[index] = digit;
+      setNextOtpValues(newValues);
 
       // Move to next input if available
-      if (text && index < length - 1) {
+      if (digit && index < length - 1) {
         inputReferences.current[index + 1]?.focus();
-      } else if (index === length - 1 && text) {
+      } else if (index === length - 1 && digit) {
         // Check completion for last input
-        checkCompletion();
+        const otpValue = newValues.join('');
+        if (otpValue.length === length && newValues.every(Boolean)) {
+          callback?.(otpValue);
+        }
         inputReferences.current[index]?.blur();
       }
     },
-    [handleBackspace, handlePaste, updateOtpValue, length, checkCompletion]
+    [handleBackspace, handlePaste, length, callback, setNextOtpValues]
   );
 
   // Create and memoize the input fields
@@ -160,6 +188,7 @@ const OTPInput: React.FC<OTPInputProps> = ({ callback, length = 6, style }) => {
         autoComplete="one-time-code"
         inputMode="numeric"
         key={index}
+        testID={`otp-input-${index}`}
         keyboardType="number-pad"
         maxLength={1}
         onBlur={handleOnBlur}
@@ -183,6 +212,8 @@ const OTPInput: React.FC<OTPInputProps> = ({ callback, length = 6, style }) => {
           componentStyles.input,
           focusedIndex === index && componentStyles.focus,
         ]}
+        accessibilityLabel={`OTP digit ${index + 1}`}
+        accessibilityState={{ selected: focusedIndex === index }}
         textAlignVertical="center"
         value={otpValues[index]}
       />

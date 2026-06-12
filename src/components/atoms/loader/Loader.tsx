@@ -1,6 +1,11 @@
 import React, { useLayoutEffect, useMemo } from 'react';
 import { useRef } from 'react';
-import type { StyleProp, ViewStyle, ColorValue } from 'react-native';
+import type {
+  AccessibilityProps,
+  StyleProp,
+  ViewStyle,
+  ColorValue,
+} from 'react-native';
 import { Animated, Easing } from 'react-native';
 
 import { useTheme } from '../../../theme';
@@ -16,7 +21,7 @@ const ANIMATION_CONFIG = {
 /**
  * Properties for the Loader component.
  */
-type Properties = {
+type Properties = AccessibilityProps & {
   /**
    * The style of the loader.
    */
@@ -27,7 +32,14 @@ type Properties = {
   color?: ColorValue;
 };
 
-const Loader: React.FC<Properties> = ({ style, color }) => {
+const Loader: React.FC<Properties> = ({
+  style,
+  color,
+  accessibilityLabel,
+  accessibilityRole,
+  accessibilityState,
+  ...props
+}) => {
   const spinAnim = useRef(new Animated.Value(0));
   const { layout, colors } = useTheme();
   const interpolateRotation = useMemo(
@@ -47,12 +59,25 @@ const Loader: React.FC<Properties> = ({ style, color }) => {
   );
 
   useLayoutEffect(() => {
-    Animated.loop(Animated.timing(spinAnim.current, ANIMATION_CONFIG)).start();
+    const animation = Animated.loop(
+      Animated.timing(spinAnim.current, ANIMATION_CONFIG)
+    );
+    animation.start();
+
+    return () => {
+      animation.stop();
+      spinAnim.current.stopAnimation();
+    };
   }, []);
 
   return (
     <Animated.View
+      {...props}
       testID="loader"
+      accessible
+      accessibilityLabel={accessibilityLabel ?? 'Loading'}
+      accessibilityRole={accessibilityRole ?? 'progressbar'}
+      accessibilityState={{ ...accessibilityState, busy: true }}
       style={[layout.alignSelf, animatedStyle, style]}
     >
       <IconByVariant

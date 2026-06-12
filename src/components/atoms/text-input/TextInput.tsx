@@ -39,15 +39,19 @@ const TextInput: React.FC<CustomInputProps> = ({
   wrapperStyle,
   errorMessage,
   required = false,
+  value,
+  disabled = false,
   ...props
 }) => {
   const { colors, layout, gutters, typographies, variant } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
   const [currentValue, setCurrentValue] = useState(
-    defaultValue?.toString() || ''
+    value?.toString() ?? defaultValue?.toString() ?? ''
   );
   const [error, setError] = useState<string>('');
   const inputReference = useRef<RNTextInput>(null);
+  const isControlled = value !== undefined;
+  const inputValue = isControlled ? value?.toString() ?? '' : currentValue;
 
   // Memoize styles to prevent recreating on each render
   const styles = useMemo(
@@ -111,7 +115,9 @@ const TextInput: React.FC<CustomInputProps> = ({
   // Handle text change with validation
   const handleOnChange = useCallback(
     (text: string) => {
-      setCurrentValue(text);
+      if (!isControlled) {
+        setCurrentValue(text);
+      }
       const isValid = validateInput(text);
 
       if (onChangeText) {
@@ -119,7 +125,7 @@ const TextInput: React.FC<CustomInputProps> = ({
         onChangeText(text, fieldName, isValid);
       }
     },
-    [name, onChangeText, validateInput]
+    [isControlled, name, onChangeText, validateInput]
   );
 
   // Handle focus event
@@ -131,8 +137,8 @@ const TextInput: React.FC<CustomInputProps> = ({
   // Handle blur event with validation
   const handleOnBlur = useCallback(() => {
     setIsFocused(false);
-    validateInput(currentValue);
-  }, [currentValue, validateInput]);
+    validateInput(inputValue);
+  }, [inputValue, validateInput]);
 
   // Handle right icon press
   const handleRightPress = useCallback(() => {
@@ -174,8 +180,16 @@ const TextInput: React.FC<CustomInputProps> = ({
    * Set the current value to the default value
    */
   useEffect(() => {
-    setCurrentValue(defaultValue?.toString() || '');
-  }, [defaultValue]);
+    if (!isControlled) {
+      setCurrentValue(defaultValue?.toString() || '');
+    }
+  }, [defaultValue, isControlled]);
+
+  useEffect(() => {
+    if (isControlled) {
+      setCurrentValue(value?.toString() ?? '');
+    }
+  }, [isControlled, value]);
 
   /**
    * Set the error message to the error message
@@ -188,13 +202,14 @@ const TextInput: React.FC<CustomInputProps> = ({
     <View style={[layout.fullWidth, layout.flexShrink_1, wrapperStyle]}>
       <AnimatedLabel
         labelStyle={computedLabelStyle}
-        label={required ? `${label} *` : (label ?? '')}
-        value={currentValue}
+        label={required && label ? `${label} *` : (label ?? '')}
+        value={inputValue}
         isFocused={isFocused}
       />
       <View style={containerStyle}>
         {leftIcon ? <View>{leftIcon}</View> : null}
         <RNTextInput
+          {...props}
           testID="text-input"
           numberOfLines={1}
           onBlur={handleOnBlur}
@@ -205,14 +220,19 @@ const TextInput: React.FC<CustomInputProps> = ({
           ref={inputReference}
           selectionColor={colors.primary}
           style={styles.input}
-          value={currentValue}
-          {...props}
+          value={inputValue}
+          editable={props.editable ?? !disabled}
+          accessibilityState={{ ...props.accessibilityState, disabled }}
         />
         {rightIcon ? (
           <TouchableOpacity
             activeOpacity={0.5}
+            accessibilityRole="button"
+            accessibilityLabel="Input action"
+            accessibilityState={{ disabled }}
             hitSlop={{ bottom: 10, left: 10, right: 10, top: 10 }}
             onPress={handleRightPress}
+            disabled={disabled}
           >
             {rightIcon}
           </TouchableOpacity>

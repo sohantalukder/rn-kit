@@ -33,6 +33,10 @@ const Ripple = React.memo<RippleButtonProps>(
     disabled = false,
     style,
     testID,
+    accessibilityHint,
+    accessibilityLabel,
+    accessibilityRole,
+    accessibilityState,
   }) => {
     const { colors } = useTheme();
     const [radius, setRadius] = React.useState(-1);
@@ -191,6 +195,11 @@ const Ripple = React.memo<RippleButtonProps>(
         >
           <Pressable
             onPress={handlePress}
+            testID={testID}
+            accessibilityHint={accessibilityHint}
+            accessibilityLabel={accessibilityLabel}
+            accessibilityRole={accessibilityRole}
+            accessibilityState={{ ...accessibilityState, disabled }}
             android_ripple={{
               color: rippleColor ?? withOpacity(colors.ripple, 0.12),
             }}
@@ -207,6 +216,11 @@ const Ripple = React.memo<RippleButtonProps>(
           {...child.props}
           style={[child.props.style, style]}
           testID={testID}
+          accessible={child.props.accessible ?? true}
+          accessibilityHint={accessibilityHint}
+          accessibilityLabel={accessibilityLabel}
+          accessibilityRole={accessibilityRole}
+          accessibilityState={{ ...accessibilityState, disabled }}
         >
           <View
             style={rippleStyles.container}

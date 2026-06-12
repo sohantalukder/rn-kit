@@ -11,8 +11,8 @@
     "skipLibCheck": true,
     "strict": true,
     "target": "es2021",
-    "types": ["node", "react", "react-native"]
+    "types": ["node", "react", "react-native", "jest"]
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "__tests__/**/*"],
   "exclude": ["lib", "node_modules"]
 }

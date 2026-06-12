@@ -1,17 +1,17 @@
 # @sohantalukder/rn-kit
 
-A standalone React Native UI library with reusable components, theme utilities, overlay providers, icons, and TypeScript types.
+A standalone React Native UI kit with reusable components, theme utilities, overlay providers, local SVG icons, and TypeScript types.
 
-This package is designed to live in its own Git repository and be consumed by React Native apps, including the original boilerplate it was extracted from.
+The package is designed for React Native apps that want a small design-system layer without copying component code between projects.
 
 ## Features
 
-- Theme provider with light/dark/system mode support
+- Theme provider with default, dark, and system mode support
 - Atoms, molecules, organisms, and screen templates
 - Toast, dialog, bottom sheet, and context menu providers
-- Built-in SVG icon registry
+- Local SVG icon registry through `react-native-svg`
 - CommonJS, ES module, and TypeScript declaration builds
-- npm publish-ready package configuration
+- Jest unit tests for core runtime behavior
 
 ## Install
 
@@ -19,28 +19,30 @@ This package is designed to live in its own Git repository and be consumed by Re
 npm install @sohantalukder/rn-kit
 ```
 
-Install peer dependencies in the consuming React Native app:
+Install the core peer dependencies in the consuming React Native app:
 
 ```sh
 npm install \
-  @d11/react-native-fast-image \
-  @gorhom/bottom-sheet \
   @react-navigation/native \
   @react-navigation/stack \
-  @shopify/flash-list \
-  react-error-boundary \
   react-native-gesture-handler \
   react-native-reanimated \
   react-native-safe-area-context \
-  react-native-svg \
-  react-native-webview
+  react-native-svg
 ```
 
-Then follow the native setup instructions for those packages, especially Reanimated, Gesture Handler, SVG, Safe Area Context, Bottom Sheet, and Fast Image.
+Feature-specific peers are only needed when you use the related components:
+
+| Package | Needed for |
+| --- | --- |
+| `@d11/react-native-fast-image` | `Image`, `Avatar`, `PhotoCarousel` |
+| `@gorhom/bottom-sheet` | `UiPortalProvider` bottom-sheet manager |
+
+Follow the native setup instructions for Reanimated, Gesture Handler, SVG, Safe Area Context, Bottom Sheet, and Fast Image in the consuming app.
 
 ## Usage
 
-Wrap your app with `ThemeProvider` and `UiPortalProvider`:
+Wrap the app once with `ThemeProvider`. Add `UiPortalProvider` when using toast, dialog, bottom sheet, or context menu APIs.
 
 ```tsx
 import {
@@ -57,6 +59,7 @@ export function App() {
       <UiPortalProvider>
         <Button
           text="Continue"
+          accessibilityLabel="Continue"
           onPress={() => toast.show({ type: 'success', title: 'Ready' })}
         />
         <Text variant="body1">Hello</Text>
@@ -66,9 +69,7 @@ export function App() {
 }
 ```
 
-## Persist Theme Mode
-
-Pass a storage adapter from your app:
+Persist theme mode with an app-owned storage adapter:
 
 ```tsx
 <ThemeProvider
@@ -81,12 +82,34 @@ Pass a storage adapter from your app:
 </ThemeProvider>
 ```
 
-You can also pass a logo asset:
+## Common Imports
 
 ```tsx
-<ThemeProvider logo={require('./assets/logo.png')}>
-  {children}
-</ThemeProvider>
+import { Button, TextInput, Card } from '@sohantalukder/rn-kit';
+import { ThemeProvider, useTheme } from '@sohantalukder/rn-kit';
+import { toast, dialog, bottomSheet } from '@sohantalukder/rn-kit';
+```
+
+## Component Notes
+
+- Inputs support predictable controlled `value` and uncontrolled `defaultValue` usage.
+- Buttons, checkbox, radio, switch, dialogs, and bottom sheets expose accessibility roles and states.
+- `Iconify` has been removed. Use the local SVG icon registry with `IconByVariant` or pass custom icon nodes to components.
+- `FlashList`, `ErrorBoundary`, `DefaultError`, and `SafeScreen` are not included. Use app-level list and error-boundary implementations when needed.
+- Global overlay managers are mounted by `UiPortalProvider`; mount it once near the app root.
+- The package does not include app navigation setup. Configure React Navigation in the consuming app.
+
+## Quality Gates
+
+Run these before publishing:
+
+```sh
+npm ci
+npm run typecheck
+npm test -- --runInBand
+npm run build
+npm audit --omit=dev
+npm --cache /private/tmp/rn-kit-npm-cache pack --dry-run
 ```
 
 ## Public API
@@ -100,10 +123,11 @@ export * from './types';
 export * from './utilities';
 ```
 
-Common imports:
+## Publishing Checklist
 
-```tsx
-import { Button, TextInput, Card } from '@sohantalukder/rn-kit';
-import { ThemeProvider, useTheme } from '@sohantalukder/rn-kit';
-import { toast, dialog, bottomSheet } from '@sohantalukder/rn-kit';
-```
+- Confirm `npm run typecheck`, `npm test`, and `npm run build` pass.
+- Confirm `npm audit --omit=dev` has no high or critical production advisories.
+- Inspect `npm pack --dry-run` output for unwanted files.
+- Install the packed tarball in a fresh React Native app.
+- Verify at least one Android and one iOS build when native peers are used.
+- Update `CHANGELOG.md`, bump the package version, then publish with `npm publish --access public`.

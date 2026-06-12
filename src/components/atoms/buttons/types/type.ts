@@ -1,4 +1,10 @@
-import type { ColorValue, StyleProp, TextStyle, ViewStyle } from 'react-native';
+import type {
+  AccessibilityProps,
+  ColorValue,
+  StyleProp,
+  TextStyle,
+  ViewStyle,
+} from 'react-native';
 
 /**
  * Button variant types that determine the visual style and behavior
@@ -33,7 +39,7 @@ type IconPosition = 'left' | 'right';
  * @property activityColor - Color of the loading indicator
  * @property tooltip - Tooltip text for the button
  */
-type ButtonProps = {
+type ButtonProps = AccessibilityProps & {
   // Required props
   text: string;
   variant?: ButtonVariant;
@@ -60,6 +66,7 @@ type ButtonProps = {
   borderRadius?: number;
   textStyle?: StyleProp<TextStyle>;
   wrapStyle?: StyleProp<ViewStyle>;
+  testID?: string;
 };
 
 /**
@@ -73,7 +80,7 @@ type ButtonProps = {
  * @property rippleColor - Color of the ripple effect
  * @property borderRadius - Border radius of the button
  */
-type IconButtonProps = {
+type IconButtonProps = AccessibilityProps & {
   // Required props
   icon: string | React.ReactNode;
 
@@ -96,6 +103,7 @@ type IconButtonProps = {
   // Size
   size?: 'small' | 'medium' | 'large';
   iconSize?: number;
+  testID?: string;
 };
 
 /**
@@ -112,7 +120,7 @@ type IconButtonProps = {
  * @property style - Custom styles for the button
  * @property borderRadius - Border radius of the button
  */
-type RippleButtonProps = {
+type RippleButtonProps = AccessibilityProps & {
   // Required props
   children: React.ReactNode;
 

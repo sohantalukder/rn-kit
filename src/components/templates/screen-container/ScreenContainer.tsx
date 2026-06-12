@@ -6,7 +6,6 @@ import { useTheme } from '../../../theme';
 import { StatusBar } from '../../atoms';
 import { StatusBarStyle } from '../../atoms/status-bar/StatusBar';
 import { Variant } from '../../../theme/_config';
-import { ErrorBoundary } from '../../organisms';
 
 /**
  * Common properties for screen container components
@@ -20,10 +19,6 @@ export type BaseScreenProps = PropsWithChildren<{
   readonly bgColor?: ColorValue;
   /** Whether to show the header */
   readonly showHeader?: boolean;
-  /** Error handling reset callback */
-  readonly onResetError?: () => void;
-  /** Whether to use error boundary */
-  readonly useErrorBoundary?: boolean;
   /** Whether component should apply background image */
   readonly barBackgroundColor?: ColorValue;
 }> &
@@ -31,7 +26,7 @@ export type BaseScreenProps = PropsWithChildren<{
 
 /**
  * A unified screen container component that provides consistent layout, safe areas,
- * status bar handling, and optional error boundaries across the application.
+ * status bar handling across the application.
  *
  * @example
  * // Basic usage
@@ -44,7 +39,6 @@ export type BaseScreenProps = PropsWithChildren<{
  * <ScreenContainer
  *   barStyle={StatusBarStyle.LIGHT}
  *   bgColor="#f0f0f0"
- *   useErrorBoundary={true}
  *   showHeader={false}
  * >
  *   <YourScreenContent />
@@ -56,8 +50,6 @@ const ScreenContainer: React.FC<BaseScreenProps> = ({
   barStyle,
   bgColor,
   showHeader = true,
-  useErrorBoundary = false,
-  onResetError = () => {},
   style,
   barBackgroundColor,
   ...props
@@ -72,13 +64,6 @@ const ScreenContainer: React.FC<BaseScreenProps> = ({
   // Use background color from theme if not explicitly provided
   const backgroundColor = bgColor ?? navigationTheme.colors.background;
 
-  // Prepare content with optional error boundary
-  const content = useErrorBoundary ? (
-    <ErrorBoundary onReset={onResetError}>{children}</ErrorBoundary>
-  ) : (
-    children
-  );
-
   return (
     <View
       {...props}
@@ -90,7 +75,7 @@ const ScreenContainer: React.FC<BaseScreenProps> = ({
         barStyle={resolvedBarStyle}
       />
       <View style={[layout.flex_1, { backgroundColor }, containerStyle]}>
-        {content}
+        {children}
       </View>
     </View>
   );

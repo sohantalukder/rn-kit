@@ -1,4 +1,3 @@
-import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import React, { ComponentType } from 'react';
 import { Dimensions } from 'react-native';
 import {
@@ -14,6 +13,13 @@ import {
 import { logger } from '../../logger';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
+
+type BottomSheetRefMethods = {
+  close: () => void;
+  snapToIndex: (index: number) => void;
+};
+
+type BottomSheetRef = React.RefObject<BottomSheetRefMethods | null>;
 
 export const DEFAULT_OPTIONS: Required<BottomSheetShowOptions> = {
   snapPoints: [],
@@ -36,7 +42,7 @@ export const DEFAULT_OPTIONS: Required<BottomSheetShowOptions> = {
 };
 
 class BottomSheetManager {
-  private bottomSheetRef: React.RefObject<BottomSheetMethods> | null = null;
+  private bottomSheetRef: BottomSheetRef | null = null;
   private state: BottomSheetState = {
     isOpen: false,
     snapIndex: -1,
@@ -48,9 +54,14 @@ class BottomSheetManager {
   private contentHeight: number = 0;
   private isAnimating: boolean = false;
   private animationTimeout: NodeJS.Timeout | null = null;
-  private isMounted: boolean = true;
+  private isMounted: boolean = false;
 
-  setRef = (ref: React.RefObject<BottomSheetMethods>): void => {
+  mount = (): void => {
+    this.isMounted = true;
+  };
+
+  setRef = (ref: BottomSheetRef): void => {
+    this.isMounted = true;
     this.bottomSheetRef = ref;
   };
 
@@ -471,13 +482,13 @@ class BottomSheetManager {
     this.clearAnimationTimeout();
     this.listeners.clear();
     this.bottomSheetRef = null;
-    this.setState({
+    this.state = {
       isOpen: false,
       snapIndex: -1,
       component: null,
       props: {},
       options: DEFAULT_OPTIONS,
-    });
+    };
     this.contentHeight = 0;
     this.isAnimating = false;
   };

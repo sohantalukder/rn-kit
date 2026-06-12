@@ -6,17 +6,19 @@ import RNBottomSheet, {
 } from '@gorhom/bottom-sheet';
 import {
   BackHandler,
+  NativeEventSubscription,
   LayoutChangeEvent,
   StyleSheet,
   TouchableWithoutFeedback,
 } from 'react-native';
 import { bottomSheet, DEFAULT_OPTIONS } from './manager';
 import { BottomSheetState, DEFAULT_SNAP_POINTS } from './types';
-import { BottomSheetMethods } from '@gorhom/bottom-sheet/lib/typescript/types';
 import { useTheme } from '../../theme';
 
 const BottomSheetContainer: React.FC = () => {
   const sheetRef = useRef<RNBottomSheet>(null);
+  const refFrame = useRef<number | null>(null);
+  const mounted = useRef(false);
   const { colors } = useTheme();
   const [state, setState] = useState<BottomSheetState>({
     isOpen: false,
@@ -25,24 +27,34 @@ const BottomSheetContainer: React.FC = () => {
     props: {},
     options: DEFAULT_OPTIONS,
   });
-  const backHandler = useCallback(() => {
-    return BackHandler.addEventListener('hardwareBackPress', () => {
+  const backHandlerSubscription = useRef<NativeEventSubscription | null>(null);
+
+  const addBackHandler = useCallback(() => {
+    backHandlerSubscription.current?.remove();
+    backHandlerSubscription.current = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
       if (bottomSheet.isOpen()) {
         bottomSheet.close();
         return true;
       }
       return false;
-    });
-  }, [state.snapIndex]);
+      }
+    );
+  }, []);
+
   useEffect(() => {
-    backHandler();
+    mounted.current = true;
+    bottomSheet.mount();
+    addBackHandler();
     // Set ref using requestAnimationFrame for better timing
     const setRef = () => {
+      if (!mounted.current) return;
       if (sheetRef.current) {
-        bottomSheet.setRef(sheetRef as React.RefObject<BottomSheetMethods>);
+        bottomSheet.setRef(sheetRef);
       } else {
         // Retry on next frame if ref not ready
-        requestAnimationFrame(setRef);
+        refFrame.current = requestAnimationFrame(setRef);
       }
     };
 
@@ -53,11 +65,17 @@ const BottomSheetContainer: React.FC = () => {
     });
 
     return () => {
+      mounted.current = false;
+      if (refFrame.current !== null) {
+        cancelAnimationFrame(refFrame.current);
+        refFrame.current = null;
+      }
       unsubscribe();
-      backHandler().remove();
+      backHandlerSubscription.current?.remove();
+      backHandlerSubscription.current = null;
       bottomSheet.destroy();
     };
-  }, []);
+  }, [addBackHandler]);
 
   const renderBackdrop = useCallback(
     (props: BottomSheetBackdropProps) => (
