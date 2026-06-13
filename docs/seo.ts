@@ -1,16 +1,18 @@
 import type { Metadata } from 'next';
 import { components, packageInfo } from './data/componentRegistry';
 
-const fallbackSiteUrl = 'https://sohantalukder.github.io/rn-kit';
+const fallbackSiteUrl = 'https://sohantalukder-rn-kit.vercel.app';
 
-function normalizeSiteUrl(url: string) {
-  return url.replace(/\/+$/, '');
+function normalizeSiteUrl(url?: string) {
+  const normalizedUrl = url?.trim().replace(/\/+$/, '');
+
+  return normalizedUrl || fallbackSiteUrl;
 }
 
 export const siteConfig = {
   name: '@sohantalukder/rn-kit docs',
   shortName: 'rn-kit',
-  url: normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL ?? fallbackSiteUrl),
+  url: normalizeSiteUrl(process.env.NEXT_PUBLIC_SITE_URL),
   title: '@sohantalukder/rn-kit docs',
   description:
     'Documentation for @sohantalukder/rn-kit, a typed React Native UI kit with theme primitives, polished components, and overlay providers.',
