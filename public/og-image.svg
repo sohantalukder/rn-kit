@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-label="@sohantalukder/rn-kit docs">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#101828"/>
+      <stop offset="0.52" stop-color="#1e3a8a"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <rect x="82" y="76" width="132" height="132" rx="32" fill="url(#mark)"/>
+  <path d="M130 124h55M130 142h55M130 160h34" stroke="#eff6ff" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="116" cy="124" r="10" fill="#a7f3d0"/>
+  <circle cx="116" cy="142" r="10" fill="#fef08a"/>
+  <circle cx="116" cy="160" r="10" fill="#fca5a5"/>
+  <rect x="171" y="152" width="30" height="30" rx="8" fill="#c4b5fd"/>
+  <text x="82" y="280" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="72" font-weight="800">
+    @sohantalukder/rn-kit
+  </text>
+  <text x="84" y="356" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="500">
+    Typed React Native UI components, theme primitives,
+  </text>
+  <text x="84" y="404" fill="#cbd5e1" font-family="Inter, Arial, sans-serif" font-size="34" font-weight="500">
+    local SVG icons, and overlay providers.
+  </text>
+  <rect x="84" y="482" width="184" height="52" rx="26" fill="#f8fafc"/>
+  <text x="116" y="517" fill="#111827" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">
+    Docs
+  </text>
+  <rect x="292" y="482" width="218" height="52" rx="26" fill="#1e293b" stroke="#475569"/>
+  <text x="326" y="517" fill="#f8fafc" font-family="Inter, Arial, sans-serif" font-size="24" font-weight="700">
+    Components
+  </text>
+</svg>

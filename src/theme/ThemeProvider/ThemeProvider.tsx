@@ -7,7 +7,6 @@ import type {
 import type { ComponentTheme, Theme } from '../types/theme';
 import type { PropsWithChildren } from 'react';
 
-import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 import {
   createContext,
   useCallback,
@@ -42,6 +41,10 @@ import type { FontColors } from '../types/fonts';
 import type { BorderColors } from '../types/borders';
 import type { Gutters } from '../types/gutters';
 import type { Backgrounds } from '../types/backgrounds';
+import {
+  darkNavigationTheme,
+  defaultNavigationTheme,
+} from '../navigation';
 
 type Context = {
   changeTheme: (variant: VariantWithSystem) => void;
@@ -54,16 +57,92 @@ export type ThemeStorageAdapter = {
   setTheme: (variant: VariantWithSystem) => void;
 };
 
+type ThemeProviderThemeOverrides = {
+  backgrounds?: Record<string, string>;
+  borders?: {
+    colors?: Record<string, string>;
+  };
+  colors?: Record<string, string>;
+  fonts?: {
+    colors?: Record<string, string>;
+  };
+  navigationColors?: Partial<FulfilledThemeConfiguration['navigationColors']>;
+};
+
+export type ThemeProviderTheme = ThemeProviderThemeOverrides & {
+  variants?: Partial<Record<Variant, ThemeProviderThemeOverrides>>;
+};
+
 type Properties = PropsWithChildren<{
   logo?: number;
   storageAdapter?: ThemeStorageAdapter;
+  theme?: ThemeProviderTheme;
 }>;
 
 // Cache for generated theme objects to avoid regeneration
 const themeCache = new Map<string, ComponentTheme>();
 const configCache = new Map<Variant, FulfilledThemeConfiguration>();
 
-function ThemeProvider({ children, logo, storageAdapter }: Properties) {
+const mergeThemeOverrides = (
+  baseConfig: FulfilledThemeConfiguration,
+  overrides?: ThemeProviderThemeOverrides
+): FulfilledThemeConfiguration => {
+  if (!overrides) {
+    return baseConfig;
+  }
+
+  const colorOverrides = overrides.colors ?? {};
+
+  return {
+    backgrounds: {
+      ...baseConfig.backgrounds,
+      ...colorOverrides,
+      ...(overrides.backgrounds ?? {}),
+    },
+    borders: {
+      colors: {
+        ...baseConfig.borders.colors,
+        ...colorOverrides,
+        ...(overrides.borders?.colors ?? {}),
+      },
+      radius: baseConfig.borders.radius,
+      widths: baseConfig.borders.widths,
+    },
+    colors: {
+      ...baseConfig.colors,
+      ...colorOverrides,
+    },
+    fonts: {
+      colors: {
+        ...baseConfig.fonts.colors,
+        ...colorOverrides,
+        ...(overrides.fonts?.colors ?? {}),
+      },
+      sizes: baseConfig.fonts.sizes,
+    },
+    gutters: baseConfig.gutters,
+    navigationColors: {
+      ...baseConfig.navigationColors,
+      ...(overrides.navigationColors ?? {}),
+    },
+  };
+};
+
+const applyThemeOverrides = (
+  baseConfig: FulfilledThemeConfiguration,
+  theme: ThemeProviderTheme | undefined,
+  variant: Variant
+): FulfilledThemeConfiguration => {
+  const baseTheme = mergeThemeOverrides(baseConfig, theme);
+  return mergeThemeOverrides(baseTheme, theme?.variants?.[variant]);
+};
+
+function ThemeProvider({
+  children,
+  logo,
+  storageAdapter,
+  theme: customTheme,
+}: Properties) {
   const colorScheme = useColorScheme();
   const systemTheme = colorScheme === 'dark' ? 'dark' : 'default';
 
@@ -108,7 +187,7 @@ function ThemeProvider({ children, logo, storageAdapter }: Properties) {
   );
 
   // Memoized config generation with caching
-  const fullConfig = useMemo(() => {
+  const baseConfig = useMemo(() => {
     if (configCache.has(variant)) {
       return configCache.get(variant)!;
     }
@@ -118,10 +197,15 @@ function ThemeProvider({ children, logo, storageAdapter }: Properties) {
     return config;
   }, [variant]);
 
+  const fullConfig = useMemo(
+    () => applyThemeOverrides(baseConfig, customTheme, variant),
+    [baseConfig, customTheme, variant]
+  );
+
   // Generate theme styles with caching
   const themeStyles = useMemo(() => {
     const cacheKey = `${variant}-styles`;
-    if (themeCache.has(cacheKey)) {
+    if (!customTheme && themeCache.has(cacheKey)) {
       return themeCache.get(cacheKey)!;
     }
 
@@ -161,13 +245,16 @@ function ThemeProvider({ children, logo, storageAdapter }: Properties) {
       typographies: typographies(fontColors),
     };
 
-    themeCache.set(cacheKey, styles as ComponentTheme);
+    if (!customTheme) {
+      themeCache.set(cacheKey, styles as ComponentTheme);
+    }
     return styles;
-  }, [fullConfig, variant]);
+  }, [fullConfig, customTheme, variant]);
 
   // Memoized navigation theme
   const navigationTheme = useMemo(() => {
-    const baseTheme = variant === 'dark' ? DarkTheme : DefaultTheme;
+    const baseTheme =
+      variant === 'dark' ? darkNavigationTheme : defaultNavigationTheme;
     return {
       ...baseTheme,
       colors: fullConfig.navigationColors,

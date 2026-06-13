@@ -50,6 +50,7 @@ type Properties = AccessibilityProps & {
 const Checkbox: React.FC<Properties> = ({
   checked = false,
   disabled = false,
+  size = config.size,
   onPress,
   testID,
   accessibilityLabel,
@@ -119,13 +120,14 @@ const Checkbox: React.FC<Properties> = ({
         disabled,
       }}
       style={{
-        width: config.size,
-        height: config.size,
+        width: size,
+        height: size,
       }}
     >
       <Animated.View
         style={[
           styles.container,
+          { height: size, width: size },
           containerStyle,
           borders.rounded_8,
           disabled && styles.containerDisabled,

@@ -1,26 +1,84 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import type { ViewStyle, StyleProp, DimensionValue, AccessibilityProps } from 'react-native';
-import { StyleSheet, View } from 'react-native';
-import FastImage, { type ImageStyle as FastImageStyle, type ResizeMode } from '@d11/react-native-fast-image';
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import type {
+  AccessibilityProps,
+  DimensionValue,
+  ImageErrorEventData,
+  ImageLoadEventData,
+  ImageResizeMode,
+  ImageSourcePropType,
+  ImageStyle,
+  NativeSyntheticEvent,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
+import {
+  Image as RNImage,
+  StyleSheet,
+  View,
+} from 'react-native';
 import PlaceholderImage from '../../../assets/icons/Placeholder.icon';
-import isEmpty from '../../../utilities/isEmpty';
 import Skeleton from '../skeleton/Skeleton';
 
-type ImageSource = { uri?: string; require?: number } | number;
+type ImageSource = ImageSourcePropType | { uri?: string; require?: number };
 
 type Properties = AccessibilityProps & {
   source: ImageSource;
   borderRadius?: number;
-  resizeMode?: ResizeMode;
+  resizeMode?: ImageResizeMode;
   priority?: 'low' | 'normal' | 'high';
   cache?: 'immutable' | 'web' | 'cacheOnly';
   height?: DimensionValue;
   width?: DimensionValue;
   wrapperStyle?: StyleProp<ViewStyle>;
-  style?: StyleProp<FastImageStyle>;
+  style?: StyleProp<ImageStyle>;
+  fallbackSource?: ImageSourcePropType;
+  placeholder?: React.ReactNode;
+  showLoader?: boolean;
+  onLoad?: () => void;
+  onError?: () => void;
   onLoadStart?: () => void;
   onLoadEnd?: () => void;
   testID?: string;
+};
+
+const isUsableSource = (
+  source?: ImageSourcePropType
+): source is ImageSourcePropType => {
+  if (!source) return false;
+  if (typeof source === 'number') return true;
+  if (Array.isArray(source)) return source.length > 0;
+  return typeof source.uri === 'string' && source.uri.length > 0;
+};
+
+const normalizeSource = (source?: ImageSource): ImageSourcePropType | undefined => {
+  if (!source) return undefined;
+  if (typeof source === 'number' || Array.isArray(source)) return source;
+
+  if ('require' in source && typeof source.require === 'number') {
+    return source.require;
+  }
+
+  if (typeof source.uri !== 'string' || source.uri.length === 0) {
+    return undefined;
+  }
+
+  try {
+    if (source.uri.startsWith('{') || source.uri.startsWith('[')) {
+      return JSON.parse(source.uri) as ImageSourcePropType;
+    }
+  } catch (error: unknown) {
+    if (__DEV__) {
+      console.error(error);
+    }
+  }
+
+  return { ...source, uri: source.uri };
 };
 
 const ImagePreview: React.FC<Properties> = ({
@@ -33,116 +91,141 @@ const ImagePreview: React.FC<Properties> = ({
   width,
   wrapperStyle,
   style,
+  fallbackSource,
+  placeholder,
+  showLoader = true,
+  onLoad,
+  onError,
   onLoadStart,
   onLoadEnd,
-  testID,
-  ...props
+  testID = 'image-preview',
+  ...accessibilityProps
 }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [didFailPrimary, setDidFailPrimary] = useState(false);
 
-  // Process image source only once when props change
-  const processedSource = useMemo(() => {
-    // Handle number case (require)
-    if (typeof source === 'number') {
-      return source;
+  const imageStyle = useMemo(
+    () => [{ height, width, borderRadius }, style],
+    [borderRadius, height, style, width]
+  );
+
+  const primarySource = useMemo(() => normalizeSource(source), [source]);
+
+  useEffect(() => {
+    setDidFailPrimary(false);
+  }, [primarySource]);
+
+  const displaySource = useMemo(() => {
+    if (didFailPrimary && isUsableSource(fallbackSource)) {
+      return fallbackSource;
     }
 
-    // Handle object case
-    const imageSource = source as { uri?: string; require?: number };
-    const imageCopy = { ...imageSource };
+    return isUsableSource(primarySource) ? primarySource : undefined;
+  }, [didFailPrimary, fallbackSource, primarySource]);
 
-    // Parse URI if needed
-    if (!isEmpty(imageCopy) && !isEmpty(imageCopy.uri)) {
-      try {
-        // Only attempt to parse if the URI appears to be JSON
-        if (
-          typeof imageCopy.uri === 'string' &&
-          (imageCopy.uri.startsWith('{') || imageCopy.uri.startsWith('['))
-        ) {
-          imageCopy.uri = JSON.parse(imageCopy.uri);
-        }
-      } catch (_error: unknown) {
-        if (__DEV__) {
-          console.error(_error);
-        }
-      }
-    }
+  const shouldRenderImage = isUsableSource(displaySource);
+  const shouldShowLoader = showLoader && isLoading && shouldRenderImage;
 
-    return imageCopy;
-  }, [source]);
-
-  // Check if we have a valid image source
-  const hasValidSource = useMemo(() => {
-    if (typeof processedSource === 'number') return true;
-    const sourceObj = processedSource as { uri?: string };
-    return !isEmpty(sourceObj?.uri);
-  }, [processedSource]);
-
-  // Handle image load events
   const handleLoadStart = useCallback(() => {
     setIsLoading(true);
     onLoadStart?.();
   }, [onLoadStart]);
-  
+
+  const handleLoad = useCallback(
+    (_event: NativeSyntheticEvent<ImageLoadEventData>) => {
+      setIsLoading(false);
+      onLoad?.();
+    },
+    [onLoad]
+  );
+
   const handleLoadEnd = useCallback(() => {
     setIsLoading(false);
     onLoadEnd?.();
   }, [onLoadEnd]);
 
-  // Prepare FastImage source configuration
-  const fastImageSource = useMemo(() => {
-    if (typeof processedSource === 'number') {
-      return processedSource;
-    }
+  const handleError = useCallback(
+    (_event: NativeSyntheticEvent<ImageErrorEventData>) => {
+      setIsLoading(false);
 
-    const sourceObj = processedSource as { uri?: string };
-    if (sourceObj?.uri) {
-      return {
-        uri: sourceObj.uri,
-        priority: _priority === 'high' ? FastImage.priority.high : _priority === 'low' ? FastImage.priority.low : FastImage.priority.normal,
-        cache: _cache === 'web' ? FastImage.cacheControl.web : _cache === 'cacheOnly' ? FastImage.cacheControl.cacheOnly : FastImage.cacheControl.immutable,
-      };
-    }
+      if (!didFailPrimary) {
+        setDidFailPrimary(true);
+      }
 
-    return undefined;
-  }, [processedSource, _priority, _cache]);
-  return isLoading ? (
-    <View style={[styles.loaderContainer, { borderRadius, height, width }]}>
-      <Skeleton
-        height="100%"
-        width="100%"
-        borderRadius={borderRadius}
+      onError?.();
+    },
+    [didFailPrimary, onError]
+  );
+
+  const fallbackContent = useMemo(() => {
+    if (placeholder) return placeholder;
+
+    return (
+      <PlaceholderImage
+        style={[styles.placeholder, imageStyle]}
       />
+    );
+  }, [imageStyle, placeholder]);
+
+  return (
+    <View
+      style={[styles.container, wrapperStyle, { height, width }]}
+      testID={`${testID}-container`}
+    >
+      {shouldRenderImage ? (
+        <RNImage
+          {...accessibilityProps}
+          source={displaySource}
+          style={[styles.image, imageStyle]}
+          resizeMode={resizeMode}
+          onLoadStart={handleLoadStart}
+          onLoad={handleLoad}
+          onError={handleError}
+          onLoadEnd={handleLoadEnd}
+          testID={testID}
+        />
+      ) : (
+        fallbackContent
+      )}
+
+      {shouldShowLoader && (
+        <View
+          style={[styles.loader, styles.pointerEventsNone]}
+          testID={`${testID}-loader`}
+        >
+          <Skeleton
+            height="100%"
+            width="100%"
+            borderRadius={borderRadius}
+          />
+        </View>
+      )}
     </View>
-  ) : hasValidSource && fastImageSource ? (
-    <View style={[wrapperStyle, { height, width }]}>
-      <FastImage
-        source={fastImageSource}
-        style={[styles.image, { height, width, borderRadius }, style]}
-        resizeMode={resizeMode}
-        onLoadStart={handleLoadStart}
-        onLoadEnd={handleLoadEnd}
-        testID={testID || 'image-preview'}
-        {...props}
-      />
-    </View>
-  ) : (
-    <PlaceholderImage
-      style={[styles.image, { borderRadius, height, width }, style]}
-    />
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    overflow: 'hidden',
+  },
   image: {
     height: '100%',
     width: '100%',
   },
-  loaderContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    overflow: 'hidden',
+  loader: {
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
+  },
+  placeholder: {
+    height: '100%',
+    width: '100%',
+  },
+  pointerEventsNone: {
+    pointerEvents: 'none',
   },
 });
 
-export default React.memo(ImagePreview);
+export default memo(ImagePreview);

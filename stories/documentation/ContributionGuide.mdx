@@ -1,0 +1,13 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Documentation/Contribution Guide" />
+
+# Contribution Guide
+
+When adding a new package or component:
+
+1. Export it from the public package surface.
+2. Add or update `docs/data/componentRegistry.ts`.
+3. Add a dedicated Storybook story file.
+4. Include usage, props, variants, states, and best-practice notes.
+5. Run typecheck, tests, package build, docs build, and Storybook build.

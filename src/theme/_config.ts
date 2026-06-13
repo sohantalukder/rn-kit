@@ -1,6 +1,8 @@
 import type { ThemeConfiguration } from './types/config';
-
-import { DarkTheme, DefaultTheme } from '@react-navigation/native';
+import {
+  darkNavigationTheme,
+  defaultNavigationTheme,
+} from './navigation';
 
 export const enum Variant {
   DARK = 'dark',
@@ -95,7 +97,7 @@ export const config = {
   },
   gutters: sizes,
   navigationColors: {
-    ...DefaultTheme.colors,
+    ...defaultNavigationTheme.colors,
     background: colorsLight.background,
     card: colorsLight.background,
   },
@@ -110,7 +112,7 @@ export const config = {
         colors: colorsDark,
       },
       navigationColors: {
-        ...DarkTheme.colors,
+        ...darkNavigationTheme.colors,
         background: colorsDark.background,
         card: colorsDark.background,
       },

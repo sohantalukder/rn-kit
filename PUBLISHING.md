@@ -44,3 +44,12 @@ npm view @sohantalukder/rn-kit
 ```
 
 If it returns a 404, the name is available.
+
+## Automated Main Branch Release
+
+Every pull request into `main` must bump the package version in `package.json`
+and keep `package-lock.json` in sync. The CI version guard also checks direct
+pushes to `main`.
+
+After a successful `main` build, docs deploy, and npm publish, GitHub Actions
+creates a GitHub release for `v<package version>` with generated release notes.

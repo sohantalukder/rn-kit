@@ -8,7 +8,7 @@ const STATUS_BAR_HEIGHT =
 const ANIMATION_CONFIG = {
   friction: 8,
   tension: 50,
-  useNativeDriver: true,
+  useNativeDriver: Platform.OS !== 'web',
 } as const;
 
 const SCREEN_HEIGHT = rs('hf');

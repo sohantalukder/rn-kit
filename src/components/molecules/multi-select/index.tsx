@@ -6,7 +6,6 @@ import {
   TextInput,
   Keyboard,
   FlatList,
-  Pressable,
   ActivityIndicator,
   ListRenderItemInfo,
 } from 'react-native';
@@ -78,6 +77,8 @@ const MultiSelectList: React.FC<MultiSelectListProps> = ({
 
   const searchInputStyle = React.useMemo(
     () => ({
+      borderWidth: 0,
+      outlineWidth: 0,
       padding: 0,
       height: MULTI_SELECT_LIST_CONSTANTS.SEARCH_INPUT_HEIGHT,
       fontFamily,
@@ -88,12 +89,13 @@ const MultiSelectList: React.FC<MultiSelectListProps> = ({
 
   const dropdownContainerStyle = React.useMemo(
     () => ({
-      maxHeight: animatedValue,
+      height: animatedValue,
       position: 'absolute' as const,
       top: MULTI_SELECT_LIST_CONSTANTS.DROPDOWN_TOP_OFFSET,
       left: 0,
       right: 0,
       zIndex: MULTI_SELECT_LIST_CONSTANTS.Z_INDEX,
+      overflow: 'hidden' as const,
       backgroundColor: colors.background,
       borderRadius: MULTI_SELECT_LIST_CONSTANTS.BORDER_RADIUS,
       borderWidth: 1,
@@ -118,6 +120,7 @@ const MultiSelectList: React.FC<MultiSelectListProps> = ({
   );
 
   const slideDown = React.useCallback(() => {
+    animatedValue.stopAnimation();
     setDropdown(true);
     setIsFocused(true);
     Animated.timing(animatedValue, {
@@ -128,6 +131,7 @@ const MultiSelectList: React.FC<MultiSelectListProps> = ({
   }, [animatedValue, maxHeight]);
 
   const slideUp = React.useCallback(() => {
+    animatedValue.stopAnimation();
     setIsFocused(false);
     Keyboard.dismiss();
     setShowAllBadges(false);
@@ -250,19 +254,6 @@ const MultiSelectList: React.FC<MultiSelectListProps> = ({
     [styles.container, dropdown]
   );
 
-  const backdropStyle = React.useMemo(
-    () => ({
-      position: 'absolute' as const,
-      top: -1000,
-      left: -1000,
-      right: -1000,
-      bottom: -1000,
-      zIndex: MULTI_SELECT_LIST_CONSTANTS.Z_INDEX - 1,
-      backgroundColor: colors.transparent,
-    }),
-    [colors.transparent]
-  );
-
   const handleEndReached = React.useCallback(() => {
     if (!enableInfiniteScroll || !onLoadMore || isLoading || !hasMore) return;
     onLoadMore();
@@ -302,13 +293,6 @@ const MultiSelectList: React.FC<MultiSelectListProps> = ({
 
   return (
     <View style={containerStyle}>
-      {dropdown && (
-        <Pressable
-          style={backdropStyle}
-          onPress={closeAndClear}
-        />
-      )}
-
       <TouchableOpacity
         onPress={() => {
           if (!dropdown) {

@@ -1,0 +1,30 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Documentation/Getting Started" />
+
+# Getting Started
+
+```tsx
+import {
+  ThemeProvider,
+  UiPortalProvider,
+  Button,
+  Text,
+} from '@sohantalukder/rn-kit';
+
+export function App() {
+  return (
+    <ThemeProvider>
+      <UiPortalProvider>
+        <Text variant="heading3" weight="semibold">
+          Welcome
+        </Text>
+        <Button text="Continue" onPress={() => {}} />
+      </UiPortalProvider>
+    </ThemeProvider>
+  );
+}
+```
+
+Mount providers once near the application root, then import public components
+from `@sohantalukder/rn-kit`.

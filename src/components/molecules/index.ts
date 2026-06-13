@@ -1,4 +1,6 @@
 export { default as PasswordInput } from './password-input/PasswordInput';
+export { default as SearchBar } from './search-bar/SearchBar';
+export type { SearchBarProps } from './search-bar/SearchBar';
 export { default as PhotoCarousel } from './photo-carousel/PhotoCarousel';
 export { default as ClickableText } from './clickable-text/ClickableText';
 export { default as EmptyContent } from './empty-content/EmptyContent';

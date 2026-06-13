@@ -3,8 +3,13 @@ node_modules
 .DS_Store
 .env
 .env.*
+!.env.example
 .npmrc
 coverage
+.next
+storybook-static
+*.tsbuildinfo
 *.tgz
 npm-debug.log*
 yarn-error.log*
+.vercel

@@ -228,8 +228,11 @@ const Ripple = React.memo<RippleButtonProps>(
           >
             {radius > 0 && (
               <Animated.View
-                style={[rippleAnimatedStyle, rippleStyles.button]}
-                pointerEvents="none"
+                style={[
+                  rippleAnimatedStyle,
+                  rippleStyles.button,
+                  rippleStyles.pointerEventsNone,
+                ]}
               />
             )}
           </View>

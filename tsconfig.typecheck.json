@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "declaration": false
+  },
+  "include": [
+    "src/**/*",
+    "__tests__/**/*",
+    "app/**/*",
+    "docs/**/*",
+    "next-env.d.ts",
+    "next.config.ts"
+  ],
+  "exclude": [
+    "lib",
+    "node_modules",
+    ".next",
+    ".storybook",
+    "stories"
+  ]
+}

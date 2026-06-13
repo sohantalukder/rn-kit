@@ -1,5 +1,6 @@
 import CancelIcon from './Cancel.icon';
 import CheckIcon from './Check.icon';
+import { commonIconRegistry } from './CommonIcons.icon';
 import DeleteIcon from './Delete.icon';
 import DownArrowIcon from './DownArrow.icon';
 import EmptyContentIcon from './EmptyContent.icon';
@@ -23,8 +24,11 @@ import SendIcon from './Send.icon';
 import ShareIcon from './Share.icon';
 import SuccessIcon from './Success.icon';
 import ThemeIcon from './Theme.icon';
+export { iconNames } from './names';
+export type { IconName } from './names';
 
 export const iconRegistry = {
+  ...commonIconRegistry,
   cancel: CancelIcon,
   check: CheckIcon,
   delete: DeleteIcon,
@@ -51,5 +55,3 @@ export const iconRegistry = {
   success: SuccessIcon,
   theme: ThemeIcon,
 } as const;
-
-export type IconName = keyof typeof iconRegistry;
