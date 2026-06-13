@@ -1,4 +1,7 @@
+import { commonIconNames } from './CommonIcons.names';
+
 export const iconNames = [
+  ...commonIconNames,
   'cancel',
   'check',
   'delete',

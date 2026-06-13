@@ -1,5 +1,6 @@
 import CancelIcon from './Cancel.icon';
 import CheckIcon from './Check.icon';
+import { commonIconRegistry } from './CommonIcons.icon';
 import DeleteIcon from './Delete.icon';
 import DownArrowIcon from './DownArrow.icon';
 import EmptyContentIcon from './EmptyContent.icon';
@@ -27,6 +28,7 @@ export { iconNames } from './names';
 export type { IconName } from './names';
 
 export const iconRegistry = {
+  ...commonIconRegistry,
   cancel: CancelIcon,
   check: CheckIcon,
   delete: DeleteIcon,
