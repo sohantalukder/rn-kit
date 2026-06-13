@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { components, packageInfo } from './data/componentRegistry';
 
-const fallbackSiteUrl = 'https://sohantalukder-rn-kit.vercel.app';
+const fallbackSiteUrl = 'https://rn-kit.vercel.app';
 
 function normalizeSiteUrl(url?: string) {
   const normalizedUrl = url?.trim().replace(/\/+$/, '');
@@ -16,7 +16,8 @@ export const siteConfig = {
   title: '@sohantalukder/rn-kit docs',
   description:
     'Documentation for @sohantalukder/rn-kit, a typed React Native UI kit with theme primitives, polished components, and overlay providers.',
-  author: 'Sohan Talukder',
+  author: 'Md. Sohan Talukder',
+  authorUrl: 'https://sohantalukder.github.io',
   creator: '@sohantalukder',
   repository: 'https://github.com/sohantalukder/rn-kit',
   npm: 'https://www.npmjs.com/package/@sohantalukder/rn-kit',
@@ -82,15 +83,15 @@ export function createPageMetadata({
 
 export const organizationJsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'Organization',
+  '@type': 'Person',
   name: siteConfig.author,
-  url: siteConfig.repository,
+  url: siteConfig.authorUrl,
 };
 
 const publisherJsonLd = {
-  '@type': 'Organization',
+  '@type': 'Person',
   name: siteConfig.author,
-  url: siteConfig.repository,
+  url: siteConfig.authorUrl,
 };
 
 export const websiteJsonLd = {

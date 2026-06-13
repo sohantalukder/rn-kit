@@ -21,7 +21,7 @@ export const metadata: Metadata = {
     template: '%s',
   },
   applicationName: siteConfig.shortName,
-  authors: [{ name: siteConfig.author, url: siteConfig.repository }],
+  authors: [{ name: siteConfig.author, url: siteConfig.authorUrl }],
   creator: siteConfig.author,
   publisher: siteConfig.author,
   keywords: siteConfig.keywords,

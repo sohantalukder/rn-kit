@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://rn-kit.vercel.app
+    about: Read the latest docs before opening an issue.
+  - name: Developer website
+    url: https://sohantalukder.github.io
+    about: Visit the developer website for profile and contact details.

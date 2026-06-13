@@ -484,6 +484,42 @@ code {
   font-size: 13px;
 }
 
+.sidebar-developer {
+  display: grid;
+  gap: 4px;
+  margin-top: 32px;
+  border-top: 1px solid var(--border);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+  padding: 18px 10px 0;
+}
+
+.sidebar-developer span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sidebar-developer a {
+  width: fit-content;
+  color: var(--muted-strong);
+  font-weight: 720;
+}
+
+.sidebar-developer a:hover {
+  color: var(--text);
+}
+
+.sidebar-developer small {
+  overflow: hidden;
+  font-size: 12px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .docs-main {
   min-width: 0;
   padding: 52px 32px 86px 292px;

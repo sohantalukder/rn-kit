@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { Search } from 'lucide-react';
 import { components } from '../data/componentRegistry';
 import { docPages } from '../data/docsContent';
+import { siteConfig } from '../seo';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -97,6 +98,14 @@ export function Sidebar({
             </div>
           </section>
         </nav>
+
+        <div className="sidebar-developer">
+          <span>Developer</span>
+          <a href={siteConfig.authorUrl} target="_blank" rel="noreferrer">
+            {siteConfig.author}
+          </a>
+          <small>{siteConfig.authorUrl.replace(/^https?:\/\//, '')}</small>
+        </div>
       </div>
     </aside>
   );
