@@ -91,8 +91,8 @@ const componentGroups: Record<string, string> = {
   Card: 'Layout',
   Divider: 'Layout',
   ScreenContainer: 'Layout',
-  StatusBar: 'Utilities',
-  IconByVariant: 'Utilities',
+  StatusBar: 'Supporting',
+  IconByVariant: 'Supporting',
 };
 
 const searchableComponents = components.map((component) => ({

@@ -1,5 +1,5 @@
 import React from 'react';
-import type { DimensionValue } from 'react-native';
+import type { DimensionValue, ViewStyle } from 'react-native';
 import { ScrollView, View } from 'react-native';
 import { Card, Text } from '@sohantalukder/rn-kit';
 
@@ -9,6 +9,8 @@ type StoryFrameProps = {
   children: React.ReactNode;
   bestPractices?: string[];
   width?: DimensionValue;
+  cardStyle?: ViewStyle;
+  contentStyle?: ViewStyle;
 };
 
 export function StoryFrame({
@@ -17,6 +19,8 @@ export function StoryFrame({
   children,
   bestPractices = [],
   width = 420,
+  cardStyle,
+  contentStyle,
 }: StoryFrameProps) {
   return (
     <ScrollView style={{ maxHeight: 760, width }}>
@@ -27,8 +31,13 @@ export function StoryFrame({
           </Text>
           <Text color="secondary">{description}</Text>
         </View>
-        <Card variant="default" padding={18} shadow={false}>
-          <View style={{ gap: 14 }}>{children}</View>
+        <Card
+          variant="default"
+          padding={18}
+          shadow={false}
+          style={cardStyle}
+        >
+          <View style={[{ gap: 14 }, contentStyle]}>{children}</View>
         </Card>
         {bestPractices.length > 0 ? (
           <Card variant="outlined" padding={16} shadow={false}>

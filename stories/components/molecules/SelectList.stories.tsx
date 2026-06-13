@@ -19,8 +19,18 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: (args) => (
-    <StoryFrame title="Select list" description="Searchable single-select dropdown.">
-      <SelectList {...args} setSelected={() => {}} dropdownShown />
+    <StoryFrame
+      title="Select list"
+      description="Searchable single-select dropdown."
+      cardStyle={{ overflow: 'visible' }}
+      contentStyle={{ overflow: 'visible' }}
+    >
+      <SelectList
+        {...args}
+        setSelected={() => {}}
+        dropdownStyles={{ position: 'relative', top: 0, marginTop: 8 }}
+        dropdownShown
+      />
     </StoryFrame>
   ),
 };
@@ -29,12 +39,18 @@ export const Controlled: Story = {
   render: () => {
     const [selected, setSelected] = useState<string | number | undefined>('design');
     return (
-      <StoryFrame title="Controlled select" description="Single selected value is owned by parent state.">
+      <StoryFrame
+        title="Controlled select"
+        description="Single selected value is owned by parent state."
+        cardStyle={{ overflow: 'visible' }}
+        contentStyle={{ overflow: 'visible' }}
+      >
         <SelectList
           data={sampleItems}
           setSelected={setSelected}
           defaultOption={{ key: 'design', value: 'Design' }}
           placeholder="Select a team"
+          dropdownStyles={{ position: 'relative', top: 0, marginTop: 8 }}
           dropdownShown
         />
         <Text color="secondary">Selected: {selected ?? 'none'}</Text>
@@ -45,8 +61,19 @@ export const Controlled: Story = {
 
 export const NoSearch: Story = {
   render: () => (
-    <StoryFrame title="No search" description="Disable search for short option lists.">
-      <SelectList data={sampleItems} setSelected={() => {}} search={false} dropdownShown />
+    <StoryFrame
+      title="No search"
+      description="Disable search for short option lists."
+      cardStyle={{ overflow: 'visible' }}
+      contentStyle={{ overflow: 'visible' }}
+    >
+      <SelectList
+        data={sampleItems}
+        setSelected={() => {}}
+        search={false}
+        dropdownStyles={{ position: 'relative', top: 0, marginTop: 8 }}
+        dropdownShown
+      />
     </StoryFrame>
   ),
 };

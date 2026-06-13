@@ -4,9 +4,9 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Theming
 
-`ThemeProvider` exposes default, dark, and system-aware variants. Components
-consume theme tokens for colors, typography, gutters, borders, and layout
-helpers.
+`ThemeProvider` exposes `default`, `dark`, and `system` modes. Components
+consume theme tokens for colors, backgrounds, typography, gutters, borders, and
+layout helpers.
 
 ```tsx
 <ThemeProvider
@@ -19,4 +19,45 @@ helpers.
 </ThemeProvider>
 ```
 
-Use the Storybook theme toolbar to preview light and dark states.
+Use `useTheme()` to read `colors`, `backgrounds`, `fonts`, `gutters`,
+`borders`, `typographies`, `layout`, `navigationTheme`, `variant`, and
+`changeTheme`.
+
+```tsx
+const { changeTheme } = useTheme();
+
+changeTheme('default');
+changeTheme('dark');
+changeTheme('system');
+```
+
+Custom brand or user colors can be passed directly to `ThemeProvider`:
+
+```tsx
+const theme = {
+  colors: {
+    primary: 'tomato',
+    secondary: 'yellow',
+    brand: '#2563EB',
+  },
+  variants: {
+    dark: {
+      colors: {
+        primary: '#FF8A65',
+        secondary: '#FDE047',
+        brand: '#60A5FA',
+      },
+    },
+  },
+};
+
+<ThemeProvider theme={theme}>{children}</ThemeProvider>;
+```
+
+Color overrides cascade into `colors`, `backgrounds`, `fonts`, and `borders`,
+so `useTheme()` exposes `colors.brand`, `backgrounds.brand`, `fonts.brand`, and
+`borders.brand`.
+
+If you are changing the package defaults, edit `src/theme/_config.ts`.
+
+Use the Storybook theme toolbar to preview default and dark states.

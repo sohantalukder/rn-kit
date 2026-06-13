@@ -9,6 +9,20 @@ const ThemeProbe = () => {
   return <Text testID="theme-variant">{variant}</Text>;
 };
 
+const ThemeColorProbe = () => {
+  const { backgrounds, borders, colors, fonts } = useTheme();
+  return (
+    <Text testID="theme-colors">
+      {[
+        colors.primary,
+        backgrounds.primary.backgroundColor,
+        fonts.primary.color,
+        borders.primary.borderColor,
+      ].join('|')}
+    </Text>
+  );
+};
+
 describe('ThemeProvider', () => {
   it('provides a default theme context', async () => {
     const screen = await render(
@@ -33,5 +47,24 @@ describe('ThemeProvider', () => {
     );
 
     expect(screen.getByTestId('theme-variant').props.children).toBe('dark');
+  });
+
+  it('applies custom theme color overrides to generated token groups', async () => {
+    const screen = await render(
+      <ThemeProvider
+        theme={{
+          colors: {
+            primary: 'tomato',
+            secondary: 'yellow',
+          },
+        }}
+      >
+        <ThemeColorProbe />
+      </ThemeProvider>
+    );
+
+    expect(screen.getByTestId('theme-colors').props.children).toBe(
+      'tomato|tomato|tomato|tomato'
+    );
   });
 });

@@ -207,20 +207,61 @@ export function WelcomeScreen() {
           language: 'tsx',
           value: `import { Button, TextInput, Card } from '@sohantalukder/rn-kit';
 import { ThemeProvider, useTheme } from '@sohantalukder/rn-kit';
-import { toast, dialog, bottomSheet } from '@sohantalukder/rn-kit';`,
+import {
+  toast,
+  dialog,
+  bottomSheet,
+  contextMenu,
+} from '@sohantalukder/rn-kit';`,
         },
       },
       {
-        id: 'providers',
-        title: 'Providers',
+        id: 'ui-providers',
+        title: 'UI Providers',
         body: [
-          'ThemeProvider supplies colors, typography, spacing, borders, and layout helpers. UiPortalProvider mounts app-level overlay hosts for toast, dialog, bottom sheet, and context menu APIs.',
+          'ThemeProvider supplies colors, typography, spacing, borders, and layout helpers. UiPortalProvider mounts the app-level overlay hosts for toast, dialog, bottom sheet, and context menu APIs.',
+          'Mount UiPortalProvider once near the application root, inside ThemeProvider, before calling global overlay managers from feature screens.',
         ],
         code: {
           language: 'tsx',
           value: `<ThemeProvider>
   <UiPortalProvider>{children}</UiPortalProvider>
 </ThemeProvider>`,
+        },
+      },
+      {
+        id: 'overlay-managers',
+        title: 'Overlay Managers',
+        body: [
+          'After UiPortalProvider is mounted, feature code can call the exported managers directly. The bottom sheet manager requires @gorhom/bottom-sheet to be installed and configured in the consuming app.',
+        ],
+        code: {
+          language: 'tsx',
+          value: `toast.show({
+  type: 'success',
+  title: 'Saved',
+  description: 'Your changes are ready.',
+});
+
+dialog.alert('Saved', 'Your profile was updated.');
+
+dialog.confirm('Delete item?', 'This action cannot be undone.', () => {
+  deleteItem();
+});
+
+bottomSheet.show({
+  component: FilterSheet,
+  componentProps: { selectedStatus: 'active' },
+  options: { snapPoints: ['35%', '70%'] },
+});
+
+contextMenu.show({
+  position: { x: 24, y: 120 },
+  items: [
+    { id: 'edit', label: 'Edit', onPress: openEditor },
+    { id: 'delete', label: 'Delete', destructive: true, onPress: deleteItem },
+  ],
+});`,
         },
       },
       {
@@ -240,13 +281,14 @@ import { toast, dialog, bottomSheet } from '@sohantalukder/rn-kit';`,
     title: 'Theming',
     slug: 'theming',
     description:
-      'Use theme tokens consistently across screens and preview light or dark variants.',
+      'Use theme tokens consistently across screens and preview default, dark, or system variants.',
     sections: [
       {
         id: 'provider',
         title: 'Theme Provider',
         body: [
-          'ThemeProvider exposes default, dark, and storage-backed modes through the library theme context. Components consume tokens for colors, typography, gutters, borders, and layout helpers.',
+          'ThemeProvider exposes default, dark, and system modes through the library theme context. Components consume tokens for colors, typography, gutters, borders, backgrounds, and layout helpers.',
+          'Use the optional storageAdapter to persist a user preference. When no preference exists, ThemeProvider stores system and follows the operating system color scheme.',
         ],
         code: {
           language: 'tsx',
@@ -261,12 +303,178 @@ import { toast, dialog, bottomSheet } from '@sohantalukder/rn-kit';`,
         },
       },
       {
+        id: 'switch-theme',
+        title: 'Switch Theme',
+        body: [
+          'useTheme returns the active variant and a changeTheme function. Pass default, dark, or system to change the stored preference.',
+        ],
+        code: {
+          language: 'tsx',
+          value: `import { Button, useTheme } from '@sohantalukder/rn-kit';
+
+export function ThemeActions() {
+  const { changeTheme } = useTheme();
+
+  return (
+    <>
+      <Button text="Default" onPress={() => changeTheme('default')} />
+      <Button text="Dark" onPress={() => changeTheme('dark')} />
+      <Button text="System" onPress={() => changeTheme('system')} />
+    </>
+  );
+}`,
+        },
+      },
+      {
+        id: 'theme-object',
+        title: 'Theme Object',
+        body: [
+          'useTheme exposes raw color values plus generated React Native style objects. Use raw colors when a prop expects a ColorValue, and use generated style groups when composing StyleSheet-style arrays.',
+        ],
+        list: [
+          'colors: raw color values from the active theme.',
+          'backgrounds: backgroundColor styles keyed by color token.',
+          'fonts: text color, responsive font size, alignment, transform, and weight helpers.',
+          'gutters: gap, margin, and padding helpers generated from configured spacing values.',
+          'borders: border color, radius, and width helpers.',
+          'typographies: heading1, heading2, heading3, body1, body2, and body3 text styles.',
+          'layout: flex, alignment, sizing, and position helpers.',
+          'navigationTheme: React Navigation theme colors for the active variant.',
+          'variant, logo, and changeTheme: active mode, optional logo asset, and theme switching API.',
+        ],
+      },
+      {
+        id: 'token-examples',
+        title: 'Token Examples',
+        body: [
+          'Generated token keys mirror the values in src/theme/_config.ts. For example, a gutter value of 16 creates gap_16, margin_16, padding_16, and directional variants.',
+        ],
+        code: {
+          language: 'tsx',
+          value: `import { View } from 'react-native';
+import { IconByVariant, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function ProfileSummary() {
+  const { backgrounds, borders, fonts, gutters, layout, typographies } =
+    useTheme();
+
+  return (
+    <View
+      style={[
+        layout.row,
+        layout.itemsCenter,
+        gutters.gap_12,
+        gutters.padding_16,
+        backgrounds.background,
+        borders.rounded_16,
+        borders.w_1,
+        borders.gray8,
+      ]}
+    >
+      <Text style={[typographies.heading3, fonts.primary]}>
+        Account
+      </Text>
+    </View>
+  );
+}`,
+        },
+      },
+      {
+        id: 'custom-colors',
+        title: 'Custom User Colors',
+        body: [
+          'Pass a theme object to ThemeProvider when an app needs custom colors without editing the package source. This follows the same shape as common provider APIs: define the colors you want, then pass theme={theme}.',
+          'A colors override is applied to raw colors plus generated backgrounds, fonts, and borders. For example, overriding primary makes colors.primary, backgrounds.primary, fonts.primary, and borders.primary use the same value.',
+        ],
+        code: {
+          language: 'tsx',
+          value: `import { ThemeProvider } from '@sohantalukder/rn-kit';
+import App from './src/App';
+
+const theme = {
+  colors: {
+    primary: 'tomato',
+    secondary: 'yellow',
+    brand: '#2563EB',
+  },
+  variants: {
+    dark: {
+      colors: {
+        primary: '#FF8A65',
+        secondary: '#FDE047',
+        brand: '#60A5FA',
+      },
+    },
+  },
+};
+
+export default function Main() {
+  return (
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
+  );
+}`,
+        },
+      },
+      {
+        id: 'use-custom-colors',
+        title: 'Use Custom Colors',
+        body: [
+          'Import useTheme in any component rendered inside ThemeProvider and use the generated token keys. Use colors.brand when a prop expects a color value, and use backgrounds.brand, fonts.brand, or borders.brand in style arrays.',
+        ],
+        code: {
+          language: 'tsx',
+          value: `import { View } from 'react-native';
+import { Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function BrandBanner() {
+  const { backgrounds, borders, colors, fonts, gutters } = useTheme();
+
+  return (
+    <View
+      style={[
+        backgrounds.brand,
+        borders.brand,
+        borders.w_1,
+        borders.rounded_16,
+        gutters.padding_16,
+      ]}
+    >
+      <Text style={fonts.brand}>Brand color text</Text>
+      <IconByVariant path="check" color={colors.brand} />
+    </View>
+  );
+}`,
+        },
+      },
+      {
+        id: 'source-theme-config',
+        title: 'Package Default Colors',
+        body: [
+          'If you are changing the default library theme itself, edit src/theme/_config.ts instead. Add matching tokens to colorsLight and colorsDark, then keep those maps wired through colors, backgrounds, fonts.colors, and borders.colors.',
+        ],
+        code: {
+          language: 'ts',
+          value: `const colorsLight = {
+  // existing tokens...
+  brand: '#2563EB',
+} as const;
+
+const colorsDark = {
+  // existing tokens...
+  brand: '#60A5FA',
+} as const;`,
+        },
+      },
+      {
         id: 'guidelines',
         title: 'Guidelines',
         list: [
-          'Keep screen-level overrides small so components remain consistent.',
-          'Use the docs theme toggle to preview light and dark variants.',
           'Prefer theme tokens over one-off colors in app screens.',
+          'Keep screen-level overrides small so components remain consistent.',
+          'Use the docs theme toggle or Storybook toolbar to preview default and dark variants.',
+          'Use React Navigation with theme.navigationTheme when app navigation should match the active variant.',
         ],
       },
     ],
@@ -363,7 +571,7 @@ import { toast, dialog, bottomSheet } from '@sohantalukder/rn-kit';`,
         title: '0.1.0',
         list: [
           'Initial standalone React Native UI library package.',
-          'Added theme provider, UI components, overlay providers, utilities, icons, and TypeScript declarations.',
+          'Added theme provider, UI components, overlay providers, icons, and TypeScript declarations.',
           'Added Bob build output for CommonJS, ES modules, and declaration files.',
         ],
       },

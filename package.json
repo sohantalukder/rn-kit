@@ -25,6 +25,7 @@
   "files": [
     "src",
     "lib",
+    "assets/readme/rn-kit-hero.png",
     "README.md",
     "LICENSE",
     "CHANGELOG.md"

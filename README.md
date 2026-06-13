@@ -1,6 +1,27 @@
-# @sohantalukder/rn-kit
+<p align="center">
+  <img src="./assets/readme/rn-kit-hero.png" alt="@sohantalukder/rn-kit - theme-aware React Native UI primitives" width="100%" />
+</p>
 
-A React Native UI kit with theme-aware components, local SVG icons, overlay helpers, and TypeScript types.
+<p align="center">
+  <strong>Theme-aware React Native UI primitives for production app screens.</strong>
+  <br />
+  <a href="https://www.npmjs.com/package/@sohantalukder/rn-kit">npm package</a>
+  ·
+  <a href="https://github.com/sohantalukder/rn-kit">GitHub</a>
+</p>
+
+<p align="center">
+  <a href="https://www.npmjs.com/package/@sohantalukder/rn-kit"><img alt="npm version" src="https://img.shields.io/npm/v/@sohantalukder/rn-kit.svg" /></a>
+  <a href="https://github.com/sohantalukder/rn-kit/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/sohantalukder/rn-kit/actions/workflows/ci.yml/badge.svg" /></a>
+  <a href="https://www.npmjs.com/package/@sohantalukder/rn-kit"><img alt="npm downloads" src="https://img.shields.io/npm/dm/@sohantalukder/rn-kit.svg" /></a>
+  <a href="./LICENSE"><img alt="MIT license" src="https://img.shields.io/npm/l/@sohantalukder/rn-kit.svg" /></a>
+  <img alt="TypeScript" src="https://img.shields.io/badge/types-TypeScript-3178C6.svg" />
+  <img alt="React Native" src="https://img.shields.io/badge/react--native-%3E%3D0.74-61DAFB.svg" />
+</p>
+
+---
+
+**@sohantalukder/rn-kit** is a React Native UI kit with theme-aware components, local SVG icons, overlay helpers, and TypeScript types.
 
 Use it when you want a small design-system layer for app screens without copying button, input, modal, empty-state, and theme code between projects.
 
@@ -84,12 +105,127 @@ You can keep the selected theme in your own storage layer:
 </ThemeProvider>
 ```
 
+Use `useTheme()` to read the active theme and switch between `default`, `dark`, and `system` modes:
+
+```tsx
+import { useTheme } from '@sohantalukder/rn-kit';
+
+const {
+  colors,
+  backgrounds,
+  borders,
+  fonts,
+  gutters,
+  layout,
+  navigationTheme,
+  typographies,
+  variant,
+  changeTheme,
+} = useTheme();
+
+changeTheme('system');
+```
+
+Theme style groups include generated helpers for common screen composition:
+
+```tsx
+<View
+  style={[
+    layout.row,
+    layout.itemsCenter,
+    gutters.gap_12,
+    gutters.padding_16,
+    backgrounds.background,
+    borders.rounded_16,
+    borders.w_1,
+    borders.gray8,
+  ]}
+>
+  <Text style={[typographies.heading3, fonts.primary]}>Account</Text>
+</View>
+```
+
+Custom brand or user colors can be passed directly to `ThemeProvider`, similar to provider APIs like React Native Paper.
+
+```tsx
+import { ThemeProvider } from '@sohantalukder/rn-kit';
+import App from './src/App';
+
+const theme = {
+  colors: {
+    primary: 'tomato',
+    secondary: 'yellow',
+    brand: '#2563EB',
+  },
+  variants: {
+    dark: {
+      colors: {
+        primary: '#FF8A65',
+        secondary: '#FDE047',
+        brand: '#60A5FA',
+      },
+    },
+  },
+};
+
+export default function Main() {
+  return (
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
+  );
+}
+```
+
+Color overrides cascade into raw colors and generated token groups:
+
+```tsx
+const { backgrounds, borders, colors, fonts } = useTheme();
+
+colors.brand; // '#2563EB' or '#60A5FA' in dark mode
+backgrounds.brand; // { backgroundColor: ... }
+fonts.brand; // { color: ... }
+borders.brand; // { borderColor: ... }
+```
+
+If you are changing the package defaults instead of a consuming app theme, edit `src/theme/_config.ts`.
+
+## UI Providers
+
+Mount `UiPortalProvider` once near the root when you use global overlay APIs:
+
+```tsx
+<ThemeProvider>
+  <UiPortalProvider>{children}</UiPortalProvider>
+</ThemeProvider>
+```
+
+Then call the exported managers from feature code:
+
+```tsx
+toast.show({ type: 'success', title: 'Saved' });
+dialog.alert('Saved', 'Your profile was updated.');
+dialog.confirm('Delete item?', 'This action cannot be undone.', deleteItem);
+
+bottomSheet.show({
+  component: FilterSheet,
+  options: { snapPoints: ['35%', '70%'] },
+});
+
+contextMenu.show({
+  position: { x: 24, y: 120 },
+  items: [{ id: 'edit', label: 'Edit', onPress: openEditor }],
+});
+```
+
+Install and configure `@gorhom/bottom-sheet` before using the global bottom sheet manager.
+
 ## Common Imports
 
 ```tsx
 import { Button, TextInput, Card } from '@sohantalukder/rn-kit';
 import { ThemeProvider, useTheme } from '@sohantalukder/rn-kit';
-import { toast, dialog, bottomSheet } from '@sohantalukder/rn-kit';
+import { toast, dialog, bottomSheet, contextMenu } from '@sohantalukder/rn-kit';
 ```
 
 ## Icons
@@ -118,7 +254,7 @@ The package includes components across these groups:
 - Overlays: `Dialog`, `BottomSheet`, `SlideModal`
 - Media: `Image`, `Avatar`, `PhotoCarousel`
 - Layout: `Card`, `Divider`, `ScreenContainer`, `StatusBar`
-- Utilities: `Text`, `Badge`, `IconByVariant`
+- Supporting primitives: `Text`, `Badge`, `IconByVariant`
 
 ## Notes
 
@@ -136,7 +272,6 @@ export * from './components';
 export * from './providers';
 export * from './theme';
 export * from './types';
-export * from './utilities';
 ```
 
 ## License

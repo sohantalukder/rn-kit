@@ -2,7 +2,7 @@
 
 import { Check, Component, Copy } from 'lucide-react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Pressable, View } from 'react-native';
+import { Pressable, View, type ViewStyle } from 'react-native';
 import Avatar from '../../src/components/molecules/avatar/Avatar';
 import Badge from '../../src/components/atoms/badge/Badge';
 import BottomSheet from '../../src/components/atoms/bottom-sheet/BottomSheet';
@@ -106,10 +106,14 @@ function PreviewFrame({
   title,
   description,
   children,
+  cardStyle,
+  contentStyle,
 }: {
   title: string;
   description: string;
   children: React.ReactNode;
+  cardStyle?: ViewStyle;
+  contentStyle?: ViewStyle;
 }) {
   return (
     <View style={{ gap: 16, width: '100%' }}>
@@ -129,8 +133,13 @@ function PreviewFrame({
           {description}
         </Text>
       </View>
-      <Card variant="default" padding={18} shadow={false}>
-        <View style={{ gap: 14 }}>{children}</View>
+      <Card
+        variant="default"
+        padding={18}
+        shadow={false}
+        style={cardStyle}
+      >
+        <View style={[{ gap: 14 }, contentStyle]}>{children}</View>
       </Card>
     </View>
   );
@@ -622,7 +631,12 @@ function ComponentExample({ component }: ComponentPreviewProps) {
 
     case 'multi-select':
       return (
-        <PreviewFrame title="Multi select" description="Searchable dropdown with multiple selected values.">
+        <PreviewFrame
+          title="Multi select"
+          description="Searchable dropdown with multiple selected values."
+          cardStyle={{ overflow: 'visible' }}
+          contentStyle={{ overflow: 'visible' }}
+        >
           <MultiSelect
             data={sampleItems}
             selectedValues={selectedMany}
@@ -630,6 +644,7 @@ function ComponentExample({ component }: ComponentPreviewProps) {
             placeholder="Select teams"
             maxHeight={220}
             dropdownStyles={{ position: 'relative', top: 0, marginTop: 8 }}
+            dropdownShown
           />
           <Text color="secondary">Selected: {selectedMany.join(', ') || 'none'}</Text>
         </PreviewFrame>
@@ -637,7 +652,12 @@ function ComponentExample({ component }: ComponentPreviewProps) {
 
     case 'select-list':
       return (
-        <PreviewFrame title="Select list" description="Searchable single-select dropdown.">
+        <PreviewFrame
+          title="Select list"
+          description="Searchable single-select dropdown."
+          cardStyle={{ overflow: 'visible' }}
+          contentStyle={{ overflow: 'visible' }}
+        >
           <SelectList
             data={sampleItems}
             setSelected={setSelected}
@@ -645,6 +665,7 @@ function ComponentExample({ component }: ComponentPreviewProps) {
             placeholder="Select a team"
             maxHeight={200}
             dropdownStyles={{ position: 'relative', top: 0, marginTop: 8 }}
+            dropdownShown
           />
           <Text color="secondary">Selected: {selected ?? 'none'}</Text>
         </PreviewFrame>
