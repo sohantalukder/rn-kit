@@ -258,6 +258,16 @@ export const components: ComponentDoc[] = [
     usage: usage('PasswordInput', ' label="Password" required'),
   },
   {
+    name: 'SearchBar',
+    slug: 'search-bar',
+    summary: 'Theme-aware search input built on TextInput with search and clear actions.',
+    importName: 'SearchBar',
+    primaryProps: ['placeholder', 'value', 'onSearch', 'onSubmitSearch', 'clearable', 'disabled'],
+    variants: ['default', 'controlled', 'clearable', 'disabled'],
+    bestPractices: ['Use for filtering lists and local search.', 'Keep placeholder text tied to the searched content.'],
+    usage: usage('SearchBar', ' placeholder="Search items" onSearch={setQuery}'),
+  },
+  {
     name: 'PhotoCarousel',
     slug: 'photo-carousel',
     summary: 'Swipeable image carousel with pagination dots and optional auto-scroll.',

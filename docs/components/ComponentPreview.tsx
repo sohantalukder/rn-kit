@@ -26,6 +26,7 @@ import PhotoCarousel from '../../src/components/molecules/photo-carousel/PhotoCa
 import Radio from '../../src/components/atoms/radio/Radio';
 import Ripple from '../../src/components/atoms/buttons/Ripple';
 import ScreenContainer from '../../src/components/templates/screen-container/ScreenContainer';
+import SearchBar from '../../src/components/molecules/search-bar/SearchBar';
 import SelectList from '../../src/components/molecules/select-list/SelectList';
 import Skeleton from '../../src/components/atoms/skeleton/Skeleton';
 import SlideModal from '../../src/components/organisms/slide-modal/SlideModal';
@@ -153,6 +154,7 @@ function ComponentExample({ component }: ComponentPreviewProps) {
   const [textValue, setTextValue] = useState('hello@rnkit.dev');
   const [notes, setNotes] = useState('This request needs a follow-up.');
   const [password, setPassword] = useState('correct-horse');
+  const [searchQuery, setSearchQuery] = useState('invoices');
   const [selected, setSelected] = useState<string | number | undefined>('design');
   const [selectedMany, setSelectedMany] = useState<(string | number)[]>(['design']);
   const [dialogVisible, setDialogVisible] = useState(false);
@@ -587,6 +589,22 @@ function ComponentExample({ component }: ComponentPreviewProps) {
             label="Short password"
             value="short"
             errorMessage="Password must be at least 8 characters."
+          />
+        </PreviewFrame>
+      );
+
+    case 'search-bar':
+      return (
+        <PreviewFrame title="Search bar" description="Theme-aware search with icons and clear action.">
+          <SearchBar
+            value={searchQuery}
+            onSearch={setSearchQuery}
+            placeholder="Search transactions"
+          />
+          <SearchBar
+            value="archived"
+            disabled
+            placeholder="Search records"
           />
         </PreviewFrame>
       );
