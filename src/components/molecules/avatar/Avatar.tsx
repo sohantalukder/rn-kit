@@ -1,6 +1,6 @@
-import { type StyleProp, type DimensionValue, View } from 'react-native';
+import type { DimensionValue, ImageStyle, StyleProp } from 'react-native';
+import { View } from 'react-native';
 import Image from '../../atoms/image/Image';
-import type { ImageStyle } from '@d11/react-native-fast-image';
 import { IconByVariant } from '../../atoms';
 
 interface AvatarProps {

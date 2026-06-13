@@ -57,7 +57,7 @@ const EmptyContent: React.FC<Properties> = ({
   titleVariant = 'body1',
   descriptionVariant = 'body2',
   titleColor = 'default',
-  descriptionColor = 'default',
+  descriptionColor = 'secondary',
   isLoading = false,
   style,
 }) => {
@@ -83,6 +83,7 @@ const EmptyContent: React.FC<Properties> = ({
           <Text
             variant={descriptionVariant}
             color={descriptionColor}
+            weight="regular"
             style={[gutters.marginTop_6, staticFontStyles.alignCenter]}
           >
             {description}

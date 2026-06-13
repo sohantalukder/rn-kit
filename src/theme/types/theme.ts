@@ -5,7 +5,7 @@ import type { Fonts } from './fonts';
 import type { Gutters } from './gutters';
 import type layout from '../layout';
 import type { Colors } from '../types/colors';
-import type { Theme as NavigationTheme } from '@react-navigation/native';
+import type { NavigationTheme } from '../navigation';
 import type { Typographies } from './typographies';
 
 export type ComponentTheme = Omit<Theme, 'components' | 'navigationTheme'>;

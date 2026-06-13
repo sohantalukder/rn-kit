@@ -155,6 +155,7 @@ function ComponentExample({ component }: ComponentPreviewProps) {
   const [password, setPassword] = useState('correct-horse');
   const [selected, setSelected] = useState<string | number | undefined>('design');
   const [selectedMany, setSelectedMany] = useState<(string | number)[]>(['design']);
+  const [dialogVisible, setDialogVisible] = useState(false);
   const [sheetVisible, setSheetVisible] = useState(false);
   const modalRef = useRef<SlideModalRef>(null);
   const { colors } = useTheme();
@@ -309,6 +310,9 @@ function ComponentExample({ component }: ComponentPreviewProps) {
             borderColor: bottomSheetPalette.wrapperBorder,
             padding: 24,
             gap: 18,
+            minHeight: 420,
+            overflow: 'hidden',
+            position: 'relative',
           }}
         >
           <View style={{ gap: 6 }}>
@@ -381,7 +385,10 @@ function ComponentExample({ component }: ComponentPreviewProps) {
           <BottomSheet
             visible={sheetVisible}
             onRequestClose={() => setSheetVisible(false)}
+            maxHeight={240}
+            minHeight={200}
             style={{ backgroundColor: bottomSheetPalette.cardBg, paddingHorizontal: 20, paddingBottom: 24 }}
+            webPresentation="contained"
           >
             <View style={{ gap: 14 }}>
               <Text variant="heading3" weight="semibold" style={{ color: bottomSheetPalette.title }}>
@@ -535,14 +542,27 @@ function ComponentExample({ component }: ComponentPreviewProps) {
     case 'dialog':
       return (
         <PreviewFrame title="Dialog" description="Confirmation dialog content and actions.">
+          <Button
+            text="Open dialog"
+            onPress={() => setDialogVisible(true)}
+          />
           <Dialog
-            visible
+            visible={dialogVisible}
+            onDismiss={() => setDialogVisible(false)}
             title="Delete item?"
             description="This action cannot be undone."
             icon="error"
             buttons={[
-              { label: 'Cancel', type: 'outline', onPress: () => {} },
-              { label: 'Delete', type: 'error', onPress: () => {} },
+              {
+                label: 'Cancel',
+                type: 'outline',
+                onPress: () => setDialogVisible(false),
+              },
+              {
+                label: 'Delete',
+                type: 'error',
+                onPress: () => setDialogVisible(false),
+              },
             ]}
           />
         </PreviewFrame>

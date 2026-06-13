@@ -10,6 +10,7 @@ import {
   packageInfo,
 } from '../../../docs/data/componentRegistry';
 import { getPager } from '../../../docs/data/navigation';
+import { createPageMetadata } from '../../../docs/seo';
 
 type PageProps = {
   params: Promise<{
@@ -47,10 +48,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (slug !== packageInfo.slug) return {};
 
-  return {
+  return createPageMetadata({
     title: `${packageInfo.name} | rn-kit packages`,
     description: packageInfo.summary,
-  };
+    path: `/packages/${packageInfo.slug}`,
+  });
 }
 
 export default async function PackageDetailPage({ params }: PageProps) {

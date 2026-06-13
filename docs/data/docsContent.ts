@@ -68,8 +68,6 @@ export const docPages: DocPage[] = [
           value: `npm install @sohantalukder/rn-kit
 
 npm install \\
-  @react-navigation/native \\
-  @react-navigation/stack \\
   react-native-gesture-handler \\
   react-native-reanimated \\
   react-native-safe-area-context \\
@@ -174,21 +172,21 @@ export function WelcomeScreen() {
         id: 'peers',
         title: 'Peer Dependencies',
         body: [
-          'Install the core peers in the consuming React Native application. Feature-specific peers can be installed only when those components are used.',
+          'Install the core peers in the consuming React Native application. Image and bottom sheet components are implemented internally and do not require FastImage or Gorhom Bottom Sheet.',
         ],
         code: {
           language: 'sh',
           value: `npm install \\
-  @react-navigation/native \\
-  @react-navigation/stack \\
   react-native-gesture-handler \\
   react-native-reanimated \\
   react-native-safe-area-context \\
   react-native-svg`,
         },
         list: [
-          '@d11/react-native-fast-image is used by Image, Avatar, and PhotoCarousel.',
-          '@gorhom/bottom-sheet is used by the global bottom sheet portal manager.',
+          'Image, Avatar, and PhotoCarousel use the internal Image component backed by React Native Image.',
+          'The global bottom sheet manager uses the internal React Native bottom sheet host mounted by UiPortalProvider.',
+          'React Native Image does not include FastImage-style native cache controls.',
+          'React Navigation is not required; apps that use it can pass theme.navigationTheme to their navigator.',
           'Follow each native dependency setup guide in the consuming app.',
         ],
       },
@@ -233,7 +231,7 @@ import {
         id: 'overlay-managers',
         title: 'Overlay Managers',
         body: [
-          'After UiPortalProvider is mounted, feature code can call the exported managers directly. The bottom sheet manager requires @gorhom/bottom-sheet to be installed and configured in the consuming app.',
+          'After UiPortalProvider is mounted, feature code can call the exported managers directly. The bottom sheet manager is implemented inside the package and does not require an external bottom sheet dependency.',
         ],
         code: {
           language: 'tsx',

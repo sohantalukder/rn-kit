@@ -36,14 +36,6 @@ const config: StorybookConfig = {
       ...(config.resolve.alias ?? {}),
       'react-native$': 'react-native-web',
       '@sohantalukder/rn-kit': path.resolve(projectRoot, 'src'),
-      '@d11/react-native-fast-image': path.resolve(
-        projectRoot,
-        '.storybook/rn-web-mocks/fast-image.tsx'
-      ),
-      '@gorhom/bottom-sheet': path.resolve(
-        projectRoot,
-        '.storybook/rn-web-mocks/bottom-sheet.tsx'
-      ),
       'react-native-reanimated': path.resolve(
         projectRoot,
         '.storybook/rn-web-mocks/reanimated.ts'

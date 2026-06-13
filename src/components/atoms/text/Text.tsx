@@ -1,6 +1,6 @@
 import React from 'react';
 import type { TextProps, TextStyle } from 'react-native';
-import { Text as RNText } from 'react-native';
+import { Platform, Text as RNText } from 'react-native';
 import { useTheme } from '../../../theme';
 import type { TypographySize } from '../../../theme/types/fonts';
 import { fontWeight } from '../../../theme/fonts';
@@ -17,6 +17,14 @@ export type TextColor =
   | 'white';
 
 type TextWeight = 'regular' | 'medium' | 'semibold' | 'bold';
+
+const webFontStyle: TextStyle =
+  Platform.OS === 'web'
+    ? {
+        fontFamily:
+          'Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+      }
+    : {};
 
 /**
  * Props for the Text component.
@@ -78,6 +86,7 @@ const Text: React.FC<PropsWithChildren> = ({
     <RNText
       style={[
         variantStyle,
+        webFontStyle,
         { color: colorMap[color] },
         { fontWeight: weightMap[weight] },
         style,

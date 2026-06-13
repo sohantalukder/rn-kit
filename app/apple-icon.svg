@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="rn-kit package icon">
+  <rect width="180" height="180" rx="40" fill="#101828"/>
+  <rect x="30" y="30" width="120" height="120" rx="34" fill="#2563eb"/>
+  <path d="M70 72h56M70 90h56M70 108h34" stroke="#eff6ff" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="58" cy="72" r="10" fill="#a7f3d0"/>
+  <circle cx="58" cy="90" r="10" fill="#fef08a"/>
+  <circle cx="58" cy="108" r="10" fill="#fca5a5"/>
+  <rect x="112" y="100" width="30" height="30" rx="8" fill="#c4b5fd"/>
+</svg>

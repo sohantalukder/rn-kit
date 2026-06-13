@@ -114,11 +114,9 @@ export const ContextMenuContainer = () => {
   return menu ? (
     <SafeAreaView
       style={styles.container}
-      pointerEvents="box-none"
     >
       <View
         style={styles.content}
-        pointerEvents="box-none"
       >
         <AnimatedContextMenu
           config={menu}

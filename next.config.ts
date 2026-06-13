@@ -22,8 +22,6 @@ const nextConfig: NextConfig = {
     resolveAlias: {
       'react-native': 'react-native-web',
       '@sohantalukder/rn-kit': './src',
-      '@d11/react-native-fast-image': path.resolve(rnWebMocks, 'fast-image.tsx'),
-      '@gorhom/bottom-sheet': path.resolve(rnWebMocks, 'bottom-sheet.tsx'),
       'react-native-gesture-handler': path.resolve(rnWebMocks, 'gesture-handler.tsx'),
       'react-native-reanimated': path.resolve(rnWebMocks, 'reanimated.ts'),
       'react-native-safe-area-context': path.resolve(rnWebMocks, 'safe-area-context.tsx'),
@@ -36,8 +34,6 @@ const nextConfig: NextConfig = {
       ...(config.resolve.alias ?? {}),
       'react-native$': 'react-native-web',
       '@sohantalukder/rn-kit': './src',
-      '@d11/react-native-fast-image': path.resolve(rnWebMocks, 'fast-image.tsx'),
-      '@gorhom/bottom-sheet': path.resolve(rnWebMocks, 'bottom-sheet.tsx'),
       'react-native-gesture-handler': path.resolve(rnWebMocks, 'gesture-handler.tsx'),
       'react-native-reanimated': path.resolve(rnWebMocks, 'reanimated.ts'),
       'react-native-safe-area-context': path.resolve(rnWebMocks, 'safe-area-context.tsx'),

@@ -4,6 +4,7 @@ import { DocArticle } from '../../../docs/components/DocArticle';
 import { DocPager } from '../../../docs/components/DocPager';
 import { docPages, findDocPage } from '../../../docs/data/docsContent';
 import { getPager } from '../../../docs/data/navigation';
+import { createPageMetadata } from '../../../docs/seo';
 
 type PageProps = {
   params: Promise<{
@@ -21,10 +22,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!page) return {};
 
-  return {
+  return createPageMetadata({
     title: `${page.title} | rn-kit docs`,
     description: page.description,
-  };
+    path: `/docs/${page.slug}`,
+  });
 }
 
 export default async function DocsPage({ params }: PageProps) {

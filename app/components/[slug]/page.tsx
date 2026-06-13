@@ -6,6 +6,7 @@ import { DocPager } from '../../../docs/components/DocPager';
 import { components, findComponent } from '../../../docs/data/componentRegistry';
 import { getPager } from '../../../docs/data/navigation';
 import { getPropMetadata } from '../../../docs/data/propMetadata';
+import { createPageMetadata } from '../../../docs/seo';
 
 type PageProps = {
   params: Promise<{
@@ -23,10 +24,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!component) return {};
 
-  return {
+  return createPageMetadata({
     title: `${component.name} | rn-kit components`,
     description: component.summary,
-  };
+    path: `/components/${component.slug}`,
+  });
 }
 
 export default async function ComponentDetailPage({ params }: PageProps) {

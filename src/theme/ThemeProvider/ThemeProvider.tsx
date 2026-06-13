@@ -7,7 +7,6 @@ import type {
 import type { ComponentTheme, Theme } from '../types/theme';
 import type { PropsWithChildren } from 'react';
 
-import { DarkTheme, DefaultTheme } from '@react-navigation/native';
 import {
   createContext,
   useCallback,
@@ -42,6 +41,10 @@ import type { FontColors } from '../types/fonts';
 import type { BorderColors } from '../types/borders';
 import type { Gutters } from '../types/gutters';
 import type { Backgrounds } from '../types/backgrounds';
+import {
+  darkNavigationTheme,
+  defaultNavigationTheme,
+} from '../navigation';
 
 type Context = {
   changeTheme: (variant: VariantWithSystem) => void;
@@ -250,7 +253,8 @@ function ThemeProvider({
 
   // Memoized navigation theme
   const navigationTheme = useMemo(() => {
-    const baseTheme = variant === 'dark' ? DarkTheme : DefaultTheme;
+    const baseTheme =
+      variant === 'dark' ? darkNavigationTheme : defaultNavigationTheme;
     return {
       ...baseTheme,
       colors: fullConfig.navigationColors,

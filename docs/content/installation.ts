@@ -2,11 +2,11 @@ export const installation = {
   title: 'Installation',
   commands: [
     'npm install @sohantalukder/rn-kit',
-    'npm install react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg @react-navigation/native @react-navigation/stack',
+    'npm install react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg',
   ],
   notes: [
-    'Install optional peers only when the related components are used.',
-    '@d11/react-native-fast-image powers Image, Avatar, and PhotoCarousel.',
-    '@gorhom/bottom-sheet powers the global bottom sheet portal manager.',
+    'Image, Avatar, PhotoCarousel, BottomSheet, and the global bottom sheet manager are implemented internally.',
+    'Image uses React Native Image, so FastImage-style native cache controls are not included.',
+    'Follow native setup guides for the listed peer packages in the consuming app.',
   ],
 };

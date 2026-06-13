@@ -11,10 +11,12 @@ npm install @sohantalukder/rn-kit
 Install the core React Native peers in the consuming app:
 
 ```sh
-npm install react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg @react-navigation/native @react-navigation/stack
+npm install react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg
 ```
 
-Feature-specific peers:
+`Image`, `Avatar`, `PhotoCarousel`, `BottomSheet`, and the global bottom sheet
+manager are implemented inside the package. `Image` uses React Native `Image`,
+so FastImage-style native cache controls are not included.
 
-- `@d11/react-native-fast-image` for `Image`, `Avatar`, and `PhotoCarousel`.
-- `@gorhom/bottom-sheet` for the global bottom sheet portal manager.
+React Navigation is not required by this package. Apps that use React Navigation
+can pass `theme.navigationTheme` to their navigator.

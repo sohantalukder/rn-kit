@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/nextjs';
-import { Dialog } from '@sohantalukder/rn-kit';
+import { Button, Dialog } from '@sohantalukder/rn-kit';
+import { useState } from 'react';
 import { StoryFrame } from '../StoryFrame';
 
 const meta = {
@@ -10,33 +11,55 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
-  render: () => (
+function DialogDemo() {
+  const [visible, setVisible] = useState(false);
+
+  return (
     <StoryFrame title="Dialog" description="Confirmation dialog content and actions.">
+      <Button
+        text="Open dialog"
+        onPress={() => setVisible(true)}
+      />
       <Dialog
-        visible
+        visible={visible}
+        onDismiss={() => setVisible(false)}
         title="Delete item?"
         description="This action cannot be undone."
         icon="error"
         buttons={[
-          { label: 'Cancel', type: 'outline', onPress: () => {} },
-          { label: 'Delete', type: 'error', onPress: () => {} },
+          { label: 'Cancel', type: 'outline', onPress: () => setVisible(false) },
+          { label: 'Delete', type: 'error', onPress: () => setVisible(false) },
         ]}
       />
     </StoryFrame>
-  ),
-};
+  );
+}
 
-export const SuccessState: Story = {
-  render: () => (
+function SuccessDialogDemo() {
+  const [visible, setVisible] = useState(false);
+
+  return (
     <StoryFrame title="Success dialog" description="Use positive confirmation copy after completed work.">
+      <Button
+        text="Show success"
+        onPress={() => setVisible(true)}
+      />
       <Dialog
-        visible
+        visible={visible}
+        onDismiss={() => setVisible(false)}
         title="Payment complete"
         description="Your transfer was submitted successfully."
         icon="success"
-        buttons={[{ label: 'Done', onPress: () => {} }]}
+        buttons={[{ label: 'Done', onPress: () => setVisible(false) }]}
       />
     </StoryFrame>
-  ),
+  );
+}
+
+export const Default: Story = {
+  render: () => <DialogDemo />,
+};
+
+export const SuccessState: Story = {
+  render: () => <SuccessDialogDemo />,
 };

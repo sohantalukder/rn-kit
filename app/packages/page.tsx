@@ -1,9 +1,18 @@
+import type { Metadata } from 'next';
 import { Boxes, Component } from 'lucide-react';
 import Link from 'next/link';
 import { DocPager } from '../../docs/components/DocPager';
 import { PackageCard } from '../../docs/components/PackageCard';
 import { components, packageInfo } from '../../docs/data/componentRegistry';
 import { getPager } from '../../docs/data/navigation';
+import { createPageMetadata } from '../../docs/seo';
+
+export const metadata: Metadata = createPageMetadata({
+  title: 'Packages | rn-kit docs',
+  description:
+    'Explore the @sohantalukder/rn-kit package, install commands, public component surface, and package documentation.',
+  path: '/packages',
+});
 
 export default function PackagesPage() {
   const pager = getPager('/packages');

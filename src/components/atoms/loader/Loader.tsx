@@ -6,7 +6,7 @@ import type {
   ViewStyle,
   ColorValue,
 } from 'react-native';
-import { Animated, Easing } from 'react-native';
+import { Animated, Easing, Platform } from 'react-native';
 
 import { useTheme } from '../../../theme';
 import { IconByVariant } from '../../atoms';
@@ -15,7 +15,7 @@ const ANIMATION_CONFIG = {
   toValue: 1,
   duration: 1000,
   easing: Easing.linear,
-  useNativeDriver: true,
+  useNativeDriver: Platform.OS !== 'web',
 };
 
 /**

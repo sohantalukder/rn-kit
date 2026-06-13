@@ -1,7 +1,7 @@
 import { useTheme } from '../../../theme';
 import React, { useEffect, useMemo, useRef } from 'react';
 import type { DimensionValue, StyleProp, ViewStyle } from 'react-native';
-import { Animated } from 'react-native';
+import { Animated, Platform } from 'react-native';
 
 /**
  * Properties for the Skeleton component.
@@ -31,7 +31,7 @@ const Skeleton: React.FC<Properties> = ({
         Animated.timing(shimmerAnim, {
           toValue: 1,
           duration: 1000,
-          useNativeDriver: true,
+          useNativeDriver: Platform.OS !== 'web',
         })
       ).start();
     };

@@ -41,8 +41,7 @@ const DropdownItem: React.FC<DropdownItemProps> = ({
     return (
       <View style={[...baseRow, { backgroundColor: colors.gray1, opacity: rs(0.5) }, disabledItemStyles]}>
         <View
-          pointerEvents="none"
-          style={[{ marginRight: rs(10) }, checkboxContainerStyle, disabledCheckBoxStyles]}
+          style={[{ marginRight: rs(10), pointerEvents: 'none' }, checkboxContainerStyle, disabledCheckBoxStyles]}
         >
           <Checkbox
             checked={isSelected}
@@ -68,8 +67,7 @@ const DropdownItem: React.FC<DropdownItemProps> = ({
       accessibilityLabel={`${isSelected ? 'Deselect' : 'Select'} ${valueStr}`}
     >
       <View
-        pointerEvents="none"
-        style={[{ marginRight: rs(10) }, checkboxContainerStyle, checkBoxStyles]}
+        style={[{ marginRight: rs(10), pointerEvents: 'none' }, checkboxContainerStyle, checkBoxStyles]}
       >
         <Checkbox
           checked={isSelected}

@@ -96,4 +96,7 @@ export const createRippleStyles = (
       borderRadius,
       overflow: !overflow ? 'hidden' : undefined,
     },
+    pointerEventsNone: {
+      pointerEvents: 'none',
+    },
   });

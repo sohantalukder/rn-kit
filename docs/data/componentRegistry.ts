@@ -17,7 +17,7 @@ export const packageInfo = {
     'A typed React Native UI kit with theme primitives, polished components, and overlay providers.',
   install: 'npm install @sohantalukder/rn-kit',
   peerInstall:
-    'npm install react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg @react-navigation/native @react-navigation/stack',
+    'npm install react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg',
 };
 
 const usage = (component: string, props = '') => `import { ${component} } from '@sohantalukder/rn-kit';
@@ -160,7 +160,7 @@ export const components: ComponentDoc[] = [
   {
     name: 'Image',
     slug: 'image',
-    summary: 'Fast image wrapper with placeholder, loading, cache, and resize options.',
+    summary: 'React Native image wrapper with placeholder, loading, fallback, and resize options.',
     importName: 'Image',
     primaryProps: ['source', 'width', 'height', 'resizeMode', 'borderRadius'],
     variants: ['remote image', 'placeholder', 'rounded'],
@@ -232,10 +232,10 @@ export const components: ComponentDoc[] = [
     slug: 'dialog',
     summary: 'Dialog content component for confirmations and alerts.',
     importName: 'Dialog',
-    primaryProps: ['title', 'message', 'buttons', 'icon'],
+    primaryProps: ['visible', 'title', 'description', 'buttons', 'icon', 'onDismiss'],
     variants: ['success', 'error', 'confirmation'],
     bestPractices: ['Reserve dialogs for decisions that interrupt flow.', 'Keep button labels action-oriented.'],
-    usage: usage('Dialog', ' title="Delete item?" message="This cannot be undone."'),
+    usage: usage('Dialog', ' visible={visible} title="Delete item?" description="This cannot be undone." onDismiss={closeDialog}'),
   },
   {
     name: 'Toast',

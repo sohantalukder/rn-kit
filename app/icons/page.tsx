@@ -3,12 +3,15 @@ import { Sparkles } from 'lucide-react';
 import { DocPager } from '../../docs/components/DocPager';
 import { IconGallery } from '../../docs/components/IconGallery';
 import { getPager } from '../../docs/data/navigation';
+import { createPageMetadata } from '../../docs/seo';
 import { iconNames } from '../../src/assets/icons/names';
 
-export const metadata: Metadata = {
-  title: 'Icons - @sohantalukder/rn-kit docs',
-  description: 'Preview and search every registered rn-kit icon.',
-};
+export const metadata: Metadata = createPageMetadata({
+  title: 'Icons | rn-kit docs',
+  description:
+    'Preview and search every registered @sohantalukder/rn-kit theme-aware SVG icon.',
+  path: '/icons',
+});
 
 export default function IconsPage() {
   const pager = getPager('/icons');

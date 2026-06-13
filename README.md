@@ -44,22 +44,15 @@ Install the required peer dependencies in your React Native app:
 
 ```sh
 npm install \
-  @react-navigation/native \
-  @react-navigation/stack \
   react-native-gesture-handler \
   react-native-reanimated \
   react-native-safe-area-context \
   react-native-svg
 ```
 
-Some components need extra optional peers:
+`Image`, `Avatar`, `PhotoCarousel`, `BottomSheet`, and the global bottom-sheet manager are implemented inside this package. They do not require FastImage or Gorhom Bottom Sheet.
 
-| Package | Used by |
-| --- | --- |
-| `@d11/react-native-fast-image` | `Image`, `Avatar`, `PhotoCarousel` |
-| `@gorhom/bottom-sheet` | Bottom-sheet overlay manager |
-
-Follow the native setup instructions for the peer packages you install, especially Reanimated, Gesture Handler, SVG, Safe Area Context, Bottom Sheet, and Fast Image.
+Follow the native setup instructions for the peer packages you install, especially Reanimated, Gesture Handler, SVG, and Safe Area Context. React Navigation is not required by this package; if your app uses it, you can pass `theme.navigationTheme` to your navigation container.
 
 ## Quick Start
 
@@ -218,7 +211,70 @@ contextMenu.show({
 });
 ```
 
-Install and configure `@gorhom/bottom-sheet` before using the global bottom sheet manager.
+The global bottom sheet manager uses the internal React Native bottom sheet host mounted by `UiPortalProvider`.
+
+## Image
+
+The public `Image` component is backed by React Native `Image`. It supports remote URI sources, local require sources, placeholders, fallback images, loading skeletons, error handling, accessibility labels, and load callbacks.
+
+```tsx
+import { Image } from '@sohantalukder/rn-kit';
+
+<Image
+  source={{ uri: avatarUrl }}
+  fallbackSource={require('./assets/avatar-placeholder.png')}
+  width={96}
+  height={96}
+  borderRadius={48}
+  resizeMode="cover"
+  accessibilityLabel="Profile photo"
+/>;
+```
+
+| Prop | Purpose |
+| --- | --- |
+| `source` | Remote URI object or local image source. |
+| `fallbackSource` | Image source rendered after the primary source fails. |
+| `placeholder` | Custom React node shown when no usable source exists. |
+| `showLoader` | Shows the package `Skeleton` while the image is loading. |
+| `onLoadStart`, `onLoad`, `onError`, `onLoadEnd` | Image lifecycle callbacks. |
+
+`priority` and `cache` are still accepted for backward compatibility, but they are no-ops. This component uses React Native `Image`, so advanced FastImage-style native caching is not included.
+
+## Bottom Sheet
+
+Use `BottomSheet` for local controlled sheets, or `bottomSheet.show()` for app-level overlay flows. Both use the internal React Native implementation with `Modal`, `Animated`, `PanResponder`, safe-area padding, backdrop close, swipe-down close, snap points, keyboard handling, and Android back handling.
+
+```tsx
+<BottomSheet
+  visible={visible}
+  onRequestClose={() => setVisible(false)}
+  maxHeight={520}
+  enableSwipeToClose
+>
+  <FilterForm />
+</BottomSheet>
+```
+
+```tsx
+bottomSheet.show({
+  component: FilterSheet,
+  componentProps: { selectedStatus: 'active' },
+  options: {
+    snapPoints: ['35%', '70%'],
+    initialSnapIndex: 1,
+    enablePanDownToClose: true,
+  },
+});
+```
+
+| Prop / option | Purpose |
+| --- | --- |
+| `visible`, `onRequestClose` | Controlled visibility for the local component. |
+| `maxHeight`, `minHeight`, `snapPoints` | Sheet sizing controls. |
+| `enableSwipeToClose`, `enablePanDownToClose` | Swipe-down dismissal. |
+| `enableOverlayTapToClose`, `backdrop` | Backdrop dismissal and visibility. |
+| `containerStyle`, `backdropStyle`, `handleStyle` | Styling hooks. |
 
 ## Common Imports
 

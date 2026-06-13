@@ -1,8 +1,17 @@
+import type { Metadata } from 'next';
 import { Component, Library } from 'lucide-react';
 import { DocPager } from '../../docs/components/DocPager';
 import { PackageCard } from '../../docs/components/PackageCard';
 import { components } from '../../docs/data/componentRegistry';
 import { getPager } from '../../docs/data/navigation';
+import { createPageMetadata } from '../../docs/seo';
+
+export const metadata: Metadata = createPageMetadata({
+  title: 'Components | rn-kit docs',
+  description:
+    'Browse documented @sohantalukder/rn-kit React Native components with usage examples, props, variants, previews, and best practices.',
+  path: '/components',
+});
 
 export default function ComponentsPage() {
   const pager = getPager('/components');

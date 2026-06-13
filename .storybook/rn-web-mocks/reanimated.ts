@@ -45,8 +45,51 @@ export function useAnimatedReaction() {
   return undefined;
 }
 
-export function useAnimatedScrollHandler(handlers: unknown) {
-  return handlers;
+type ScrollHandlerEvent = {
+  nativeEvent?: {
+    contentOffset?: {
+      x?: number;
+      y?: number;
+    };
+  };
+  currentTarget?: {
+    scrollLeft?: number;
+    scrollTop?: number;
+  };
+  target?: {
+    scrollLeft?: number;
+    scrollTop?: number;
+  };
+};
+
+type AnimatedScrollHandlers =
+  | ((event: ScrollHandlerEvent) => void)
+  | {
+      onBeginDrag?: (event: ScrollHandlerEvent) => void;
+      onEndDrag?: (event: ScrollHandlerEvent) => void;
+      onScroll?: (event: ScrollHandlerEvent) => void;
+    };
+
+const normalizeScrollEvent = (event: ScrollHandlerEvent) => {
+  const target = event.currentTarget ?? event.target;
+
+  return {
+    ...event,
+    contentOffset: {
+      x: event.nativeEvent?.contentOffset?.x ?? target?.scrollLeft ?? 0,
+      y: event.nativeEvent?.contentOffset?.y ?? target?.scrollTop ?? 0,
+    },
+  };
+};
+
+export function useAnimatedScrollHandler(handlers: AnimatedScrollHandlers) {
+  if (typeof handlers === 'function') {
+    return (event: ScrollHandlerEvent) => handlers(normalizeScrollEvent(event));
+  }
+
+  return (event: ScrollHandlerEvent) => {
+    handlers.onScroll?.(normalizeScrollEvent(event));
+  };
 }
 
 export function useAnimatedRef<T>() {

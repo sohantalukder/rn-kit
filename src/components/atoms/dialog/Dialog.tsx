@@ -1,6 +1,6 @@
 import React, { memo, useMemo, useCallback } from 'react';
 import type { GestureResponderEvent, ViewStyle } from 'react-native';
-import { Modal, View, Pressable } from 'react-native';
+import { Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 
 import type { ButtonVariant } from '../buttons/types/type';
 import Text from '../text/Text';
@@ -93,37 +93,50 @@ interface DialogButtonsProps {
 
 const DialogButtons: React.FC<DialogButtonsProps> = memo(({ buttons }) => {
   const { layout } = useTheme();
+  const isSingleButton = buttons?.length === 1;
 
   const buttonContainerStyle = useMemo(() => {
     if (!buttons?.length) return [];
 
-    const styles: ViewStyle[] = [layout.row];
+    const styles: ViewStyle[] = [layout.row, { width: '100%' }];
 
-    if (buttons.length === 1) {
-      styles.push({ justifyContent: 'center', ...layout.flexShrink_1 });
+    if (isSingleButton) {
+      styles.push({ justifyContent: 'center' });
     } else {
       styles.push({
-        justifyContent: 'flex-end',
         gap: 12,
-        ...layout.flexShrink_1,
+        justifyContent: 'flex-end',
       });
     }
 
     return styles;
-  }, [buttons, layout]);
+  }, [buttons, isSingleButton, layout]);
+
+  const buttonItemStyle = useMemo<ViewStyle>(
+    () =>
+      isSingleButton
+        ? { width: '100%' }
+        : { flexBasis: 0, flexGrow: 1, flexShrink: 1, minWidth: 0 },
+    [isSingleButton]
+  );
+
   if (!buttons?.length) return null;
 
   return (
     <View style={buttonContainerStyle}>
       {buttons.map((button, index) => (
-        <Button
+        <View
           key={`dialog-btn-${index}`}
-          onPress={button.onPress}
-          text={button.label}
-          variant={button.type || 'primary'}
-          isLoading={button.isLoading || false}
-          wrapStyle={{ height: rs(44) }}
-        />
+          style={buttonItemStyle}
+        >
+          <Button
+            onPress={button.onPress}
+            text={button.label}
+            variant={button.type || 'primary'}
+            isLoading={button.isLoading || false}
+            wrapStyle={{ height: rs(44) }}
+          />
+        </View>
       ))}
     </View>
   );
@@ -133,6 +146,7 @@ const DialogButtons: React.FC<DialogButtonsProps> = memo(({ buttons }) => {
 const BACKDROP_OPACITY = 0.5;
 const MIN_DIALOG_WIDTH = 280;
 const DIALOG_MARGIN = 40;
+const isWeb = Platform.OS === 'web';
 
 // Main Dialog Component
 const Dialog: React.FC<DialogProps> = memo(
@@ -156,6 +170,7 @@ const Dialog: React.FC<DialogProps> = memo(
         {
           backgroundColor: withOpacity(colors?.gray5, BACKDROP_OPACITY),
         },
+        isWeb && webStyles.backdrop,
       ];
 
       const dialogStyle = [
@@ -163,7 +178,9 @@ const Dialog: React.FC<DialogProps> = memo(
           backgroundColor: colors.background,
           maxWidth: rs('wf') - DIALOG_MARGIN,
           minWidth: rs(MIN_DIALOG_WIDTH),
+          width: '100%' as const,
         },
+        isWeb && webStyles.dialog,
         borders.rounded_8,
         gutters.padding_20,
         gutters.gap_12,
@@ -172,7 +189,8 @@ const Dialog: React.FC<DialogProps> = memo(
       return { backdropStyle, dialogStyle };
     }, [layout, colors, borders, gutters]);
 
-    const handleBackdropPress = useCallback(() => {
+    const handleBackdropPress = useCallback((e: GestureResponderEvent) => {
+      e.stopPropagation();
       if (dismissible && onDismiss) {
         onDismiss();
       }
@@ -185,14 +203,7 @@ const Dialog: React.FC<DialogProps> = memo(
     // Early return for better performance
     if (!visible) return null;
 
-    return (
-      <Modal
-        visible={visible}
-        transparent
-        animationType="fade"
-        onRequestClose={dismissible ? onDismiss : undefined}
-        statusBarTranslucent
-      >
+    const dialogContent = (
         <Pressable
           style={styles.backdropStyle}
           onPress={handleBackdropPress}
@@ -215,9 +226,48 @@ const Dialog: React.FC<DialogProps> = memo(
             <DialogButtons buttons={buttons} />
           </Pressable>
         </Pressable>
+    );
+
+    if (isWeb) {
+      return <View style={webStyles.modal}>{dialogContent}</View>;
+    }
+
+    return (
+      <Modal
+        visible={visible}
+        transparent
+        animationType="fade"
+        onRequestClose={dismissible ? onDismiss : undefined}
+        statusBarTranslucent
+      >
+        {dialogContent}
       </Modal>
     );
   }
 );
+
+const webStyles = StyleSheet.create({
+  backdrop: {
+    bottom: 0,
+    left: 0,
+    position: 'fixed',
+    right: 0,
+    top: 0,
+    zIndex: 9998,
+  } as unknown as ViewStyle,
+  dialog: {
+    maxWidth: 'calc(100vw - 40px)',
+    zIndex: 9999,
+  } as unknown as ViewStyle,
+  modal: {
+    bottom: 0,
+    left: 0,
+    pointerEvents: 'auto',
+    position: 'fixed',
+    right: 0,
+    top: 0,
+    zIndex: 9997,
+  } as unknown as ViewStyle,
+});
 
 export default Dialog;
