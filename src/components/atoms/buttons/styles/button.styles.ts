@@ -61,6 +61,13 @@ export const iconButtonStyles = StyleSheet.create({
     justifyContent: 'center',
     minWidth: 0,
     padding: 0,
+    position: 'relative',
+  },
+  dot: {
+    borderRadius: 999,
+    position: 'absolute',
+    right: 1,
+    top: 1,
   },
   large: {
     height: config.iconButtonSizeLarge,

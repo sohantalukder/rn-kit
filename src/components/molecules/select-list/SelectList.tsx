@@ -53,6 +53,7 @@ const SelectList: React.FC<SelectListProps> = ({
   dropdownShown = false,
   fontFamily,
   label,
+  animatedLabel = true,
 }) => {
   const { colors, layout, gutters } = useTheme();
   const styles = React.useMemo(() => selectStyles({ colors }), [colors]);
@@ -308,12 +309,15 @@ const SelectList: React.FC<SelectListProps> = ({
 
   return (
     <View style={containerStyle}>
-      {/* AnimatedLabel */}
-      <AnimatedLabel
-        label={label || placeholder || 'Select option'}
-        value={selectedVal ?? ''}
-        isFocused={selectedVal?.toString() ? true : isFocused}
-      />
+      {animatedLabel ? (
+        <AnimatedLabel
+          label={label || placeholder || 'Select option'}
+          value={selectedVal ?? ''}
+          isFocused={selectedVal?.toString() ? true : isFocused}
+        />
+      ) : label ? (
+        <Text style={gutters.paddingBottom_6}>{label}</Text>
+      ) : null}
 
       {dropdown && search ? (
         <View style={[styles.select, isFocused && styles.activeContainer, boxStyles]}>
@@ -356,7 +360,9 @@ const SelectList: React.FC<SelectListProps> = ({
           accessibilityLabel="Open dropdown"
         >
           <Text style={[baseTextStyle, selectedTextColorStyle, inputStyles]}>
-            {selectedVal === '' && isFocused ? placeholder || 'Select option' : String(selectedVal)}
+            {selectedVal === '' && (isFocused || !animatedLabel)
+              ? placeholder || 'Select option'
+              : String(selectedVal)}
           </Text>
 
           <View style={styles.arrow}>

@@ -20,11 +20,613 @@ export const packageInfo = {
     'npm install react-native-gesture-handler react-native-reanimated react-native-safe-area-context react-native-svg',
 };
 
-const usage = (component: string, props = '') => `import { ${component} } from '@sohantalukder/rn-kit';
+const usageExamples = {
+  button: `import { useState } from 'react';
+import { Button, toast } from '@sohantalukder/rn-kit';
 
-export function Example() {
-  return <${component}${props} />;
-}`;
+export function SaveButton() {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = () => {
+    setIsSaving(true);
+    toast.show({ type: 'success', title: 'Saved' });
+    setTimeout(() => setIsSaving(false), 800);
+  };
+
+  return (
+    <Button
+      text="Save changes"
+      accessibilityLabel="Save changes"
+      isLoading={isSaving}
+      disabled={isSaving}
+      onPress={handleSave}
+    />
+  );
+}`,
+  iconButton: `import { useState } from 'react';
+import { IconButton } from '@sohantalukder/rn-kit';
+
+export function NotificationAction() {
+  const [isActive, setIsActive] = useState(false);
+
+  return (
+    <IconButton
+      icon={isActive ? 'check' : 'notification'}
+      accessibilityLabel="Notifications"
+      size="medium"
+      showDot={!isActive}
+      onPress={() => setIsActive((value) => !value)}
+    />
+  );
+}`,
+  ripple: `import { View } from 'react-native';
+import { Ripple, Text, toast, useTheme } from '@sohantalukder/rn-kit';
+
+export function PressableRow() {
+  const { borders, gutters } = useTheme();
+
+  return (
+    <Ripple
+      accessibilityRole="button"
+      accessibilityLabel="Open account details"
+      onPress={() => toast.show({ type: 'info', title: 'Opening details' })}
+    >
+      <View style={[gutters.padding_16, borders.rounded_12]}>
+        <Text weight="semibold">Account details</Text>
+        <Text color="secondary">Tap to review the latest activity.</Text>
+      </View>
+    </Ripple>
+  );
+}`,
+  loader: `import { View } from 'react-native';
+import { Loader, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function LoadingState() {
+  const { gutters, layout } = useTheme();
+
+  return (
+    <View style={[layout.itemsCenter, gutters.gap_12, gutters.padding_24]}>
+      <Loader size={32} />
+      <Text color="secondary">Loading transactions...</Text>
+    </View>
+  );
+}`,
+  statusBar: `import { StatusBar } from '@sohantalukder/rn-kit';
+
+export function ScreenChrome() {
+  return (
+    <StatusBar
+      bgColor="#FFFFFF"
+      showHeader
+      translucent={false}
+    />
+  );
+}`,
+  textInput: `import { useState } from 'react';
+import { TextInput } from '@sohantalukder/rn-kit';
+
+export function EmailField() {
+  const [email, setEmail] = useState('');
+  const error =
+    email.length > 0 && !email.includes('@')
+      ? 'Enter a valid email address.'
+      : undefined;
+
+  return (
+    <TextInput
+      label="Email"
+      placeholder="you@example.com"
+      keyboardType="email-address"
+      autoCapitalize="none"
+      value={email}
+      errorMessage={error}
+      onChangeText={(value) => setEmail(value)}
+    />
+  );
+}`,
+  multilineInput: `import { useState } from 'react';
+import { MultilineInput } from '@sohantalukder/rn-kit';
+
+export function NotesField() {
+  const [notes, setNotes] = useState('');
+
+  return (
+    <MultilineInput
+      label="Notes"
+      animatedLabel
+      placeholder="Add delivery instructions"
+      numberOfLines={4}
+      height={120}
+      value={notes}
+      onChangeText={(value) => setNotes(value)}
+    />
+  );
+}`,
+  otpInput: `import { useState } from 'react';
+import { Text, OTPInput } from '@sohantalukder/rn-kit';
+
+export function VerifyCode() {
+  const [code, setCode] = useState('');
+
+  return (
+    <>
+      <OTPInput length={6} callback={setCode} />
+      <Text color="secondary">Entered code: {code || 'Waiting...'}</Text>
+    </>
+  );
+}`,
+  bottomSheet: `import { useState } from 'react';
+import { View } from 'react-native';
+import { BottomSheet, Button, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function FilterSheetExample() {
+  const [visible, setVisible] = useState(false);
+  const { gutters } = useTheme();
+
+  return (
+    <>
+      <Button text="Open filters" onPress={() => setVisible(true)} />
+      <BottomSheet
+        visible={visible}
+        onRequestClose={() => setVisible(false)}
+        maxHeight={420}
+        enableSwipeToClose
+      >
+        <View style={[gutters.gap_12, gutters.padding_16]}>
+          <Text variant="heading3" weight="semibold">Filters</Text>
+          <Text color="secondary">Choose the options for this list.</Text>
+          <Button text="Apply" onPress={() => setVisible(false)} />
+        </View>
+      </BottomSheet>
+    </>
+  );
+}`,
+  text: `import { Text } from '@sohantalukder/rn-kit';
+
+export function SectionTitle() {
+  return (
+    <>
+      <Text variant="heading3" weight="semibold">
+        Payment methods
+      </Text>
+      <Text color="secondary">
+        Manage saved cards and bank accounts.
+      </Text>
+    </>
+  );
+}`,
+  checkbox: `import { useState } from 'react';
+import { View } from 'react-native';
+import { Checkbox, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function TermsCheckbox() {
+  const [accepted, setAccepted] = useState(false);
+  const { gutters, layout } = useTheme();
+
+  return (
+    <View style={[layout.row, layout.itemsCenter, gutters.gap_10]}>
+      <Checkbox
+        checked={accepted}
+        accessibilityLabel="Accept terms"
+        onPress={() => setAccepted((value) => !value)}
+      />
+      <Text>I agree to the terms</Text>
+    </View>
+  );
+}`,
+  radio: `import { useState } from 'react';
+import { View } from 'react-native';
+import { Radio, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function PlanOptions() {
+  const [plan, setPlan] = useState('standard');
+  const { gutters, layout } = useTheme();
+
+  return (
+    <View style={gutters.gap_12}>
+      <View style={[layout.row, layout.itemsCenter, gutters.gap_10]}>
+        <Radio
+          checked={plan === 'standard'}
+          accessibilityLabel="Standard plan"
+          onChange={() => setPlan('standard')}
+        />
+        <Text>Standard</Text>
+      </View>
+      <View style={[layout.row, layout.itemsCenter, gutters.gap_10]}>
+        <Radio
+          checked={plan === 'priority'}
+          accessibilityLabel="Priority plan"
+          onChange={() => setPlan('priority')}
+        />
+        <Text>Priority</Text>
+      </View>
+    </View>
+  );
+}`,
+  switch: `import { useState } from 'react';
+import { View } from 'react-native';
+import { Switch, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function NotificationSwitch() {
+  const [enabled, setEnabled] = useState(true);
+  const { gutters, layout } = useTheme();
+
+  return (
+    <View style={[layout.row, layout.itemsCenter, gutters.gap_12]}>
+      <Switch
+        value={enabled}
+        name="notifications"
+        onPress={(nextValue) => setEnabled(nextValue)}
+      />
+      <Text>Push notifications</Text>
+    </View>
+  );
+}`,
+  image: `import { Image } from '@sohantalukder/rn-kit';
+
+export function ProfilePhoto() {
+  return (
+    <Image
+      source={{ uri: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330' }}
+      width={96}
+      height={96}
+      borderRadius={48}
+      resizeMode="cover"
+      accessibilityLabel="Profile photo"
+    />
+  );
+}`,
+  skeleton: `import { View } from 'react-native';
+import { Skeleton, useTheme } from '@sohantalukder/rn-kit';
+
+export function ProfileSkeleton() {
+  const { gutters } = useTheme();
+
+  return (
+    <View style={gutters.gap_12}>
+      <Skeleton width={64} height={64} borderRadius={32} />
+      <Skeleton width="80%" height={16} />
+      <Skeleton width="55%" height={16} />
+    </View>
+  );
+}`,
+  slider: `import { useState } from 'react';
+import { View } from 'react-native';
+import { Slider, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function BudgetSlider() {
+  const [budget, setBudget] = useState(50);
+  const { gutters } = useTheme();
+
+  return (
+    <View style={gutters.gap_12}>
+      <Text weight="semibold">Budget: {budget}</Text>
+      <Slider
+        min={0}
+        max={100}
+        initialValue={budget}
+        value={budget}
+        onValueChange={setBudget}
+      />
+    </View>
+  );
+}`,
+  card: `import { Card, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function AccountCard() {
+  const { gutters } = useTheme();
+
+  return (
+    <Card variant="outlined" style={gutters.gap_8}>
+      <Text variant="heading3" weight="semibold">Savings</Text>
+      <Text color="secondary">Available balance</Text>
+      <Text variant="heading2" weight="bold">$2,450.00</Text>
+    </Card>
+  );
+}`,
+  divider: `import { View } from 'react-native';
+import { Divider, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function SettingsGroup() {
+  const { gutters } = useTheme();
+
+  return (
+    <View style={gutters.gap_12}>
+      <Text>Profile</Text>
+      <Divider />
+      <Text>Notifications</Text>
+      <Divider />
+      <Text>Security</Text>
+    </View>
+  );
+}`,
+  iconByVariant: `import { View } from 'react-native';
+import { IconByVariant, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function SearchHint() {
+  const { gutters, layout } = useTheme();
+
+  return (
+    <View style={[layout.row, layout.itemsCenter, gutters.gap_8]}>
+      <IconByVariant path="search" height={24} width={24} />
+      <Text color="secondary">Search customers</Text>
+    </View>
+  );
+}`,
+  badge: `import { Badge, toast } from '@sohantalukder/rn-kit';
+
+export function StatusBadge() {
+  return (
+    <Badge
+      text="Active"
+      size="medium"
+      onPress={() => toast.show({ type: 'success', title: 'Status active' })}
+    />
+  );
+}`,
+  dialog: `import { useState } from 'react';
+import { Button, Dialog } from '@sohantalukder/rn-kit';
+
+export function DeleteDialog() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <>
+      <Button text="Delete item" variant="error" onPress={() => setVisible(true)} />
+      <Dialog
+        visible={visible}
+        title="Delete item?"
+        description="This action cannot be undone."
+        onDismiss={() => setVisible(false)}
+        buttons={[
+          { label: 'Cancel', type: 'outline', onPress: () => setVisible(false) },
+          { label: 'Delete', type: 'error', onPress: () => setVisible(false) },
+        ]}
+      />
+    </>
+  );
+}`,
+  toast: `import { useState } from 'react';
+import { Toast, Button } from '@sohantalukder/rn-kit';
+
+export function InlineToastExample() {
+  const [visible, setVisible] = useState(false);
+
+  return (
+    <>
+      <Button text="Show toast" onPress={() => setVisible(true)} />
+      {visible ? (
+        <Toast
+          type="success"
+          title="Saved"
+          onDismiss={() => setVisible(false)}
+        />
+      ) : null}
+    </>
+  );
+}`,
+  passwordInput: `import { useState } from 'react';
+import { PasswordInput } from '@sohantalukder/rn-kit';
+
+export function PasswordField() {
+  const [password, setPassword] = useState('');
+  const error =
+    password.length > 0 && password.length < 8
+      ? 'Use at least 8 characters.'
+      : undefined;
+
+  return (
+    <PasswordInput
+      label="Password"
+      placeholder="Enter password"
+      required
+      value={password}
+      errorMessage={error}
+      onChangeText={(value) => setPassword(value)}
+    />
+  );
+}`,
+  searchBar: `import { useState } from 'react';
+import { SearchBar, Text } from '@sohantalukder/rn-kit';
+
+export function CustomerSearch() {
+  const [query, setQuery] = useState('');
+
+  return (
+    <>
+      <SearchBar
+        placeholder="Search customers"
+        value={query}
+        onSearch={setQuery}
+        onSubmitSearch={(value) => setQuery(value)}
+        onClear={() => setQuery('')}
+      />
+      <Text color="secondary">Searching for: {query || 'All customers'}</Text>
+    </>
+  );
+}`,
+  photoCarousel: `import { PhotoCarousel } from '@sohantalukder/rn-kit';
+
+const photos = [
+  {
+    id: 'front',
+    uri: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee',
+    accessibilityLabel: 'Front view',
+  },
+  {
+    id: 'inside',
+    uri: 'https://images.unsplash.com/photo-1494526585095-c41746248156',
+    accessibilityLabel: 'Interior view',
+  },
+];
+
+export function ListingPhotos() {
+  return (
+    <PhotoCarousel
+      photos={photos}
+      carouselHeight={220}
+      onPhotoChange={(index) => console.log('Current photo', index)}
+    />
+  );
+}`,
+  clickableText: `import { ClickableText, toast } from '@sohantalukder/rn-kit';
+
+export function TermsLink() {
+  return (
+    <ClickableText
+      textColor="primary"
+      onPress={() => toast.show({ type: 'info', title: 'Opening terms' })}
+    >
+      View terms and conditions
+    </ClickableText>
+  );
+}`,
+  emptyContent: `import { useState } from 'react';
+import { View } from 'react-native';
+import { Button, EmptyContent, useTheme } from '@sohantalukder/rn-kit';
+
+export function EmptyResults() {
+  const [hasResetFilters, setHasResetFilters] = useState(false);
+  const { gutters, layout } = useTheme();
+
+  return (
+    <View style={[layout.itemsCenter, gutters.gap_16, gutters.padding_24]}>
+      <EmptyContent
+        title="No results"
+        description="Try changing your filters or search term."
+        icon="emptyContent"
+      />
+      <Button
+        text={hasResetFilters ? 'Filters reset' : 'Reset filters'}
+        variant="outline"
+        disabled={hasResetFilters}
+        onPress={() => setHasResetFilters(true)}
+      />
+    </View>
+  );
+}`,
+  avatar: `import { View } from 'react-native';
+import { Avatar, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function UserSummary() {
+  const { gutters, layout } = useTheme();
+
+  return (
+    <View style={[layout.row, layout.itemsCenter, gutters.gap_12]}>
+      <Avatar
+        imageUrl="https://images.unsplash.com/photo-1494790108377-be9c29b29330"
+        height={48}
+        width={48}
+        borderRadius={24}
+      />
+      <Text weight="semibold">Nadia Rahman</Text>
+    </View>
+  );
+}`,
+  noInternet: `import { NoInternet, toast } from '@sohantalukder/rn-kit';
+
+export function OfflineScreen() {
+  return (
+    <NoInternet
+      text="No connection"
+      description="Check your internet connection and try again."
+      onRetry={() => toast.show({ type: 'info', title: 'Retrying connection' })}
+    />
+  );
+}`,
+  multiSelect: `import { useState } from 'react';
+import { MultiSelect } from '@sohantalukder/rn-kit';
+
+const items = [
+  { key: 'design', value: 'Design' },
+  { key: 'mobile', value: 'Mobile' },
+  { key: 'backend', value: 'Backend', disabled: true },
+];
+
+export function SkillPicker() {
+  const [selected, setSelected] = useState<(string | number)[]>([]);
+
+  return (
+    <MultiSelect
+      label="Skills"
+      placeholder="Choose skills"
+      data={items}
+      selectedValues={selected}
+      setSelected={(values) => setSelected(values ?? [])}
+      save="key"
+      search
+    />
+  );
+}`,
+  selectList: `import { useState } from 'react';
+import { SelectList, Text } from '@sohantalukder/rn-kit';
+
+const items = [
+  { key: 'draft', value: 'Draft' },
+  { key: 'active', value: 'Active' },
+  { key: 'archived', value: 'Archived', disabled: true },
+];
+
+export function StatusSelect() {
+  const [status, setStatus] = useState<string | number | undefined>();
+
+  return (
+    <>
+      <SelectList
+        label="Status"
+        placeholder="Select status"
+        data={items}
+        setSelected={setStatus}
+        save="key"
+        search
+      />
+      <Text color="secondary">Selected: {status ?? 'None'}</Text>
+    </>
+  );
+}`,
+  slideModal: `import { useRef } from 'react';
+import { Button, SlideModal, Text } from '@sohantalukder/rn-kit';
+
+export function SlideModalExample() {
+  const modalRef = useRef<{
+    openModal: () => void;
+    closeModal: () => void;
+  } | null>(null);
+
+  return (
+    <>
+      <Button text="Open modal" onPress={() => modalRef.current?.openModal()} />
+      <SlideModal ref={modalRef}>
+        <Text variant="heading3" weight="semibold">
+          Complete profile
+        </Text>
+        <Button
+          text="Close"
+          variant="outline"
+          onPress={() => modalRef.current?.closeModal()}
+        />
+      </SlideModal>
+    </>
+  );
+}`,
+  screenContainer: `import { ScreenContainer, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function DashboardScreen() {
+  const { gutters } = useTheme();
+
+  return (
+    <ScreenContainer
+      showHeader
+      containerStyle={gutters.padding_20}
+    >
+      <Text variant="heading2" weight="semibold">
+        Dashboard
+      </Text>
+      <Text color="secondary">Your account overview is ready.</Text>
+    </ScreenContainer>
+  );
+}`,
+} as const;
 
 export const components: ComponentDoc[] = [
   {
@@ -35,17 +637,17 @@ export const components: ComponentDoc[] = [
     primaryProps: ['text', 'variant', 'icon', 'isLoading', 'disabled', 'onPress'],
     variants: ['primary', 'secondary', 'outline', 'error', 'disable'],
     bestPractices: ['Use one primary button per decision area.', 'Prefer `isLoading` over changing labels during async work.'],
-    usage: usage('Button', ' text="Continue" onPress={handleContinue}'),
+    usage: usageExamples.button,
   },
   {
     name: 'IconButton',
     slug: 'icon-button',
     summary: 'Compact icon-only action button with sizes, states, and accessible labels.',
     importName: 'IconButton',
-    primaryProps: ['icon', 'size', 'disabled', 'bgColor', 'iconColor', 'onPress'],
+    primaryProps: ['icon', 'size', 'showDot', 'disabled', 'bgColor', 'iconColor', 'onPress'],
     variants: ['small', 'medium', 'large', 'disabled'],
     bestPractices: ['Always provide an accessibility label.', 'Use recognizable icons for repeated toolbar actions.'],
-    usage: usage('IconButton', ' icon="search" accessibilityLabel="Search"'),
+    usage: usageExamples.iconButton,
   },
   {
     name: 'Ripple',
@@ -55,7 +657,7 @@ export const components: ComponentDoc[] = [
     primaryProps: ['children', 'rippleColor', 'duration', 'disabled', 'onPress'],
     variants: ['default', 'custom color', 'disabled'],
     bestPractices: ['Wrap simple pressable content.', 'Keep ripple contrast visible in both themes.'],
-    usage: usage('Ripple', ' onPress={handlePress}'),
+    usage: usageExamples.ripple,
   },
   {
     name: 'Loader',
@@ -65,37 +667,37 @@ export const components: ComponentDoc[] = [
     primaryProps: ['size', 'color', 'style'],
     variants: ['small', 'medium', 'large', 'custom color'],
     bestPractices: ['Pair long waits with descriptive text.', 'Use inside buttons only when the action is already submitted.'],
-    usage: usage('Loader', ' size={32}'),
+    usage: usageExamples.loader,
   },
   {
     name: 'StatusBar',
     slug: 'status-bar',
     summary: 'Theme-aware status bar adapter for React Native screens.',
     importName: 'StatusBar',
-    primaryProps: ['barStyle', 'backgroundColor', 'translucent'],
+    primaryProps: ['barStyle', 'bgColor', 'translucent', 'showHeader'],
     variants: ['light', 'dark', 'translucent'],
     bestPractices: ['Configure per screen when backgrounds change.', 'Preview in native apps for exact platform behavior.'],
-    usage: usage('StatusBar'),
+    usage: usageExamples.statusBar,
   },
   {
     name: 'TextInput',
     slug: 'text-input',
     summary: 'Single-line input with labels, icons, validation, errors, and disabled state.',
     importName: 'TextInput',
-    primaryProps: ['label', 'placeholder', 'value', 'errorMessage', 'disabled', 'required'],
+    primaryProps: ['label', 'animatedLabel', 'placeholder', 'value', 'errorMessage', 'disabled', 'required'],
     variants: ['default', 'controlled', 'error', 'disabled', 'with icons'],
     bestPractices: ['Use controlled values for forms.', 'Show validation copy close to the input.'],
-    usage: usage('TextInput', ' label="Email" placeholder="you@example.com"'),
+    usage: usageExamples.textInput,
   },
   {
     name: 'MultilineInput',
     slug: 'multiline-input',
     summary: 'Text area input for longer values with labels and validation support.',
     importName: 'MultilineInput',
-    primaryProps: ['label', 'placeholder', 'numberOfLines', 'height', 'value'],
+    primaryProps: ['label', 'animatedLabel', 'placeholder', 'numberOfLines', 'height', 'value'],
     variants: ['default', 'controlled', 'custom height', 'disabled'],
     bestPractices: ['Set a predictable height for forms.', 'Use character limits for user-generated descriptions.'],
-    usage: usage('MultilineInput', ' label="Notes" numberOfLines={4}'),
+    usage: usageExamples.multilineInput,
   },
   {
     name: 'OTPInput',
@@ -105,7 +707,7 @@ export const components: ComponentDoc[] = [
     primaryProps: ['length', 'callback', 'style'],
     variants: ['4 digits', '6 digits', 'custom style'],
     bestPractices: ['Keep OTP length aligned with backend policy.', 'Move focus automatically only when the user enters valid digits.'],
-    usage: usage('OTPInput', ' length={6} callback={handleCode}'),
+    usage: usageExamples.otpInput,
   },
   {
     name: 'BottomSheet',
@@ -115,7 +717,7 @@ export const components: ComponentDoc[] = [
     primaryProps: ['visible', 'onRequestClose', 'children', 'maxHeight', 'enableSwipeToClose'],
     variants: ['default', 'custom content', 'no swipe close'],
     bestPractices: ['Use for contextual tasks, not full navigation.', 'Keep destructive actions visually separated.'],
-    usage: usage('BottomSheet', ' visible={visible} onRequestClose={closeSheet}'),
+    usage: usageExamples.bottomSheet,
   },
   {
     name: 'Text',
@@ -125,37 +727,37 @@ export const components: ComponentDoc[] = [
     primaryProps: ['children', 'variant', 'color', 'weight'],
     variants: ['headings', 'body', 'colors', 'weights'],
     bestPractices: ['Use semantic variants consistently.', 'Avoid one-off font sizes inside screens.'],
-    usage: usage('Text', ' variant="body1"'),
+    usage: usageExamples.text,
   },
   {
     name: 'Checkbox',
     slug: 'checkbox',
     summary: 'Animated checkbox with selected, disabled, and label support.',
     importName: 'Checkbox',
-    primaryProps: ['checked', 'label', 'disabled', 'onChange'],
+    primaryProps: ['checked', 'disabled', 'size', 'onPress'],
     variants: ['unchecked', 'checked', 'disabled'],
     bestPractices: ['Use checkboxes for independent binary choices.', 'Keep labels explicit and tappable.'],
-    usage: usage('Checkbox', ' label="Remember me" checked={checked} onChange={setChecked}'),
+    usage: usageExamples.checkbox,
   },
   {
     name: 'Radio',
     slug: 'radio',
     summary: 'Radio control for mutually exclusive selections.',
     importName: 'Radio',
-    primaryProps: ['selected', 'label', 'disabled', 'onChange'],
+    primaryProps: ['checked', 'disabled', 'onChange'],
     variants: ['unselected', 'selected', 'disabled'],
     bestPractices: ['Use radios for small visible option sets.', 'Use one selected value per group.'],
-    usage: usage('Radio', ' label="Standard" selected={selected} onChange={setSelected}'),
+    usage: usageExamples.radio,
   },
   {
     name: 'Switch',
     slug: 'switch',
     summary: 'Theme-aware switch for immediate on/off settings.',
     importName: 'Switch',
-    primaryProps: ['value', 'disabled', 'onChange'],
+    primaryProps: ['value', 'name', 'activeColor', 'onPress'],
     variants: ['off', 'on', 'disabled'],
     bestPractices: ['Use for settings that take effect immediately.', 'Avoid using switches for form submission.'],
-    usage: usage('Switch', ' value={enabled} onChange={setEnabled}'),
+    usage: usageExamples.switch,
   },
   {
     name: 'Image',
@@ -165,7 +767,7 @@ export const components: ComponentDoc[] = [
     primaryProps: ['source', 'width', 'height', 'resizeMode', 'borderRadius'],
     variants: ['remote image', 'placeholder', 'rounded'],
     bestPractices: ['Set explicit dimensions to avoid layout shift.', 'Use placeholders for optional remote media.'],
-    usage: usage('Image', ' source={{ uri }} width={96} height={96} borderRadius={16}'),
+    usage: usageExamples.image,
   },
   {
     name: 'Skeleton',
@@ -175,17 +777,17 @@ export const components: ComponentDoc[] = [
     primaryProps: ['width', 'height', 'borderRadius', 'style'],
     variants: ['line', 'avatar', 'card'],
     bestPractices: ['Match the final content shape.', 'Use sparingly on fast transitions.'],
-    usage: usage('Skeleton', ' width="100%" height={16}'),
+    usage: usageExamples.skeleton,
   },
   {
     name: 'Slider',
     slug: 'slider',
     summary: 'Gesture-driven slider for numeric range input.',
     importName: 'Slider',
-    primaryProps: ['min', 'max', 'value', 'step', 'onValueChange'],
+    primaryProps: ['min', 'max', 'initialValue', 'value', 'onValueChange'],
     variants: ['default', 'stepped', 'disabled'],
     bestPractices: ['Show the selected value near the control.', 'Use steps for financial or count inputs.'],
-    usage: usage('Slider', ' value={50} min={0} max={100} onValueChange={setValue}'),
+    usage: usageExamples.slider,
   },
   {
     name: 'Card',
@@ -195,7 +797,7 @@ export const components: ComponentDoc[] = [
     primaryProps: ['variant', 'padding', 'elevation', 'pressable', 'children'],
     variants: ['default', 'elevated', 'outlined', 'filled', 'pressable'],
     bestPractices: ['Use cards for repeated content groups.', 'Keep nested card structures out of app screens.'],
-    usage: usage('Card', ' variant="outlined"'),
+    usage: usageExamples.card,
   },
   {
     name: 'Divider',
@@ -205,7 +807,7 @@ export const components: ComponentDoc[] = [
     primaryProps: ['width', 'height', 'color', 'style'],
     variants: ['horizontal', 'vertical', 'custom color'],
     bestPractices: ['Use to separate related groups, not every row.', 'Prefer spacing when hierarchy is already clear.'],
-    usage: usage('Divider'),
+    usage: usageExamples.divider,
   },
   {
     name: 'IconByVariant',
@@ -215,7 +817,7 @@ export const components: ComponentDoc[] = [
     primaryProps: ['path', 'height', 'width', 'color'],
     variants: ['registry grid', 'custom color', 'different sizes'],
     bestPractices: ['Use registry keys for consistent icons.', 'Pass accessible labels on the surrounding action.'],
-    usage: usage('IconByVariant', ' path="search" height={24} width={24}'),
+    usage: usageExamples.iconByVariant,
   },
   {
     name: 'Badge',
@@ -225,7 +827,7 @@ export const components: ComponentDoc[] = [
     primaryProps: ['text', 'size', 'bgColor', 'disabled', 'onPress'],
     variants: ['small', 'medium', 'large', 'filled', 'disabled'],
     bestPractices: ['Use short labels.', 'Do not use badges as the only status signal when color matters.'],
-    usage: usage('Badge', ' text="Active" size="medium"'),
+    usage: usageExamples.badge,
   },
   {
     name: 'Dialog',
@@ -235,47 +837,47 @@ export const components: ComponentDoc[] = [
     primaryProps: ['visible', 'title', 'description', 'buttons', 'icon', 'onDismiss'],
     variants: ['success', 'error', 'confirmation'],
     bestPractices: ['Reserve dialogs for decisions that interrupt flow.', 'Keep button labels action-oriented.'],
-    usage: usage('Dialog', ' visible={visible} title="Delete item?" description="This cannot be undone." onDismiss={closeDialog}'),
+    usage: usageExamples.dialog,
   },
   {
     name: 'Toast',
     slug: 'toast',
-    summary: 'Inline toast visual for success, warning, error, and info messages.',
+    summary: 'Inline toast visual for success, error, and info messages.',
     importName: 'Toast',
-    primaryProps: ['type', 'title', 'message', 'onDismiss'],
-    variants: ['success', 'error', 'warning', 'info'],
+    primaryProps: ['type', 'title', 'onDismiss'],
+    variants: ['success', 'error', 'info'],
     bestPractices: ['Keep messages brief.', 'Do not use toasts for required decisions.'],
-    usage: usage('Toast', ' type="success" title="Saved"'),
+    usage: usageExamples.toast,
   },
   {
     name: 'PasswordInput',
     slug: 'password-input',
     summary: 'Password field with visibility toggle, label, required, and error support.',
     importName: 'PasswordInput',
-    primaryProps: ['label', 'placeholder', 'value', 'errorMessage', 'required'],
+    primaryProps: ['label', 'animatedLabel', 'placeholder', 'value', 'errorMessage', 'required'],
     variants: ['default', 'controlled', 'error', 'custom style'],
     bestPractices: ['Pair with validation copy.', 'Avoid pre-filling sensitive values in examples.'],
-    usage: usage('PasswordInput', ' label="Password" required'),
+    usage: usageExamples.passwordInput,
   },
   {
     name: 'SearchBar',
     slug: 'search-bar',
     summary: 'Theme-aware search input built on TextInput with search and clear actions.',
     importName: 'SearchBar',
-    primaryProps: ['placeholder', 'value', 'onSearch', 'onSubmitSearch', 'clearable', 'disabled'],
+    primaryProps: ['placeholder', 'animatedLabel', 'value', 'onSearch', 'onSubmitSearch', 'clearable', 'disabled'],
     variants: ['default', 'controlled', 'clearable', 'disabled'],
     bestPractices: ['Use for filtering lists and local search.', 'Keep placeholder text tied to the searched content.'],
-    usage: usage('SearchBar', ' placeholder="Search items" onSearch={setQuery}'),
+    usage: usageExamples.searchBar,
   },
   {
     name: 'PhotoCarousel',
     slug: 'photo-carousel',
     summary: 'Swipeable image carousel with pagination dots and optional auto-scroll.',
     importName: 'PhotoCarousel',
-    primaryProps: ['photos', 'height', 'autoScroll', 'showDots'],
+    primaryProps: ['photos', 'carouselHeight', 'autoScroll', 'onPhotoChange'],
     variants: ['default', 'single image', 'auto scroll'],
     bestPractices: ['Use consistent image aspect ratios.', 'Avoid auto-scroll on dense forms.'],
-    usage: usage('PhotoCarousel', ' photos={photos} height={220}'),
+    usage: usageExamples.photoCarousel,
   },
   {
     name: 'ClickableText',
@@ -285,27 +887,27 @@ export const components: ComponentDoc[] = [
     primaryProps: ['children', 'onPress', 'variant', 'textColor', 'disabled'],
     variants: ['default', 'inline link', 'disabled'],
     bestPractices: ['Use for small text actions.', 'Prefer buttons for primary actions.'],
-    usage: usage('ClickableText', ' onPress={handlePress}'),
+    usage: usageExamples.clickableText,
   },
   {
     name: 'EmptyContent',
     slug: 'empty-content',
     summary: 'Empty state layout with icon, title, description, and action.',
     importName: 'EmptyContent',
-    primaryProps: ['title', 'description', 'buttonText', 'onPress'],
+    primaryProps: ['title', 'description', 'icon', 'isLoading'],
     variants: ['default', 'with action', 'custom icon'],
     bestPractices: ['Explain what happened and what to do next.', 'Use one clear recovery action.'],
-    usage: usage('EmptyContent', ' title="No results" description="Try another search."'),
+    usage: usageExamples.emptyContent,
   },
   {
     name: 'Avatar',
     slug: 'avatar',
     summary: 'Avatar image wrapper with size and rounded presentation.',
     importName: 'Avatar',
-    primaryProps: ['source', 'size', 'borderRadius', 'style'],
+    primaryProps: ['imageUrl', 'height', 'width', 'borderRadius'],
     variants: ['image', 'small', 'large', 'placeholder'],
     bestPractices: ['Use stable square dimensions.', 'Provide fallbacks for missing user images.'],
-    usage: usage('Avatar', ' source={{ uri }} size={64}'),
+    usage: usageExamples.avatar,
   },
   {
     name: 'NoInternet',
@@ -315,7 +917,7 @@ export const components: ComponentDoc[] = [
     primaryProps: ['text', 'description', 'onRetry', 'animated', 'iconSize'],
     variants: ['default', 'static', 'custom copy'],
     bestPractices: ['Provide a retry path.', 'Use clear offline copy without blame.'],
-    usage: usage('NoInternet', ' onRetry={retryConnection}'),
+    usage: usageExamples.noInternet,
   },
   {
     name: 'MultiSelect',
@@ -325,7 +927,7 @@ export const components: ComponentDoc[] = [
     primaryProps: ['data', 'selectedValues', 'setSelected', 'search', 'placeholder'],
     variants: ['default', 'controlled', 'with disabled items', 'loading'],
     bestPractices: ['Use for longer option sets.', 'Keep selected badges scannable.'],
-    usage: usage('MultiSelect', ' data={items} selectedValues={selected} setSelected={setSelected}'),
+    usage: usageExamples.multiSelect,
   },
   {
     name: 'SelectList',
@@ -335,27 +937,27 @@ export const components: ComponentDoc[] = [
     primaryProps: ['data', 'setSelected', 'defaultOption', 'search', 'placeholder'],
     variants: ['default', 'searchable', 'disabled items', 'no search'],
     bestPractices: ['Use when options do not need to be visible all at once.', 'Provide a meaningful placeholder.'],
-    usage: usage('SelectList', ' data={items} setSelected={setSelected}'),
+    usage: usageExamples.selectList,
   },
   {
     name: 'SlideModal',
     slug: 'slide-modal',
     summary: 'Animated slide-up modal for composed flows.',
     importName: 'SlideModal',
-    primaryProps: ['visible', 'onClose', 'children'],
+    primaryProps: ['children', 'ref'],
     variants: ['default', 'custom content'],
     bestPractices: ['Use for short focused flows.', 'Keep close behavior predictable.'],
-    usage: usage('SlideModal', ' visible={visible} onClose={closeModal}'),
+    usage: usageExamples.slideModal,
   },
   {
     name: 'ScreenContainer',
     slug: 'screen-container',
     summary: 'Screen layout wrapper with safe spacing, loading, and error-friendly composition.',
     importName: 'ScreenContainer',
-    primaryProps: ['children', 'style', 'scrollable', 'backgroundColor'],
+    primaryProps: ['children', 'containerStyle', 'bgColor', 'showHeader'],
     variants: ['default', 'scrollable content', 'custom background'],
     bestPractices: ['Use as the first layer inside app screens.', 'Keep screen-level padding consistent.'],
-    usage: usage('ScreenContainer'),
+    usage: usageExamples.screenContainer,
   },
 ];
 

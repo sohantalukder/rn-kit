@@ -19,6 +19,9 @@ const IconButton = React.memo(
     size = 'medium',
     iconColor,
     iconSize,
+    showDot = false,
+    dotColor,
+    dotSize = rs(8),
     testID,
     accessibilityHint,
     accessibilityLabel,
@@ -62,6 +65,19 @@ const IconButton = React.memo(
           ) : (
             icon
           )}
+          {showDot ? (
+            <View
+              testID="icon-button-dot"
+              style={[
+                iconButtonStyles.dot,
+                {
+                  backgroundColor: dotColor ?? colors.error,
+                  height: dotSize,
+                  width: dotSize,
+                },
+              ]}
+            />
+          ) : null}
         </View>
       </Ripple>
     );

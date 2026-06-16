@@ -3,9 +3,13 @@
 </p>
 
 <p align="center">
-  <strong>Theme-aware React Native UI primitives for production app screens.</strong>
+  <strong>Simple, theme-aware React Native components for app screens.</strong>
   <br />
-  <a href="https://www.npmjs.com/package/@sohantalukder/rn-kit">npm package</a>
+  <a href="https://rn-kit.vercel.app">Docs</a>
+  ·
+  <a href="https://rn-kit.vercel.app/docs/theming">Theming</a>
+  ·
+  <a href="https://www.npmjs.com/package/@sohantalukder/rn-kit">npm</a>
   ·
   <a href="https://github.com/sohantalukder/rn-kit">GitHub</a>
 </p>
@@ -19,20 +23,11 @@
   <img alt="React Native" src="https://img.shields.io/badge/react--native-%3E%3D0.74-61DAFB.svg" />
 </p>
 
----
+## What Is This?
 
-**@sohantalukder/rn-kit** is a React Native UI kit with theme-aware components, local SVG icons, overlay helpers, and TypeScript types.
+`@sohantalukder/rn-kit` is a small React Native UI kit with typed components, local SVG icons, theme tokens, and app-level overlay helpers.
 
-Use it when you want a small design-system layer for app screens without copying button, input, modal, empty-state, and theme code between projects.
-
-## Features
-
-- Theme provider with default, dark, and system mode support
-- 32 documented React Native components
-- Buttons, inputs, selection controls, loaders, cards, modals, sheets, toasts, and screen wrappers
-- Local SVG icon registry powered by `react-native-svg`
-- Overlay helpers for toast, dialog, bottom sheet, and context menu flows
-- CommonJS, ES module, and TypeScript declaration builds
+Use it when you want reusable buttons, inputs, cards, modals, sheets, toasts, empty states, and theme helpers without copying the same UI code between apps.
 
 ## Install
 
@@ -40,7 +35,7 @@ Use it when you want a small design-system layer for app screens without copying
 npm install @sohantalukder/rn-kit
 ```
 
-Install the required peer dependencies in your React Native app:
+Install the required native peer packages in your app:
 
 ```sh
 npm install \
@@ -50,231 +45,113 @@ npm install \
   react-native-svg
 ```
 
-`Image`, `Avatar`, `PhotoCarousel`, `BottomSheet`, and the global bottom-sheet manager are implemented inside this package. They do not require FastImage or Gorhom Bottom Sheet.
-
-Follow the native setup instructions for the peer packages you install, especially Reanimated, Gesture Handler, SVG, and Safe Area Context. React Navigation is not required by this package; if your app uses it, you can pass `theme.navigationTheme` to your navigation container.
+Follow the setup guide for those peer packages in your React Native app, especially Reanimated and Gesture Handler.
 
 ## Quick Start
 
-Wrap your app with `ThemeProvider`. Add `UiPortalProvider` if you use toast, dialog, bottom sheet, or context menu APIs.
+Wrap the app once with `ThemeProvider`. Add `UiPortalProvider` when you use toast, dialog, bottom sheet, or context menu APIs.
 
 ```tsx
 import {
-  ThemeProvider,
-  UiPortalProvider,
   Button,
   Text,
-  toast,
+  ThemeProvider,
+  UiPortalProvider,
 } from '@sohantalukder/rn-kit';
 
-export function App() {
+function HomeScreen() {
+  return (
+    <>
+      <Text variant="heading3" weight="semibold">
+        Welcome
+      </Text>
+      <Button text="Continue" onPress={() => {}} />
+    </>
+  );
+}
+
+export default function App() {
   return (
     <ThemeProvider>
       <UiPortalProvider>
-        <Text variant="heading2">Welcome back</Text>
-        <Button
-          text="Continue"
-          accessibilityLabel="Continue"
-          onPress={() => toast.show({ type: 'success', title: 'Ready' })}
-        />
+        <HomeScreen />
       </UiPortalProvider>
     </ThemeProvider>
   );
 }
 ```
 
-## Theme Persistence
+## Theming
 
-You can keep the selected theme in your own storage layer:
+The short version:
 
-```tsx
-<ThemeProvider
-  storageAdapter={{
-    getTheme: () => localStore.getTheme(),
-    setTheme: value => localStore.setTheme(value),
-  }}
->
-  {children}
-</ThemeProvider>
-```
-
-Use `useTheme()` to read the active theme and switch between `default`, `dark`, and `system` modes:
+- `ThemeProvider` gives every component access to the active theme.
+- `useTheme()` gives your screen `colors`, `backgrounds`, `fonts`, `gutters`, `borders`, `typographies`, `layout`, `navigationTheme`, `variant`, and `changeTheme`.
+- Use `colors` for raw color values, `backgrounds` for View backgrounds, `gutters` for spacing, and `layout` for flexbox helpers.
+- Pass `theme` to `ThemeProvider` when your app needs brand colors.
+- Use the full theming guide for persistence, custom tokens, dark mode overrides, and package-default changes.
 
 ```tsx
-import { useTheme } from '@sohantalukder/rn-kit';
-
-const {
-  colors,
-  backgrounds,
-  borders,
-  fonts,
-  gutters,
-  layout,
-  navigationTheme,
-  typographies,
-  variant,
-  changeTheme,
-} = useTheme();
-
-changeTheme('system');
-```
-
-Theme style groups include generated helpers for common screen composition:
-
-```tsx
-<View
-  style={[
-    layout.row,
-    layout.itemsCenter,
-    gutters.gap_12,
-    gutters.padding_16,
-    backgrounds.background,
-    borders.rounded_16,
-    borders.w_1,
-    borders.gray8,
-  ]}
->
-  <Text style={[typographies.heading3, fonts.primary]}>Account</Text>
-</View>
-```
-
-Custom brand or user colors can be passed directly to `ThemeProvider`, similar to provider APIs like React Native Paper.
-
-```tsx
-import { ThemeProvider } from '@sohantalukder/rn-kit';
-import App from './src/App';
-
-const theme = {
+const appTheme = {
   colors: {
-    primary: 'tomato',
-    secondary: 'yellow',
-    brand: '#2563EB',
+    primary: '#2563EB',
+    brand: '#7C3AED',
   },
   variants: {
     dark: {
       colors: {
-        primary: '#FF8A65',
-        secondary: '#FDE047',
-        brand: '#60A5FA',
+        primary: '#60A5FA',
+        brand: '#C4B5FD',
       },
     },
   },
 };
 
-export default function Main() {
-  return (
-    <ThemeProvider theme={theme}>
-      <App />
-    </ThemeProvider>
-  );
-}
+<ThemeProvider theme={appTheme}>
+  <App />
+</ThemeProvider>;
 ```
 
-Color overrides cascade into raw colors and generated token groups:
+Full guide: https://rn-kit.vercel.app/docs/theming
 
-```tsx
-const { backgrounds, borders, colors, fonts } = useTheme();
+## Components
 
-colors.brand; // '#2563EB' or '#60A5FA' in dark mode
-backgrounds.brand; // { backgroundColor: ... }
-fonts.brand; // { color: ... }
-borders.brand; // { borderColor: ... }
-```
-
-If you are changing the package defaults instead of a consuming app theme, edit `src/theme/_config.ts`.
+- Actions: `Button`, `IconButton`, `Ripple`, `ClickableText`
+- Inputs: `TextInput`, `MultilineInput`, `PasswordInput`, `OTPInput`, `Checkbox`, `Radio`, `Switch`, `Slider`, `SelectList`, `MultiSelect`
+- Feedback: `Loader`, `Skeleton`, `Toast`, `EmptyContent`, `NoInternet`
+- Overlays: `Dialog`, `BottomSheet`, `SlideModal`
+- Media: `Image`, `Avatar`, `PhotoCarousel`
+- Layout: `Card`, `Divider`, `ScreenContainer`, `StatusBar`
+- Primitives: `Text`, `Badge`, `IconByVariant`
 
 ## UI Providers
 
-Mount `UiPortalProvider` once near the root when you use global overlay APIs:
+Mount `UiPortalProvider` once when you use global overlay APIs:
 
 ```tsx
+import {
+  ThemeProvider,
+  UiPortalProvider,
+  bottomSheet,
+  contextMenu,
+  dialog,
+  toast,
+} from '@sohantalukder/rn-kit';
+
 <ThemeProvider>
-  <UiPortalProvider>{children}</UiPortalProvider>
-</ThemeProvider>
-```
+  <UiPortalProvider>
+    <App />
+  </UiPortalProvider>
+</ThemeProvider>;
 
-Then call the exported managers from feature code:
+const position = { x: 24, y: 120 };
+const items = [{ id: 'delete', label: 'Delete', onPress: onDelete }];
 
-```tsx
 toast.show({ type: 'success', title: 'Saved' });
-dialog.alert('Saved', 'Your profile was updated.');
-dialog.confirm('Delete item?', 'This action cannot be undone.', deleteItem);
-
-bottomSheet.show({
-  component: FilterSheet,
-  options: { snapPoints: ['35%', '70%'] },
-});
-
-contextMenu.show({
-  position: { x: 24, y: 120 },
-  items: [{ id: 'edit', label: 'Edit', onPress: openEditor }],
-});
+dialog.confirm('Delete item?', 'This action cannot be undone.', onDelete);
+bottomSheet.show({ component: FilterSheet });
+contextMenu.show({ position, items });
 ```
-
-The global bottom sheet manager uses the internal React Native bottom sheet host mounted by `UiPortalProvider`.
-
-## Image
-
-The public `Image` component is backed by React Native `Image`. It supports remote URI sources, local require sources, placeholders, fallback images, loading skeletons, error handling, accessibility labels, and load callbacks.
-
-```tsx
-import { Image } from '@sohantalukder/rn-kit';
-
-<Image
-  source={{ uri: avatarUrl }}
-  fallbackSource={require('./assets/avatar-placeholder.png')}
-  width={96}
-  height={96}
-  borderRadius={48}
-  resizeMode="cover"
-  accessibilityLabel="Profile photo"
-/>;
-```
-
-| Prop | Purpose |
-| --- | --- |
-| `source` | Remote URI object or local image source. |
-| `fallbackSource` | Image source rendered after the primary source fails. |
-| `placeholder` | Custom React node shown when no usable source exists. |
-| `showLoader` | Shows the package `Skeleton` while the image is loading. |
-| `onLoadStart`, `onLoad`, `onError`, `onLoadEnd` | Image lifecycle callbacks. |
-
-`priority` and `cache` are still accepted for backward compatibility, but they are no-ops. This component uses React Native `Image`, so advanced FastImage-style native caching is not included.
-
-## Bottom Sheet
-
-Use `BottomSheet` for local controlled sheets, or `bottomSheet.show()` for app-level overlay flows. Both use the internal React Native implementation with `Modal`, `Animated`, `PanResponder`, safe-area padding, backdrop close, swipe-down close, snap points, keyboard handling, and Android back handling.
-
-```tsx
-<BottomSheet
-  visible={visible}
-  onRequestClose={() => setVisible(false)}
-  maxHeight={520}
-  enableSwipeToClose
->
-  <FilterForm />
-</BottomSheet>
-```
-
-```tsx
-bottomSheet.show({
-  component: FilterSheet,
-  componentProps: { selectedStatus: 'active' },
-  options: {
-    snapPoints: ['35%', '70%'],
-    initialSnapIndex: 1,
-    enablePanDownToClose: true,
-  },
-});
-```
-
-| Prop / option | Purpose |
-| --- | --- |
-| `visible`, `onRequestClose` | Controlled visibility for the local component. |
-| `maxHeight`, `minHeight`, `snapPoints` | Sheet sizing controls. |
-| `enableSwipeToClose`, `enablePanDownToClose` | Swipe-down dismissal. |
-| `enableOverlayTapToClose`, `backdrop` | Backdrop dismissal and visibility. |
-| `containerStyle`, `backdropStyle`, `handleStyle` | Styling hooks. |
 
 ## Common Imports
 
@@ -289,46 +166,24 @@ import { toast, dialog, bottomSheet, contextMenu } from '@sohantalukder/rn-kit';
 Render a registered local SVG icon with `IconByVariant`:
 
 ```tsx
-import { IconByVariant } from '@sohantalukder/rn-kit';
+import { IconByVariant, iconNames } from '@sohantalukder/rn-kit';
 
 <IconByVariant path="search" height={24} width={24} />;
 ```
 
-Available icon keys are exported as `iconNames`:
+Use `iconNames` when you need the list of registered icon keys.
 
-```tsx
-import { iconNames } from '@sohantalukder/rn-kit';
-```
+## Package Notes
 
-## Components
-
-The package includes components across these groups:
-
-- Actions: `Button`, `IconButton`, `Ripple`, `ClickableText`
-- Inputs: `TextInput`, `MultilineInput`, `PasswordInput`, `OTPInput`, `Checkbox`, `Radio`, `Switch`, `Slider`, `SelectList`, `MultiSelect`
-- Feedback: `Loader`, `Skeleton`, `Toast`, `EmptyContent`, `NoInternet`
-- Overlays: `Dialog`, `BottomSheet`, `SlideModal`
-- Media: `Image`, `Avatar`, `PhotoCarousel`
-- Layout: `Card`, `Divider`, `ScreenContainer`, `StatusBar`
-- Supporting primitives: `Text`, `Badge`, `IconByVariant`
-
-## Notes
-
+- `Image`, `Avatar`, and `PhotoCarousel` use the internal Image component backed by React Native `Image`.
+- `BottomSheet` and the global bottom-sheet manager use the internal React Native sheet host mounted by `UiPortalProvider`.
+- React Navigation is not required. Apps that use it can pass `navigationTheme` from `useTheme()` to the navigation container.
 - Inputs support controlled `value` and uncontrolled `defaultValue` usage where applicable.
 - Interactive components expose accessibility roles and states where supported.
-- Use `IconByVariant` for bundled icons, or pass custom icon nodes to components that accept icons.
-- Mount `UiPortalProvider` once near the app root when using global overlay APIs.
-- The package does not configure navigation for you. Set up React Navigation in your app.
 
-## Public API
+## Documentation
 
-```ts
-export * from './assets';
-export * from './components';
-export * from './providers';
-export * from './theme';
-export * from './types';
-```
+Full package docs: https://rn-kit.vercel.app
 
 ## License
 

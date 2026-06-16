@@ -30,9 +30,14 @@ export const Default: Story = {
 export const Sizes: Story = {
   render: () => (
     <StoryFrame title="Sizes" description="Use sizes to fit toolbar and list action density.">
-      <View style={{ flexDirection: 'row', gap: 12 }}>
+      <View style={{ alignItems: 'center', flexDirection: 'row', gap: 12 }}>
         <IconButton icon="search" size="small" accessibilityLabel="Small search" />
-        <IconButton icon="notification" size="medium" accessibilityLabel="Notifications" />
+        <IconButton
+          icon="notification"
+          size="medium"
+          showDot
+          accessibilityLabel="Notifications"
+        />
         <IconButton icon="more" size="large" accessibilityLabel="More actions" />
       </View>
     </StoryFrame>

@@ -1,20 +1,30 @@
 export const theming = {
   title: 'Theming',
   body:
-    'ThemeProvider exposes default, dark, and system modes through the library theme context. Components consume theme tokens for colors, backgrounds, typography, gutters, borders, and layout helpers.',
-  code: `<ThemeProvider
-  storageAdapter={{
-    getTheme: () => localStore.getTheme(),
-    setTheme: value => localStore.setTheme(value),
-  }}
->
-  {children}
+    'ThemeProvider gives every component the same theme. Use colors for raw color strings, backgrounds for View backgrounds, gutters for spacing, layout for flexbox helpers, and fonts, borders, and typographies for common text and border styles.',
+  code: `const appTheme = {
+  colors: {
+    primary: '#2563EB',
+    brand: '#7C3AED',
+  },
+  variants: {
+    dark: {
+      colors: {
+        primary: '#60A5FA',
+        brand: '#C4B5FD',
+      },
+    },
+  },
+};
+
+<ThemeProvider theme={appTheme}>
+  <App />
 </ThemeProvider>`,
   notes: [
-    'Use the storage adapter to persist default, dark, or system user preference.',
-    'Use useTheme to read colors, backgrounds, fonts, gutters, borders, typographies, layout, navigationTheme, variant, logo, and changeTheme.',
-    'Pass custom brand or user colors with ThemeProvider theme={{ colors: { primary: "tomato" } }}; useTheme then exposes colors.token, backgrounds.token, fonts.token, and borders.token.',
-    'Use the docs theme toggle to preview default and dark variants.',
-    'Keep screen-specific overrides small so components remain consistent.',
+    'Mount ThemeProvider once near the app root.',
+    'Call useTheme inside screens to read colors, backgrounds, gutters, layout, fonts, borders, typographies, navigationTheme, and changeTheme.',
+    'Pass theme to ThemeProvider for app brand colors; use variants.dark for dark-mode overrides.',
+    'A colors token creates colors.token, backgrounds.token, fonts.token, and borders.token.',
+    'Edit src/theme/_config.ts only when changing the package defaults.',
   ],
 };

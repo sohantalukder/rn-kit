@@ -60,4 +60,6 @@ export interface SelectListProps {
   fontFamily?: string;
   /** Label text for the select field */
   label?: string;
+  /** Whether the label should float inside the select when focused or filled */
+  animatedLabel?: boolean;
 }

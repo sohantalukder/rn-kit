@@ -9,6 +9,7 @@ import {
   findComponent,
   packageInfo,
 } from '../../../docs/data/componentRegistry';
+import { firstScreenUsageCode } from '../../../docs/data/docsContent';
 import { getPager } from '../../../docs/data/navigation';
 import { createPageMetadata } from '../../../docs/seo';
 
@@ -17,24 +18,6 @@ type PageProps = {
     slug: string;
   }>;
 };
-
-const usageCode = `import {
-  ThemeProvider,
-  UiPortalProvider,
-  Button,
-  TextInput,
-} from '@sohantalukder/rn-kit';
-
-export function App() {
-  return (
-    <ThemeProvider>
-      <UiPortalProvider>
-        <TextInput label="Email" placeholder="you@example.com" />
-        <Button text="Continue" onPress={() => {}} />
-      </UiPortalProvider>
-    </ThemeProvider>
-  );
-}`;
 
 export function generateStaticParams() {
   return [
@@ -85,7 +68,7 @@ export default async function PackageDetailPage({ params }: PageProps) {
 
       <section className="content-section" id="usage">
         <h2>Usage</h2>
-        <CodeBlock code={usageCode} language="tsx" />
+        <CodeBlock code={firstScreenUsageCode} language="tsx" />
       </section>
 
       <section className="content-section" id="components">

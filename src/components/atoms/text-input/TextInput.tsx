@@ -6,7 +6,12 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { TextInput as RNTextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Text,
+  TextInput as RNTextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { z } from 'zod';
 
 import { useTheme } from '../../../theme';
@@ -41,6 +46,7 @@ const TextInput: React.FC<CustomInputProps> = ({
   required = false,
   value,
   disabled = false,
+  animatedLabel = true,
   ...props
 }) => {
   const { colors, layout, gutters, typographies, variant } = useTheme();
@@ -170,6 +176,10 @@ const TextInput: React.FC<CustomInputProps> = ({
     () => [gutters.paddingBottom_6, labelStyle],
     [gutters.paddingBottom_6, labelStyle]
   );
+  const plainLabelStyle = useMemo(
+    () => [typographies.body1, gutters.paddingBottom_6, labelStyle],
+    [typographies.body1, gutters.paddingBottom_6, labelStyle]
+  );
   // Compute error text style
   const errorTextStyle = useMemo(
     () => [typographies.body2, { color: colors.error, marginTop: 4 }],
@@ -200,12 +210,16 @@ const TextInput: React.FC<CustomInputProps> = ({
 
   return (
     <View style={[layout.fullWidth, layout.flexShrink_1, wrapperStyle]}>
-      <AnimatedLabel
-        labelStyle={computedLabelStyle}
-        label={required && label ? `${label} *` : (label ?? '')}
-        value={inputValue}
-        isFocused={isFocused}
-      />
+      {animatedLabel ? (
+        <AnimatedLabel
+          labelStyle={computedLabelStyle}
+          label={required && label ? `${label} *` : (label ?? '')}
+          value={inputValue}
+          isFocused={isFocused}
+        />
+      ) : label ? (
+        <Text style={plainLabelStyle}>{required ? `${label} *` : label}</Text>
+      ) : null}
       <View style={containerStyle}>
         {leftIcon ? <View>{leftIcon}</View> : null}
         <RNTextInput
@@ -215,7 +229,7 @@ const TextInput: React.FC<CustomInputProps> = ({
           onBlur={handleOnBlur}
           onChangeText={handleOnChange}
           onFocus={handleOnFocus}
-          placeholder={label ? '' : placeholder}
+          placeholder={animatedLabel && label ? '' : placeholder}
           placeholderTextColor={colors.gray4}
           ref={inputReference}
           selectionColor={colors.primary}

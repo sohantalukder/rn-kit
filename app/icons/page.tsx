@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { Sparkles } from 'lucide-react';
+import { Code2, Sparkles } from 'lucide-react';
+import { CodeBlock } from '../../docs/components/CodeBlock';
 import { DocPager } from '../../docs/components/DocPager';
 import { IconGallery } from '../../docs/components/IconGallery';
 import { getPager } from '../../docs/data/navigation';
@@ -12,6 +13,32 @@ export const metadata: Metadata = createPageMetadata({
     'Preview and search every registered @sohantalukder/rn-kit theme-aware SVG icon.',
   path: '/icons',
 });
+
+const iconByVariantUsage = `import { IconByVariant } from '@sohantalukder/rn-kit';
+
+export function Example() {
+  return (
+    <IconByVariant
+      path="search"
+      height={24}
+      width={24}
+      color="#0ea5e9"
+    />
+  );
+}`;
+
+const iconButtonUsage = `import { IconButton } from '@sohantalukder/rn-kit';
+
+export function Example() {
+  return (
+    <IconButton
+      icon="search"
+      iconColor="#0ea5e9"
+      accessibilityLabel="Search"
+      onPress={handleSearch}
+    />
+  );
+}`;
 
 export default function IconsPage() {
   const pager = getPager('/icons');
@@ -32,7 +59,23 @@ export default function IconsPage() {
         </div>
       </section>
 
-      <section className="content-section first-section" id="library">
+      <section className="content-section first-section" id="usage">
+        <h2>
+          <Code2 size={21} aria-hidden="true" />
+          Usage
+        </h2>
+        <p>
+          Pass a copied icon key to <code>IconByVariant</code> for standalone SVGs or
+          to <code>IconButton</code> for icon-only actions. Use <code>color</code> or
+          <code>iconColor</code> to set the icon fill.
+        </p>
+        <div className="icon-usage-grid">
+          <CodeBlock code={iconByVariantUsage} language="tsx" />
+          <CodeBlock code={iconButtonUsage} language="tsx" />
+        </div>
+      </section>
+
+      <section className="content-section" id="library">
         <h2>
           <Sparkles size={21} aria-hidden="true" />
           Library

@@ -19,6 +19,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
   wrapperStyle = {},
   errorMessage = '',
   required = false,
+  animatedLabel,
 }) => {
   const [isShowPass, setIsShowPass] = useState(false);
 
@@ -58,6 +59,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
       wrapperStyle={wrapperStyle}
       errorMessage={errorMessage}
       required={required}
+      animatedLabel={animatedLabel}
     />
   );
 };

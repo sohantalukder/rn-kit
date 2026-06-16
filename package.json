@@ -1,7 +1,7 @@
 {
   "name": "@sohantalukder/rn-kit",
-  "version": "0.1.0",
-  "description": "Reusable React Native UI components extracted from Sohan Talukder's boilerplate.",
+  "version": "0.1.0-beta.1",
+  "description": "Theme-aware React Native UI components, icons, and overlay helpers for production app screens.",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
   "types": "lib/typescript/commonjs/index.d.ts",
@@ -37,6 +37,8 @@
     "docs:dev": "next dev --webpack",
     "docs:start": "next start",
     "pack:dry-run": "npm pack --dry-run",
+    "publish:check-auth": "npm whoami",
+    "publish:beta": "npm run publish:check-auth && npm publish --access public --tag beta",
     "prepublishOnly": "npm run typecheck && npm run build",
     "build-storybook": "storybook build",
     "storybook": "storybook dev -p 6006",

@@ -87,6 +87,16 @@ const metadataByProp: Record<string, PropMetadata> = {
     defaultValue: 'false',
     description: 'Prevents interaction and renders the disabled visual state.',
   },
+  dotColor: {
+    type: 'ColorValue',
+    defaultValue: 'theme error',
+    description: 'Overrides the notification dot color.',
+  },
+  dotSize: {
+    type: 'number',
+    defaultValue: '8',
+    description: 'Sets the notification dot diameter.',
+  },
   duration: {
     type: 'number',
     defaultValue: '300',
@@ -131,6 +141,11 @@ const metadataByProp: Record<string, PropMetadata> = {
     type: 'boolean',
     defaultValue: 'false',
     description: 'Shows a loading indicator and prevents duplicate submissions.',
+  },
+  animatedLabel: {
+    type: 'boolean',
+    defaultValue: 'component default',
+    description: 'Floats the label inside the field when focused or filled.',
   },
   label: {
     type: 'string',
@@ -271,6 +286,11 @@ const metadataByProp: Record<string, PropMetadata> = {
     type: 'boolean',
     defaultValue: 'true',
     description: 'Shows pagination dots beneath carousel content.',
+  },
+  showDot: {
+    type: 'boolean',
+    defaultValue: 'false',
+    description: 'Shows a small notification dot on an icon button.',
   },
   size: {
     type: 'ComponentSize | number',

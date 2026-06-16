@@ -74,9 +74,13 @@ export const inputStyles = ({ colors }: Properties) => {
 
     multiLineContainer: {
       ...containerBorderStyle,
-      flexDirection: 'row',
       gap: MULTI_LINE_GAP,
       paddingHorizontal: MULTI_LINE_PADDING,
+    },
+    multiLineWrapper: {
+      flexShrink: 1,
+      position: 'relative',
+      width: '100%',
     },
     phoneInput: {
       color: colors.text,

@@ -15,6 +15,7 @@ export const multiSelectStyles = ({ colors }: MultiSelectStylesProps) =>
       marginLeft: rs(8),
     },
     container: {
+      position: 'relative',
       width: '100%',
     },
     disabled: {
