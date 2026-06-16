@@ -120,7 +120,12 @@ jobs:
         run: npm ci
 
       - name: Publish to npm
-        run: npm publish --provenance --access public
+        run: |
+          VERSION="$(node -p "require('./package.json').version")"
+          TAG="$(node -p "const version = require('./package.json').version; const prerelease = version.match(/-([0-9A-Za-z]+)(?:[.-]|$)/); prerelease ? prerelease[1] : 'latest'")"
+
+          echo "Publishing ${VERSION} with npm dist-tag ${TAG}"
+          npm publish --provenance --access public --tag "$TAG"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 

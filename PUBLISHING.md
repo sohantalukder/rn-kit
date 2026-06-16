@@ -37,6 +37,13 @@ npm login
 npm publish --access public
 ```
 
+For prerelease versions such as `0.1.0-beta.1`, publish with an explicit npm
+dist-tag:
+
+```sh
+npm publish --access public --tag beta
+```
+
 For the first public release, make sure the package name in `package.json` is available on npm:
 
 ```sh
