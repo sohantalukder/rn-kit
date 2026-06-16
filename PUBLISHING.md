@@ -37,11 +37,27 @@ npm login
 npm publish --access public
 ```
 
-For prerelease versions such as `0.1.0-beta.1`, publish with an explicit npm
-dist-tag:
+If publish returns `E404 Not Found` for this existing package, check auth first:
 
 ```sh
-npm publish --access public --tag beta
+npm whoami
+```
+
+It must print `sohantalukder`. If it returns `401 Unauthorized`, refresh the
+local npm token:
+
+```sh
+npm logout --registry=https://registry.npmjs.org
+npm login --registry=https://registry.npmjs.org
+npm whoami
+```
+
+For prerelease versions such as `0.1.0-beta.1`, publish with an explicit npm
+dist-tag. This repository's `.npmrc` sets `beta` as the default tag for plain
+`npm publish`, and the script below makes that intent explicit:
+
+```sh
+npm run publish:beta
 ```
 
 For the first public release, make sure the package name in `package.json` is available on npm:

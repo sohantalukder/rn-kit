@@ -37,6 +37,8 @@
     "docs:dev": "next dev --webpack",
     "docs:start": "next start",
     "pack:dry-run": "npm pack --dry-run",
+    "publish:check-auth": "npm whoami",
+    "publish:beta": "npm run publish:check-auth && npm publish --access public --tag beta",
     "prepublishOnly": "npm run typecheck && npm run build",
     "build-storybook": "storybook build",
     "storybook": "storybook dev -p 6006",
