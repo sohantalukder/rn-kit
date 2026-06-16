@@ -362,7 +362,7 @@ npm install \\
           'Image, Avatar, and PhotoCarousel use the internal Image component backed by React Native Image.',
           'The global bottom sheet manager uses the internal React Native bottom sheet host mounted by UiPortalProvider.',
           'React Native Image does not include FastImage-style native cache controls.',
-          'React Navigation is not required; apps that use it can pass theme.navigationTheme to their navigator.',
+          'React Navigation is not required; apps that use it can pass navigationTheme from useTheme to their navigator.',
           'Follow each native dependency setup guide in the consuming app.',
         ],
       },
@@ -436,78 +436,63 @@ npm install \\
     title: 'Theming',
     slug: 'theming',
     description:
-      'Use theme tokens consistently across screens and preview default, dark, or system variants.',
+      'Wrap your app once, read theme values with useTheme, and customize colors without guessing which object to use.',
     sections: [
       {
-        id: 'provider',
-        title: 'Theme Provider',
+        id: 'theme-basics',
+        title: 'Theme Basics',
         body: [
-          'ThemeProvider exposes default, dark, and system modes through the library theme context. Components consume tokens for colors, typography, gutters, borders, backgrounds, and layout helpers.',
-          'Use the optional storageAdapter to persist a user preference. When no preference exists, ThemeProvider stores system and follows the operating system color scheme.',
+          'A theme is the shared style system for your app. It keeps colors, spacing, typography, borders, and layout helpers in one place so every screen can use the same values.',
+          'The flow is simple: wrap the app with ThemeProvider, call useTheme inside a screen, then use the object that matches what you are styling.',
         ],
-        code: {
-          language: 'tsx',
-          value: `<ThemeProvider
-  storageAdapter={{
-    getTheme: () => localStore.getTheme(),
-    setTheme: value => localStore.setTheme(value),
-  }}
->
-  {children}
-</ThemeProvider>`,
-        },
+        list: [
+          'colors: plain color values. Use colors.primary when a prop needs a color string.',
+          'backgrounds: ready-made backgroundColor styles. Use backgrounds.primary on a View.',
+          'gutters: spacing helpers. Use gutters.padding_16, gutters.margin_12, or gutters.gap_8.',
+          'layout: flexbox helpers. Use layout.row, layout.itemsCenter, layout.justifyCenter, or layout.flex_1.',
+          'fonts: text color and font helpers. Use fonts.primary or fonts.size_16 in Text styles.',
+          'borders: border color, radius, and width helpers. Use borders.gray8, borders.rounded_16, or borders.w_1.',
+          'typographies: text presets. Use typographies.heading3, typographies.body1, or typographies.body2.',
+          'navigationTheme: pass this to React Navigation when navigation should follow the active theme.',
+        ],
       },
       {
-        id: 'switch-theme',
-        title: 'Switch Theme',
+        id: 'root-setup',
+        title: 'Root Setup',
         body: [
-          'useTheme returns the active variant and a changeTheme function. Pass default, dark, or system to change the stored preference.',
+          'Wrap the app with ThemeProvider before rendering package components. Add UiPortalProvider inside it when the app uses toast, dialog, bottom sheet, or context menu managers.',
         ],
         code: {
           language: 'tsx',
-          value: `import { Button, useTheme } from '@sohantalukder/rn-kit';
+          value: `import {
+  ThemeProvider,
+  UiPortalProvider,
+} from '@sohantalukder/rn-kit';
 
-export function ThemeActions() {
-  const { changeTheme } = useTheme();
+import { AccountScreen } from './src/screens/AccountScreen';
 
+export function App() {
   return (
-    <>
-      <Button text="Default" onPress={() => changeTheme('default')} />
-      <Button text="Dark" onPress={() => changeTheme('dark')} />
-      <Button text="System" onPress={() => changeTheme('system')} />
-    </>
+    <ThemeProvider>
+      <UiPortalProvider>
+        <AccountScreen />
+      </UiPortalProvider>
+    </ThemeProvider>
   );
 }`,
         },
       },
       {
-        id: 'theme-object',
-        title: 'Theme Object',
+        id: 'read-theme',
+        title: 'Use Theme Values',
         body: [
-          'useTheme exposes raw color values plus generated React Native style objects. Use raw colors when a prop expects a ColorValue, and use generated style groups when composing StyleSheet-style arrays.',
-        ],
-        list: [
-          'colors: raw color values from the active theme.',
-          'backgrounds: backgroundColor styles keyed by color token.',
-          'fonts: text color, responsive font size, alignment, transform, and weight helpers.',
-          'gutters: gap, margin, and padding helpers generated from configured spacing values.',
-          'borders: border color, radius, and width helpers.',
-          'typographies: heading1, heading2, heading3, body1, body2, and body3 text styles.',
-          'layout: flex, alignment, sizing, and position helpers.',
-          'navigationTheme: React Navigation theme colors for the active variant.',
-          'variant, logo, and changeTheme: active mode, optional logo asset, and theme switching API.',
-        ],
-      },
-      {
-        id: 'token-examples',
-        title: 'Token Examples',
-        body: [
-          'Generated token keys mirror the values in src/theme/_config.ts. For example, a gutter value of 16 creates gap_16, margin_16, padding_16, and directional variants.',
+          'Call useTheme inside any component rendered below ThemeProvider. Compose the returned helpers in normal React Native style arrays.',
+          'This example uses layout for flex direction, gutters for spacing, backgrounds for the card background, borders for the outline, typographies for the heading size, and fonts for the heading color.',
         ],
         code: {
           language: 'tsx',
           value: `import { View } from 'react-native';
-import { IconByVariant, Text, useTheme } from '@sohantalukder/rn-kit';
+import { Text, useTheme } from '@sohantalukder/rn-kit';
 
 export function ProfileSummary() {
   const { backgrounds, borders, fonts, gutters, layout, typographies } =
@@ -529,35 +514,96 @@ export function ProfileSummary() {
       <Text style={[typographies.heading3, fonts.primary]}>
         Account
       </Text>
+      <Text color="secondary">Ready to review</Text>
     </View>
   );
 }`,
         },
       },
       {
-        id: 'custom-colors',
-        title: 'Custom User Colors',
+        id: 'theme-object',
+        title: 'Theme Objects',
         body: [
-          'Pass a theme object to ThemeProvider when an app needs custom colors without editing the package source. This follows the same shape as common provider APIs: define the colors you want, then pass theme={theme}.',
-          'A colors override is applied to raw colors plus generated backgrounds, fonts, and borders. For example, overriding primary makes colors.primary, backgrounds.primary, fonts.primary, and borders.primary use the same value.',
+          'These are the objects returned by useTheme. Choose the object by what the React Native prop expects.',
+        ],
+        list: [
+          'Need a raw color? Use colors.primary.',
+          'Need a background style? Use backgrounds.primary.',
+          'Need spacing? Use gutters.padding_16, gutters.margin_16, or gutters.gap_16.',
+          'Need flexbox layout? Use layout.row, layout.flex_1, layout.itemsCenter, or layout.justifyCenter.',
+          'Need text styling? Use fonts.primary with typographies.heading3.',
+          'Need border styling? Use borders.gray8, borders.w_1, and borders.rounded_16.',
+          'Need React Navigation styling? Use navigationTheme.',
+          'Need to switch mode? Use changeTheme with default, dark, or system.',
+        ],
+      },
+      {
+        id: 'theme-modes',
+        title: 'Theme Modes',
+        body: [
+          'rn-kit supports default, dark, and system. default is the light theme. dark forces the dark theme. system follows the device color scheme.',
+          'Use changeTheme when a user selects a theme from settings.',
+        ],
+        code: {
+          language: 'tsx',
+          value: `import { Button, useTheme } from '@sohantalukder/rn-kit';
+
+export function ThemeActions() {
+  const { changeTheme } = useTheme();
+
+  return (
+    <>
+      <Button text="Use light" onPress={() => changeTheme('default')} />
+      <Button text="Use dark" onPress={() => changeTheme('dark')} />
+      <Button text="Follow system" onPress={() => changeTheme('system')} />
+    </>
+  );
+}`,
+        },
+      },
+      {
+        id: 'persist-theme',
+        title: 'Save User Choice',
+        body: [
+          'ThemeProvider does not force one storage library. Give it a small storageAdapter that reads and writes default, dark, or system in your own app storage.',
+          'When no saved value exists, ThemeProvider stores system and follows the operating system color scheme.',
+        ],
+        code: {
+          language: 'tsx',
+          value: `<ThemeProvider
+  storageAdapter={{
+    getTheme: () => localStore.getTheme(),
+    setTheme: value => localStore.setTheme(value),
+  }}
+>
+  <App />
+</ThemeProvider>`,
+        },
+      },
+      {
+        id: 'custom-colors',
+        title: 'Customize App Colors',
+        body: [
+          'Most apps only need to pass brand colors to ThemeProvider. Start with colors. Any token added to colors is also generated as backgrounds.token, fonts.token, and borders.token, so the same token can be used across views, text, and borders.',
+          'Add dark overrides inside variants.dark when the dark value should be different. You do not need to repeat every color in dark mode, only the values that should change.',
         ],
         code: {
           language: 'tsx',
           value: `import { ThemeProvider } from '@sohantalukder/rn-kit';
 import App from './src/App';
 
-const theme = {
+const appTheme = {
   colors: {
-    primary: 'tomato',
-    secondary: 'yellow',
+    primary: '#2563EB',
     brand: '#2563EB',
+    accent: '#7C3AED',
   },
   variants: {
     dark: {
       colors: {
-        primary: '#FF8A65',
-        secondary: '#FDE047',
+        primary: '#60A5FA',
         brand: '#60A5FA',
+        accent: '#C4B5FD',
       },
     },
   },
@@ -565,7 +611,7 @@ const theme = {
 
 export default function Main() {
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={appTheme}>
       <App />
     </ThemeProvider>
   );
@@ -576,12 +622,12 @@ export default function Main() {
         id: 'use-custom-colors',
         title: 'Use Custom Colors',
         body: [
-          'Import useTheme in any component rendered inside ThemeProvider and use the generated token keys. Use colors.brand when a prop expects a color value, and use backgrounds.brand, fonts.brand, or borders.brand in style arrays.',
+          'Use the same token from the object that matches the prop. In this example, colors.brand is a color string for an icon, backgrounds.brand is a View style, fonts.white is a Text style, and borders.brand is a border style.',
         ],
         code: {
           language: 'tsx',
           value: `import { View } from 'react-native';
-import { Text, useTheme } from '@sohantalukder/rn-kit';
+import { IconByVariant, Text, useTheme } from '@sohantalukder/rn-kit';
 
 export function BrandBanner() {
   const { backgrounds, borders, colors, fonts, gutters } = useTheme();
@@ -596,7 +642,7 @@ export function BrandBanner() {
         gutters.padding_16,
       ]}
     >
-      <Text style={fonts.brand}>Brand color text</Text>
+      <Text style={fonts.white}>Brand announcement</Text>
       <IconByVariant path="check" color={colors.brand} />
     </View>
   );
@@ -604,10 +650,66 @@ export function BrandBanner() {
         },
       },
       {
-        id: 'source-theme-config',
-        title: 'Package Default Colors',
+        id: 'advanced-overrides',
+        title: 'Advanced Color Overrides',
         body: [
-          'If you are changing the default library theme itself, edit src/theme/_config.ts instead. Add matching tokens to colorsLight and colorsDark, then keep those maps wired through colors, backgrounds, fonts.colors, and borders.colors.',
+          'Use colors when one token should create raw, background, font, and border helpers. Use backgrounds, fonts.colors, or borders.colors when a token should only exist in one style group.',
+          'Use navigationColors when React Navigation should match your app theme. Pass the returned navigationTheme from useTheme to your NavigationContainer.',
+        ],
+        code: {
+          language: 'tsx',
+          value: `const appTheme = {
+  colors: {
+    brand: '#2563EB',
+  },
+  backgrounds: {
+    brandSurface: '#EFF6FF',
+  },
+  fonts: {
+    colors: {
+      mutedText: '#64748B',
+    },
+  },
+  borders: {
+    colors: {
+      brandOutline: '#93C5FD',
+    },
+  },
+  navigationColors: {
+    primary: '#2563EB',
+  },
+  variants: {
+    dark: {
+      colors: {
+        brand: '#60A5FA',
+      },
+      backgrounds: {
+        brandSurface: '#172554',
+      },
+      fonts: {
+        colors: {
+          mutedText: '#CBD5E1',
+        },
+      },
+      borders: {
+        colors: {
+          brandOutline: '#2563EB',
+        },
+      },
+      navigationColors: {
+        primary: '#60A5FA',
+      },
+    },
+  },
+};`,
+        },
+      },
+      {
+        id: 'source-theme-config',
+        title: 'Change Package Defaults',
+        body: [
+          'If you are maintaining this package and want to change its built-in defaults, edit src/theme/_config.ts. This is different from app-level customization with ThemeProvider theme.',
+          'Add the token to colorsLight and colorsDark, then keep the maps connected through colors, backgrounds, fonts.colors, and borders.colors. Edit the sizes array when you need new gutter or font-size helper keys.',
         ],
         code: {
           language: 'ts',
@@ -623,13 +725,25 @@ const colorsDark = {
         },
       },
       {
+        id: 'troubleshooting',
+        title: 'Common Questions',
+        list: [
+          'My custom color is missing: make sure the component is rendered below the ThemeProvider that receives theme={appTheme}.',
+          'I only need a one-off screen color: prefer adding a named token to the theme instead of hardcoding colors in many files.',
+          'I need new spacing helpers: app-level theme overrides do not add gutter sizes; package maintainers should edit the sizes array in src/theme/_config.ts.',
+          'My navigation colors do not change: pass navigationTheme from useTheme to your React Navigation container.',
+        ],
+      },
+      {
         id: 'guidelines',
         title: 'Guidelines',
         list: [
+          'Start with the default theme before adding custom tokens.',
+          'Use clear token names like brand, accent, surfaceWarning, or mutedText.',
+          'Add dark overrides only for values that need different contrast in dark mode.',
           'Prefer theme tokens over one-off colors in app screens.',
-          'Keep screen-level overrides small so components remain consistent.',
           'Use the docs theme toggle or Storybook toolbar to preview default and dark variants.',
-          'Use React Navigation with theme.navigationTheme when app navigation should match the active variant.',
+          'Use navigationTheme from useTheme when React Navigation should match the active variant.',
         ],
       },
     ],

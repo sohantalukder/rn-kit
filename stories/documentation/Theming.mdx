@@ -4,9 +4,93 @@ import { Meta } from '@storybook/addon-docs/blocks';
 
 # Theming
 
-`ThemeProvider` exposes `default`, `dark`, and `system` modes. Components
-consume theme tokens for colors, backgrounds, typography, gutters, borders, and
-layout helpers.
+A theme is the shared style system for your app. It keeps colors, spacing,
+typography, borders, and layout helpers in one place so every screen can use
+the same values.
+
+The flow is simple: wrap the app with `ThemeProvider`, call `useTheme()` inside
+a screen, then use the object that matches what you are styling.
+
+```tsx
+import {
+  ThemeProvider,
+  UiPortalProvider,
+} from '@sohantalukder/rn-kit';
+
+import { AccountScreen } from '../screens/AccountScreen';
+
+export function App() {
+  return (
+    <ThemeProvider>
+      <UiPortalProvider>
+        <AccountScreen />
+      </UiPortalProvider>
+    </ThemeProvider>
+  );
+}
+```
+
+## Theme Basics
+
+- `colors`: plain color values. Use `colors.primary` when a prop needs a color string.
+- `backgrounds`: ready-made background styles. Use `backgrounds.primary` on a `View`.
+- `gutters`: spacing helpers. Use `gutters.padding_16`, `gutters.margin_12`, or `gutters.gap_8`.
+- `layout`: flexbox helpers. Use `layout.row`, `layout.itemsCenter`, `layout.justifyCenter`, or `layout.flex_1`.
+- `fonts`: text color and font helpers. Use `fonts.primary` or `fonts.size_16` in `Text` styles.
+- `borders`: border color, radius, and width helpers. Use `borders.gray8`, `borders.rounded_16`, or `borders.w_1`.
+- `typographies`: text presets. Use `typographies.heading3`, `typographies.body1`, or `typographies.body2`.
+- `navigationTheme`: pass this to React Navigation when navigation should follow the active theme.
+
+```tsx
+import { View } from 'react-native';
+import { Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function AccountCard() {
+  const { backgrounds, borders, fonts, gutters, layout, typographies } =
+    useTheme();
+
+  return (
+    <View
+      style={[
+        layout.row,
+        layout.itemsCenter,
+        gutters.gap_12,
+        gutters.padding_16,
+        backgrounds.background,
+        borders.rounded_16,
+        borders.w_1,
+        borders.gray8,
+      ]}
+    >
+      <Text style={[typographies.heading3, fonts.primary]}>Account</Text>
+      <Text color="secondary">Ready</Text>
+    </View>
+  );
+}
+```
+
+## Switch Modes
+
+The built-in modes are `default`, `dark`, and `system`. `system` follows the
+device color scheme.
+
+```tsx
+import { Button, useTheme } from '@sohantalukder/rn-kit';
+
+export function ThemeActions() {
+  const { changeTheme } = useTheme();
+
+  return (
+    <>
+      <Button text="Use light" onPress={() => changeTheme('default')} />
+      <Button text="Use dark" onPress={() => changeTheme('dark')} />
+      <Button text="Follow system" onPress={() => changeTheme('system')} />
+    </>
+  );
+}
+```
+
+Use `storageAdapter` when the app should remember the user choice:
 
 ```tsx
 <ThemeProvider
@@ -15,49 +99,64 @@ layout helpers.
     setTheme: value => localStore.setTheme(value),
   }}
 >
-  {children}
+  <App />
 </ThemeProvider>
 ```
 
-Use `useTheme()` to read `colors`, `backgrounds`, `fonts`, `gutters`,
-`borders`, `typographies`, `layout`, `navigationTheme`, `variant`, and
-`changeTheme`.
+## Customize App Colors
+
+Start with `colors`. A token added to `colors` also creates matching helpers in
+`backgrounds`, `fonts`, and `borders`.
 
 ```tsx
-const { changeTheme } = useTheme();
-
-changeTheme('default');
-changeTheme('dark');
-changeTheme('system');
-```
-
-Custom brand or user colors can be passed directly to `ThemeProvider`:
-
-```tsx
-const theme = {
+const appTheme = {
   colors: {
-    primary: 'tomato',
-    secondary: 'yellow',
+    primary: '#2563EB',
     brand: '#2563EB',
+    accent: '#7C3AED',
   },
   variants: {
     dark: {
       colors: {
-        primary: '#FF8A65',
-        secondary: '#FDE047',
+        primary: '#60A5FA',
         brand: '#60A5FA',
+        accent: '#C4B5FD',
       },
     },
   },
 };
 
-<ThemeProvider theme={theme}>{children}</ThemeProvider>;
+<ThemeProvider theme={appTheme}>
+  <App />
+</ThemeProvider>;
 ```
 
-Color overrides cascade into `colors`, `backgrounds`, `fonts`, and `borders`,
-so `useTheme()` exposes `colors.brand`, `backgrounds.brand`, `fonts.brand`, and
-`borders.brand`.
+```tsx
+import { View } from 'react-native';
+import { IconByVariant, Text, useTheme } from '@sohantalukder/rn-kit';
 
-If you are changing the package defaults, edit `src/theme/_config.ts`.
+export function BrandBanner() {
+  const { backgrounds, borders, colors, fonts, gutters } = useTheme();
 
-Use the Storybook theme toolbar to preview default and dark states.
+  return (
+    <View
+      style={[
+        backgrounds.brand,
+        borders.brand,
+        borders.w_1,
+        borders.rounded_16,
+        gutters.padding_16,
+      ]}
+    >
+      <Text style={fonts.white}>Brand announcement</Text>
+      <IconByVariant path="check" color={colors.brand} />
+    </View>
+  );
+}
+```
+
+Use `backgrounds`, `fonts.colors`, or `borders.colors` only when a token should
+exist in one style group instead of all color helpers.
+
+If you are changing the package defaults, edit `src/theme/_config.ts`. App
+teams should prefer passing `theme` to `ThemeProvider`.
