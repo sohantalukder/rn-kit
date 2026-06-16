@@ -33,6 +33,7 @@ const componentsToc = [
 
 const iconsToc = [
   { id: 'overview', title: 'Overview' },
+  { id: 'usage', title: 'Usage' },
   { id: 'library', title: 'Library' },
 ];
 

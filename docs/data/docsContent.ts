@@ -27,6 +27,214 @@ export type DocPage = {
   sections: DocSection[];
 };
 
+export const rootSetupCode = `import {
+  ThemeProvider,
+  UiPortalProvider,
+} from '@sohantalukder/rn-kit';
+
+import { AccountScreen } from './src/screens/AccountScreen';
+
+export function App() {
+  return (
+    <ThemeProvider>
+      <UiPortalProvider>
+        <AccountScreen />
+      </UiPortalProvider>
+    </ThemeProvider>
+  );
+}`;
+
+export const firstScreenUsageCode = `import { useState } from 'react';
+import { View } from 'react-native';
+import {
+  Button,
+  Card,
+  Text,
+  TextInput,
+  ThemeProvider,
+  UiPortalProvider,
+  toast,
+  useTheme,
+} from '@sohantalukder/rn-kit';
+
+function AccountScreen() {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { gutters, layout } = useTheme();
+
+  const emailError =
+    email.length > 0 && !email.includes('@')
+      ? 'Enter a valid email address.'
+      : undefined;
+
+  const handleSubmit = () => {
+    if (!email || emailError) {
+      toast.show({ type: 'error', title: 'Add a valid email first' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    toast.show({ type: 'success', title: 'Profile saved' });
+    setTimeout(() => setIsSubmitting(false), 800);
+  };
+
+  return (
+    <View style={[layout.flex_1, layout.justifyCenter, gutters.padding_24]}>
+      <Card variant="outlined" style={gutters.gap_16}>
+        <Text variant="heading3" weight="semibold">
+          Account setup
+        </Text>
+        <Text color="secondary">
+          Use controlled fields and let rn-kit handle theme-aware states.
+        </Text>
+        <TextInput
+          label="Email"
+          placeholder="you@example.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          value={email}
+          errorMessage={emailError}
+          onChangeText={(value) => setEmail(value)}
+        />
+        <Button
+          text="Save profile"
+          accessibilityLabel="Save profile"
+          disabled={!email || Boolean(emailError)}
+          isLoading={isSubmitting}
+          onPress={handleSubmit}
+        />
+      </Card>
+    </View>
+  );
+}
+
+export function App() {
+  return (
+    <ThemeProvider>
+      <UiPortalProvider>
+        <AccountScreen />
+      </UiPortalProvider>
+    </ThemeProvider>
+  );
+}`;
+
+export const overlayManagersUsageCode = `import { View } from 'react-native';
+import {
+  Button,
+  Text,
+  bottomSheet,
+  contextMenu,
+  dialog,
+  toast,
+  useTheme,
+} from '@sohantalukder/rn-kit';
+
+function FilterSheet({
+  selectedStatus,
+  onApply,
+}: {
+  selectedStatus: string;
+  onApply: () => void;
+}) {
+  const { gutters } = useTheme();
+
+  return (
+    <View style={[gutters.gap_12, gutters.padding_16]}>
+      <Text variant="heading3" weight="semibold">
+        Filters
+      </Text>
+      <Text color="secondary">Current status: {selectedStatus}</Text>
+      <Button
+        text="Apply filters"
+        onPress={() => {
+          onApply();
+          bottomSheet.close();
+        }}
+      />
+    </View>
+  );
+}
+
+export function ToolbarActions() {
+  const { gutters } = useTheme();
+
+  const saveProfile = () => {
+    toast.show({ type: 'success', title: 'Profile saved' });
+  };
+
+  const deleteItem = () => {
+    dialog.confirm('Delete item?', 'This action cannot be undone.', () => {
+      toast.show({ type: 'success', title: 'Item deleted' });
+    });
+  };
+
+  const openFilters = () => {
+    bottomSheet.show({
+      component: FilterSheet,
+      componentProps: {
+        selectedStatus: 'active',
+        onApply: () => toast.show({ type: 'success', title: 'Filters applied' }),
+      },
+      options: {
+        snapPoints: ['35%', '70%'],
+        initialSnapIndex: 1,
+      },
+    });
+  };
+
+  const openMenu = () => {
+    contextMenu.show({
+      position: { x: 24, y: 120 },
+      title: 'Row actions',
+      items: [
+        { id: 'save', label: 'Save', icon: 'check', onPress: saveProfile },
+        {
+          id: 'delete',
+          label: 'Delete',
+          destructive: true,
+          onPress: deleteItem,
+        },
+      ],
+    });
+  };
+
+  return (
+    <View style={gutters.gap_12}>
+      <Button text="Save" onPress={saveProfile} />
+      <Button text="Filters" variant="outline" onPress={openFilters} />
+      <Button text="More actions" variant="secondary" onPress={openMenu} />
+    </View>
+  );
+}`;
+
+export const themeUsageCode = `import { View } from 'react-native';
+import { Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function AccountSummary() {
+  const { backgrounds, borders, fonts, gutters, layout, typographies } =
+    useTheme();
+
+  return (
+    <View
+      style={[
+        layout.row,
+        layout.itemsCenter,
+        gutters.gap_12,
+        gutters.padding_16,
+        backgrounds.background,
+        borders.rounded_16,
+        borders.w_1,
+        borders.gray8,
+      ]}
+    >
+      <Text style={[typographies.heading3, fonts.primary]}>
+        Account
+      </Text>
+      <Text color="secondary">Ready to review</Text>
+    </View>
+  );
+}`;
+
 export const docPages: DocPage[] = [
   {
     title: 'Getting Started',
@@ -76,56 +284,24 @@ npm install \\
       },
       {
         id: 'minimal-app',
-        title: 'Minimal App',
+        title: 'Root Setup',
         body: [
           'Wrap your app once with ThemeProvider. Add UiPortalProvider inside it when you need overlay managers such as toast, dialog, bottom sheet, or context menu.',
         ],
         code: {
           language: 'tsx',
-          value: `import {
-  ThemeProvider,
-  UiPortalProvider,
-  Button,
-  Text,
-} from '@sohantalukder/rn-kit';
-
-export function App() {
-  return (
-    <ThemeProvider>
-      <UiPortalProvider>
-        <Text variant="heading3" weight="semibold">
-          Welcome
-        </Text>
-        <Button text="Continue" onPress={() => {}} />
-      </UiPortalProvider>
-    </ThemeProvider>
-  );
-}`,
+          value: rootSetupCode,
         },
       },
       {
         id: 'first-screen',
         title: 'Build a First Screen',
         body: [
-          'Import only the components needed for the screen. Keep screen styles focused on layout, and let the package components carry interaction states and theme-aware visuals.',
+          'This example includes imports, provider placement, local state, validation, a submit handler, and a toast so the pattern can be copied into a new screen.',
         ],
         code: {
           language: 'tsx',
-          value: `import { Button, Card, Text } from '@sohantalukder/rn-kit';
-
-export function WelcomeScreen() {
-  return (
-    <Card style={{ gap: 16, padding: 20 }}>
-      <Text variant="heading3" weight="semibold">
-        Welcome back
-      </Text>
-      <Text color="secondary">
-        Continue from the same design primitives across every screen.
-      </Text>
-      <Button text="Continue" onPress={() => {}} />
-    </Card>
-  );
-}`,
+          value: firstScreenUsageCode,
         },
       },
       {
@@ -199,67 +375,48 @@ export function WelcomeScreen() {
       'Import components, mount providers, and use overlay managers from the public package surface.',
     sections: [
       {
-        id: 'imports',
-        title: 'Common Imports',
-        code: {
-          language: 'tsx',
-          value: `import { Button, TextInput, Card } from '@sohantalukder/rn-kit';
-import { ThemeProvider, useTheme } from '@sohantalukder/rn-kit';
-import {
-  toast,
-  dialog,
-  bottomSheet,
-  contextMenu,
-} from '@sohantalukder/rn-kit';`,
-        },
-      },
-      {
-        id: 'ui-providers',
-        title: 'UI Providers',
+        id: 'root-setup',
+        title: 'Root Setup',
         body: [
           'ThemeProvider supplies colors, typography, spacing, borders, and layout helpers. UiPortalProvider mounts the app-level overlay hosts for toast, dialog, bottom sheet, and context menu APIs.',
           'Mount UiPortalProvider once near the application root, inside ThemeProvider, before calling global overlay managers from feature screens.',
         ],
         code: {
           language: 'tsx',
-          value: `<ThemeProvider>
-  <UiPortalProvider>{children}</UiPortalProvider>
-</ThemeProvider>`,
+          value: rootSetupCode,
+        },
+      },
+      {
+        id: 'first-screen',
+        title: 'First Screen',
+        body: [
+          'Use package components like normal React Native components. Keep form state in the screen, pass controlled values to inputs, and call overlay managers from explicit handlers.',
+        ],
+        code: {
+          language: 'tsx',
+          value: firstScreenUsageCode,
         },
       },
       {
         id: 'overlay-managers',
         title: 'Overlay Managers',
         body: [
-          'After UiPortalProvider is mounted, feature code can call the exported managers directly. The bottom sheet manager is implemented inside the package and does not require an external bottom sheet dependency.',
+          'After UiPortalProvider is mounted, feature code can call the exported managers directly. This example defines every handler and bottom sheet component it references.',
         ],
         code: {
           language: 'tsx',
-          value: `toast.show({
-  type: 'success',
-  title: 'Saved',
-  description: 'Your changes are ready.',
-});
-
-dialog.alert('Saved', 'Your profile was updated.');
-
-dialog.confirm('Delete item?', 'This action cannot be undone.', () => {
-  deleteItem();
-});
-
-bottomSheet.show({
-  component: FilterSheet,
-  componentProps: { selectedStatus: 'active' },
-  options: { snapPoints: ['35%', '70%'] },
-});
-
-contextMenu.show({
-  position: { x: 24, y: 120 },
-  items: [
-    { id: 'edit', label: 'Edit', onPress: openEditor },
-    { id: 'delete', label: 'Delete', destructive: true, onPress: deleteItem },
-  ],
-});`,
+          value: overlayManagersUsageCode,
+        },
+      },
+      {
+        id: 'theme-usage',
+        title: 'Theme Usage',
+        body: [
+          'Use useTheme inside components rendered below ThemeProvider. Generated token groups can be composed in React Native style arrays.',
+        ],
+        code: {
+          language: 'tsx',
+          value: themeUsageCode,
         },
       },
       {

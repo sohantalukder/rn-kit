@@ -901,6 +901,11 @@ code {
   gap: 18px;
 }
 
+.icon-usage-grid {
+  display: grid;
+  gap: 14px;
+}
+
 .icon-gallery-toolbar {
   display: flex;
   flex-wrap: wrap;

@@ -119,6 +119,11 @@ export type CustomInputProps = TextInputProps & {
   labelStyle?: StyleProp<TextStyle>;
 
   /**
+   * Whether the label should float inside the input when focused or filled
+   */
+  animatedLabel?: boolean;
+
+  /**
    * Error message to display (for controlled error handling)
    */
   errorMessage?: string;
@@ -174,6 +179,11 @@ export type MultilineInputProps = {
   labelStyle?: StyleProp<TextStyle>;
 
   /**
+   * Whether the label should float inside the input when focused or filled
+   */
+  animatedLabel?: boolean;
+
+  /**
    * Color for the label text
    */
   labelColor?: string;
@@ -222,6 +232,11 @@ export type PasswordInputProps = {
    * Style for the label text
    */
   labelStyle?: StyleProp<TextStyle>;
+
+  /**
+   * Whether the label should float inside the input when focused or filled
+   */
+  animatedLabel?: boolean;
 
   /**
    * Error message to display

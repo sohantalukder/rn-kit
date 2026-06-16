@@ -1,13 +1,21 @@
 import rs from '../../../utilities/responsiveSize';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Text, TextInput, View } from 'react-native';
 
 import { useTheme } from '../../../theme';
 
 import type { MultilineInputProps } from './types/type';
 import { inputStyles } from './styles/input.styles';
+import AnimatedLabel from './AnimatedLabel';
 
 const MultilineInput: React.FC<MultilineInputProps> = ({
+  animatedLabel = false,
   containerStyle,
   defaultValue,
   height = rs(150),
@@ -19,11 +27,18 @@ const MultilineInput: React.FC<MultilineInputProps> = ({
   onChangeText,
   onChangeValue,
   placeholder,
+  textAlignVertical = 'top',
+  value,
   ...props
 }) => {
   const { colors, gutters, typographies, variant } = useTheme();
   const [isFocused, setIsFocused] = useState(false);
+  const [currentValue, setCurrentValue] = useState(
+    value?.toString() ?? defaultValue?.toString() ?? ''
+  );
   const inputReference = useRef<TextInput>(null);
+  const isControlled = value !== undefined;
+  const inputValue = isControlled ? value?.toString() ?? '' : currentValue;
 
   // Memoize styles to prevent unnecessary recalculations
   const styles = useMemo(
@@ -38,6 +53,10 @@ const MultilineInput: React.FC<MultilineInputProps> = ({
   // Handle text changes
   const handleChangeText = useCallback(
     (text: string) => {
+      if (!isControlled) {
+        setCurrentValue(text);
+      }
+
       if (onChangeValue) {
         onChangeValue(text, name);
       }
@@ -46,7 +65,7 @@ const MultilineInput: React.FC<MultilineInputProps> = ({
         onChangeText(text, name);
       }
     },
-    [onChangeValue, onChangeText, name]
+    [isControlled, onChangeValue, onChangeText, name]
   );
 
   // Handle focus event
@@ -79,6 +98,10 @@ const MultilineInput: React.FC<MultilineInputProps> = ({
     () => [typographies.body1, gutters.paddingBottom_6, labelStyle],
     [typographies.body1, gutters.paddingBottom_6, labelStyle]
   );
+  const animatedLabelStyles = useMemo(
+    () => [gutters.paddingBottom_6, labelStyle],
+    [gutters.paddingBottom_6, labelStyle]
+  );
 
   // Get input style
   const textInputStyles = useMemo(
@@ -86,25 +109,51 @@ const MultilineInput: React.FC<MultilineInputProps> = ({
     [styles.input, height, inputStyle]
   );
 
+  useEffect(() => {
+    if (!isControlled) {
+      setCurrentValue(defaultValue?.toString() ?? '');
+    }
+  }, [defaultValue, isControlled]);
+
+  useEffect(() => {
+    if (isControlled) {
+      setCurrentValue(value?.toString() ?? '');
+    }
+  }, [isControlled, value]);
+
   return (
-    <View style={containerStyles}>
-      {label ? <Text style={labelStyles}>{label}</Text> : null}
-      <TextInput
-        testID="multiline-input"
-        defaultValue={defaultValue?.toString()}
-        multiline
-        numberOfLines={numberOfLines}
-        onBlur={handleBlur}
-        onChangeText={handleChangeText}
-        onFocus={handleFocus}
-        placeholder={placeholder}
-        placeholderTextColor={colors.gray4}
-        ref={inputReference}
-        selectionColor={colors.primary}
-        style={textInputStyles}
-        textAlignVertical="center"
-        {...props}
-      />
+    <View style={styles.multiLineWrapper}>
+      {animatedLabel ? (
+        <AnimatedLabel
+          label={label ? String(label) : ''}
+          labelStyle={animatedLabelStyles}
+          value={inputValue}
+          isFocused={isFocused}
+        />
+      ) : label ? (
+        <Text style={labelStyles}>{label}</Text>
+      ) : null}
+      <View
+        style={containerStyles}
+        testID="multiline-input-container"
+      >
+        <TextInput
+          {...props}
+          testID="multiline-input"
+          multiline
+          numberOfLines={numberOfLines}
+          onBlur={handleBlur}
+          onChangeText={handleChangeText}
+          onFocus={handleFocus}
+          placeholder={animatedLabel && label ? '' : placeholder}
+          placeholderTextColor={colors.gray4}
+          ref={inputReference}
+          selectionColor={colors.primary}
+          style={textInputStyles}
+          textAlignVertical={textAlignVertical}
+          value={inputValue}
+        />
+      </View>
     </View>
   );
 };

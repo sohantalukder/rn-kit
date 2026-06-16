@@ -44,12 +44,14 @@ const MultiSelectList: React.FC<MultiSelectListProps> = ({
   disabledTextStyles,
   disabledCheckBoxStyles,
   checkBoxStyles,
+  labelStyles,
   badgeStyles,
   badgeTextStyles,
   onSelect,
   dropdownShown = false,
   fontFamily,
   label,
+  animatedLabel = true,
   enableInfiniteScroll = false,
   onLoadMore,
   isLoading = false,
@@ -293,20 +295,27 @@ const MultiSelectList: React.FC<MultiSelectListProps> = ({
 
   return (
     <View style={containerStyle}>
-      <TouchableOpacity
-        onPress={() => {
-          if (!dropdown) {
-            Keyboard.dismiss();
-            slideDown();
-          }
-        }}
-      >
-        <AnimatedLabel
-          label={label || placeholder || 'Select options'}
-          value={selectedVal.length > 0 ? `${selectedVal.length} selected` : ''}
-          isFocused={isFocused}
-        />
-      </TouchableOpacity>
+      {animatedLabel ? (
+        <TouchableOpacity
+          onPress={() => {
+            if (!dropdown) {
+              Keyboard.dismiss();
+              slideDown();
+            }
+          }}
+        >
+          <AnimatedLabel
+            label={label || placeholder || 'Select options'}
+            labelStyle={labelStyles}
+            value={
+              selectedVal.length > 0 ? `${selectedVal.length} selected` : ''
+            }
+            isFocused={isFocused}
+          />
+        </TouchableOpacity>
+      ) : label ? (
+        <Text style={[gutters.paddingBottom_6, labelStyles]}>{label}</Text>
+      ) : null}
 
       {dropdown && search ? (
         <View style={[styles.select, isFocused && styles.activeContainer, boxStyles]}>
@@ -363,7 +372,9 @@ const MultiSelectList: React.FC<MultiSelectListProps> = ({
                 color="disabled"
                 style={inputStyles}
               >
-                {isFocused ? placeholder || 'Select options' : ''}
+                {isFocused || !animatedLabel
+                  ? placeholder || 'Select options'
+                  : ''}
               </Text>
             )}
           </View>

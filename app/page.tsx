@@ -4,19 +4,8 @@ import { CodeBlock } from '../docs/components/CodeBlock';
 import { DocPager } from '../docs/components/DocPager';
 import { PackageCard } from '../docs/components/PackageCard';
 import { components, packageInfo } from '../docs/data/componentRegistry';
+import { firstScreenUsageCode } from '../docs/data/docsContent';
 import { getPager } from '../docs/data/navigation';
-
-const quickStartCode = `import { ThemeProvider, UiPortalProvider, Button } from '@sohantalukder/rn-kit';
-
-export function App() {
-  return (
-    <ThemeProvider>
-      <UiPortalProvider>
-        <Button text="Continue" onPress={() => {}} />
-      </UiPortalProvider>
-    </ThemeProvider>
-  );
-}`;
 
 export default function HomePage() {
   const pager = getPager('/');
@@ -47,10 +36,10 @@ export default function HomePage() {
           Quick start
         </h2>
         <p>
-          Install the package, mount providers at the app root, and import public
-          components from the package entry point.
+          Install the package, mount providers at the app root, and copy a
+          complete screen pattern with state, validation, and feedback.
         </p>
-        <CodeBlock code={quickStartCode} language="tsx" />
+        <CodeBlock code={firstScreenUsageCode} language="tsx" />
       </section>
 
       <section className="content-section" id="explore">

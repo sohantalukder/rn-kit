@@ -237,9 +237,14 @@ function ComponentExample({ component }: ComponentPreviewProps) {
     case 'icon-button':
       return (
         <PreviewFrame title="Icon button sizes" description="Icon-only actions for toolbars and compact rows.">
-          <View style={{ flexDirection: 'row', gap: 12 }}>
+          <View style={{ alignItems: 'center', flexDirection: 'row', gap: 12 }}>
             <IconButton icon="search" size="small" accessibilityLabel="Small search" />
-            <IconButton icon="notification" size="medium" accessibilityLabel="Notifications" />
+            <IconButton
+              icon="notification"
+              size="medium"
+              showDot
+              accessibilityLabel="Notifications"
+            />
             <IconButton icon="more" size="large" accessibilityLabel="More actions" />
           </View>
         </PreviewFrame>
@@ -289,7 +294,13 @@ function ComponentExample({ component }: ComponentPreviewProps) {
     case 'multiline-input':
       return (
         <PreviewFrame title="Multiline input" description="Text area input for longer values.">
-          <MultilineInput label="Notes" value={notes} onChangeText={setNotes} numberOfLines={4} />
+          <MultilineInput
+            label="Notes"
+            animatedLabel
+            value={notes}
+            onChangeText={setNotes}
+            numberOfLines={4}
+          />
         </PreviewFrame>
       );
 

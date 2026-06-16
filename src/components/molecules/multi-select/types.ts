@@ -39,6 +39,7 @@ export interface MultiSelectListProps {
   dropdownShown?: boolean;
   fontFamily?: string;
   label?: string;
+  animatedLabel?: boolean;
   enableInfiniteScroll?: boolean;
   onLoadMore?: () => void;
   isLoading?: boolean;

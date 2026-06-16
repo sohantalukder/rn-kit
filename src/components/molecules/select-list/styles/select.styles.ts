@@ -15,6 +15,7 @@ export const selectStyles = ({ colors }: SelectStylesProps) =>
       marginLeft: rs(8),
     },
     container: {
+      position: 'relative',
       width: '100%',
     },
     disabled: {

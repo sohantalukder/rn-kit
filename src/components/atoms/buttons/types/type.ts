@@ -92,6 +92,7 @@ type IconButtonProps = AccessibilityProps & {
 
   // State
   disabled?: boolean;
+  showDot?: boolean;
 
   // Callbacks
   onPress?: () => void;
@@ -103,6 +104,8 @@ type IconButtonProps = AccessibilityProps & {
   // Size
   size?: 'small' | 'medium' | 'large';
   iconSize?: number;
+  dotColor?: ColorValue;
+  dotSize?: number;
   testID?: string;
 };
 

@@ -56,27 +56,78 @@ Follow the native setup instructions for the peer packages you install, especial
 
 ## Quick Start
 
-Wrap your app with `ThemeProvider`. Add `UiPortalProvider` if you use toast, dialog, bottom sheet, or context menu APIs.
+Wrap your app with `ThemeProvider`. Add `UiPortalProvider` if you use toast, dialog, bottom sheet, or context menu APIs. This example shows the root setup, a controlled field, validation, a submit handler, and toast feedback in one copyable screen.
 
 ```tsx
+import { useState } from 'react';
+import { View } from 'react-native';
 import {
+  Button,
+  Card,
+  Text,
+  TextInput,
   ThemeProvider,
   UiPortalProvider,
-  Button,
-  Text,
   toast,
+  useTheme,
 } from '@sohantalukder/rn-kit';
 
-export function App() {
+function AccountScreen() {
+  const [email, setEmail] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { gutters, layout } = useTheme();
+
+  const emailError =
+    email.length > 0 && !email.includes('@')
+      ? 'Enter a valid email address.'
+      : undefined;
+
+  const handleSubmit = () => {
+    if (!email || emailError) {
+      toast.show({ type: 'error', title: 'Add a valid email first' });
+      return;
+    }
+
+    setIsSubmitting(true);
+    toast.show({ type: 'success', title: 'Profile saved' });
+    setTimeout(() => setIsSubmitting(false), 800);
+  };
+
+  return (
+    <View style={[layout.flex_1, layout.justifyCenter, gutters.padding_24]}>
+      <Card variant="outlined" style={gutters.gap_16}>
+        <Text variant="heading3" weight="semibold">
+          Account setup
+        </Text>
+        <Text color="secondary">
+          Use controlled fields and let rn-kit handle theme-aware states.
+        </Text>
+        <TextInput
+          label="Email"
+          placeholder="you@example.com"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          value={email}
+          errorMessage={emailError}
+          onChangeText={(value) => setEmail(value)}
+        />
+        <Button
+          text="Save profile"
+          accessibilityLabel="Save profile"
+          disabled={!email || Boolean(emailError)}
+          isLoading={isSubmitting}
+          onPress={handleSubmit}
+        />
+      </Card>
+    </View>
+  );
+}
+
+export default function App() {
   return (
     <ThemeProvider>
       <UiPortalProvider>
-        <Text variant="heading2">Welcome back</Text>
-        <Button
-          text="Continue"
-          accessibilityLabel="Continue"
-          onPress={() => toast.show({ type: 'success', title: 'Ready' })}
-        />
+        <AccountScreen />
       </UiPortalProvider>
     </ThemeProvider>
   );
@@ -196,19 +247,94 @@ Mount `UiPortalProvider` once near the root when you use global overlay APIs:
 Then call the exported managers from feature code:
 
 ```tsx
-toast.show({ type: 'success', title: 'Saved' });
-dialog.alert('Saved', 'Your profile was updated.');
-dialog.confirm('Delete item?', 'This action cannot be undone.', deleteItem);
+import { View } from 'react-native';
+import {
+  Button,
+  Text,
+  bottomSheet,
+  contextMenu,
+  dialog,
+  toast,
+  useTheme,
+} from '@sohantalukder/rn-kit';
 
-bottomSheet.show({
-  component: FilterSheet,
-  options: { snapPoints: ['35%', '70%'] },
-});
+function FilterSheet({
+  selectedStatus,
+  onApply,
+}: {
+  selectedStatus: string;
+  onApply: () => void;
+}) {
+  const { gutters } = useTheme();
 
-contextMenu.show({
-  position: { x: 24, y: 120 },
-  items: [{ id: 'edit', label: 'Edit', onPress: openEditor }],
-});
+  return (
+    <View style={[gutters.gap_12, gutters.padding_16]}>
+      <Text variant="heading3" weight="semibold">
+        Filters
+      </Text>
+      <Text color="secondary">Current status: {selectedStatus}</Text>
+      <Button
+        text="Apply filters"
+        onPress={() => {
+          onApply();
+          bottomSheet.close();
+        }}
+      />
+    </View>
+  );
+}
+
+export function ToolbarActions() {
+  const { gutters } = useTheme();
+
+  const saveProfile = () => {
+    toast.show({ type: 'success', title: 'Profile saved' });
+  };
+
+  const deleteItem = () => {
+    dialog.confirm('Delete item?', 'This action cannot be undone.', () => {
+      toast.show({ type: 'success', title: 'Item deleted' });
+    });
+  };
+
+  const openFilters = () => {
+    bottomSheet.show({
+      component: FilterSheet,
+      componentProps: {
+        selectedStatus: 'active',
+        onApply: () => toast.show({ type: 'success', title: 'Filters applied' }),
+      },
+      options: {
+        snapPoints: ['35%', '70%'],
+        initialSnapIndex: 1,
+      },
+    });
+  };
+
+  const openMenu = () => {
+    contextMenu.show({
+      position: { x: 24, y: 120 },
+      title: 'Row actions',
+      items: [
+        { id: 'save', label: 'Save', icon: 'check', onPress: saveProfile },
+        {
+          id: 'delete',
+          label: 'Delete',
+          destructive: true,
+          onPress: deleteItem,
+        },
+      ],
+    });
+  };
+
+  return (
+    <View style={gutters.gap_12}>
+      <Button text="Save" onPress={saveProfile} />
+      <Button text="Filters" variant="outline" onPress={openFilters} />
+      <Button text="More actions" variant="secondary" onPress={openMenu} />
+    </View>
+  );
+}
 ```
 
 The global bottom sheet manager uses the internal React Native bottom sheet host mounted by `UiPortalProvider`.
@@ -220,15 +346,22 @@ The public `Image` component is backed by React Native `Image`. It supports remo
 ```tsx
 import { Image } from '@sohantalukder/rn-kit';
 
-<Image
-  source={{ uri: avatarUrl }}
-  fallbackSource={require('./assets/avatar-placeholder.png')}
-  width={96}
-  height={96}
-  borderRadius={48}
-  resizeMode="cover"
-  accessibilityLabel="Profile photo"
-/>;
+export function ProfilePhoto() {
+  const avatarUrl =
+    'https://images.unsplash.com/photo-1494790108377-be9c29b29330';
+
+  return (
+    <Image
+      source={{ uri: avatarUrl }}
+      fallbackSource={require('./assets/avatar-placeholder.png')}
+      width={96}
+      height={96}
+      borderRadius={48}
+      resizeMode="cover"
+      accessibilityLabel="Profile photo"
+    />
+  );
+}
 ```
 
 | Prop | Purpose |
@@ -246,26 +379,86 @@ import { Image } from '@sohantalukder/rn-kit';
 Use `BottomSheet` for local controlled sheets, or `bottomSheet.show()` for app-level overlay flows. Both use the internal React Native implementation with `Modal`, `Animated`, `PanResponder`, safe-area padding, backdrop close, swipe-down close, snap points, keyboard handling, and Android back handling.
 
 ```tsx
-<BottomSheet
-  visible={visible}
-  onRequestClose={() => setVisible(false)}
-  maxHeight={520}
-  enableSwipeToClose
->
-  <FilterForm />
-</BottomSheet>
+import { useState } from 'react';
+import { View } from 'react-native';
+import { BottomSheet, Button, Text, useTheme } from '@sohantalukder/rn-kit';
+
+export function LocalFilterSheet() {
+  const [visible, setVisible] = useState(false);
+  const { gutters } = useTheme();
+
+  return (
+    <>
+      <Button text="Open filters" onPress={() => setVisible(true)} />
+      <BottomSheet
+        visible={visible}
+        onRequestClose={() => setVisible(false)}
+        maxHeight={420}
+        enableSwipeToClose
+      >
+        <View style={[gutters.gap_12, gutters.padding_16]}>
+          <Text variant="heading3" weight="semibold">
+            Filters
+          </Text>
+          <Text color="secondary">Choose the options for this list.</Text>
+          <Button text="Apply filters" onPress={() => setVisible(false)} />
+        </View>
+      </BottomSheet>
+    </>
+  );
+}
 ```
 
 ```tsx
-bottomSheet.show({
-  component: FilterSheet,
-  componentProps: { selectedStatus: 'active' },
-  options: {
-    snapPoints: ['35%', '70%'],
-    initialSnapIndex: 1,
-    enablePanDownToClose: true,
-  },
-});
+import { View } from 'react-native';
+import {
+  Button,
+  Text,
+  bottomSheet,
+  toast,
+  useTheme,
+} from '@sohantalukder/rn-kit';
+
+function FilterSheet({
+  selectedStatus,
+  onApply,
+}: {
+  selectedStatus: string;
+  onApply: () => void;
+}) {
+  const { gutters } = useTheme();
+
+  return (
+    <View style={[gutters.gap_12, gutters.padding_16]}>
+      <Text variant="heading3" weight="semibold">
+        Filters
+      </Text>
+      <Text color="secondary">Current status: {selectedStatus}</Text>
+      <Button
+        text="Apply filters"
+        onPress={() => {
+          onApply();
+          bottomSheet.close();
+        }}
+      />
+    </View>
+  );
+}
+
+export function openFilterSheet() {
+  bottomSheet.show({
+    component: FilterSheet,
+    componentProps: {
+      selectedStatus: 'active',
+      onApply: () => toast.show({ type: 'success', title: 'Filters applied' }),
+    },
+    options: {
+      snapPoints: ['35%', '70%'],
+      initialSnapIndex: 1,
+      enablePanDownToClose: true,
+    },
+  });
+}
 ```
 
 | Prop / option | Purpose |
