@@ -13,7 +13,7 @@ type SidebarProps = {
   pathname: string;
 };
 
-const visibleDocSlugs = new Set(['getting-started', 'installation', 'theming']);
+const visibleDocSlugs = new Set(['getting-started', 'installation', 'theming', 'mcp']);
 
 const primaryLinks = [
   ...docPages

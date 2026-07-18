@@ -36,6 +36,9 @@
     "docs:build": "next build --webpack",
     "docs:dev": "next dev --webpack",
     "docs:start": "next start",
+    "mcp:check": "tsc --noEmit --project tsconfig.mcp.json",
+    "mcp:http": "tsx mcp/http.ts",
+    "mcp:stdio": "tsx mcp/stdio.ts",
     "pack:dry-run": "npm pack --dry-run",
     "publish:check-auth": "npm whoami",
     "publish:beta": "npm run publish:check-auth && npm publish --access public --tag beta",
@@ -81,6 +84,7 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-class-static-block": "^7.29.7",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@react-native/babel-preset": "^0.80.1",
     "@react-native/jest-preset": "^0.86.0",
     "@react-native/typescript-config": "^0.80.1",
@@ -100,6 +104,7 @@
     "react-native-web": "^0.21.2",
     "react-test-renderer": "^19.2.7",
     "storybook": "^10.4.4",
+    "tsx": "^4.23.1",
     "typescript": "^5.7.3"
   },
   "react-native-builder-bob": {

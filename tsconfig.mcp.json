@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "target": "es2022",
+    "types": ["node"]
+  },
+  "include": [
+    "mcp/**/*",
+    "docs/data/**/*",
+    "docs/content/getting-started.ts",
+    "docs/content/installation.ts",
+    "docs/content/theming.ts",
+    "src/assets/icons/names.ts",
+    "src/assets/icons/CommonIcons.names.ts"
+  ],
+  "exclude": ["node_modules", "lib"]
+}
