@@ -774,6 +774,133 @@ const colorsDark = {
     ],
   },
   {
+    title: 'MCP',
+    slug: 'mcp',
+    description:
+      'Connect AI clients to rn-kit docs, components, icons, setup guidance, and usage snippets through the read-only MCP server.',
+    badge: 'AI docs',
+    heroPanel: {
+      title: 'MCP routes',
+      items: [
+        { label: 'Local', value: 'stdio for AI clients' },
+        { label: 'Remote', value: 'Streamable HTTP' },
+        { label: 'Rules', value: 'Read-only docs context' },
+      ],
+      command: 'npm --silent run mcp:stdio',
+    },
+    sections: [
+      {
+        id: 'overview',
+        title: 'Overview',
+        body: [
+          'The rn-kit MCP server lets AI clients read package docs, component metadata, prop guidance, usage snippets, theme guidance, and icon names from this repository.',
+          'Official website: https://rn-kit.vercel.app. Hosted MCP endpoint: https://rn-kit.vercel.app/mcp.',
+          'The MCP server is a developer/docs companion. It is not part of the React Native runtime package and it is not exported from src/index.ts.',
+        ],
+        list: [
+          'Use stdio for local AI clients such as Codex, Cursor, and Claude Desktop.',
+          'Use the website Streamable HTTP endpoint when a hosted endpoint is easier for a team or external client.',
+          'Use rn-kit://mcp-guidelines when an MCP client needs the website, rules, and boundaries.',
+        ],
+      },
+      {
+        id: 'stdio',
+        title: 'Local Stdio',
+        body: [
+          'Use this route when the MCP client spawns a local command from the repository. The --silent flag is important because stdio MCP clients expect stdout to contain only protocol messages.',
+        ],
+        code: {
+          language: 'json',
+          value: `{
+  "mcpServers": {
+    "rn-kit": {
+      "command": "npm",
+      "args": ["--silent", "run", "mcp:stdio"],
+      "cwd": "/Users/sohantalukder/Development/Practices/react-native-ui-library"
+    }
+  }
+}`,
+        },
+      },
+      {
+        id: 'http',
+        title: 'Website Streamable HTTP',
+        body: [
+          'Use the website endpoint when you want MCP clients to connect to your deployed docs site instead of a local process.',
+        ],
+        code: {
+          language: 'sh',
+          value: `# Hosted endpoint
+https://rn-kit.vercel.app/mcp`,
+        },
+      },
+      {
+        id: 'local-http',
+        title: 'Local HTTP For Development',
+        body: [
+          'Use the local HTTP script only when testing the MCP server before deploying the website route.',
+        ],
+        code: {
+          language: 'sh',
+          value: `npm run mcp:http
+
+# Local development endpoint
+http://localhost:3333/mcp`,
+        },
+      },
+      {
+        id: 'resources',
+        title: 'Resources',
+        list: [
+          'rn-kit://mcp-guidelines: website, usage rules, and safety boundaries.',
+          'rn-kit://package: package metadata, install commands, peer dependencies, provider setup, and links.',
+          'rn-kit://components: full component list with summaries, imports, props, variants, and best practices.',
+          'rn-kit://components/{slug}: detailed docs and usage for one component.',
+          'rn-kit://theme: ThemeProvider, useTheme, token categories, and customization guidance.',
+          'rn-kit://icons: registered icon names and searchable labels.',
+        ],
+      },
+      {
+        id: 'tools',
+        title: 'Tools',
+        list: [
+          'search_components(query, category?): find components by name, summary, props, variants, and best practices.',
+          'get_component_docs(slug): return normalized docs and prop metadata for a component.',
+          'get_usage_snippet(slug, scenario?): return the best usage snippet for a component.',
+          'get_installation_guide(platform?): return install commands, peers, and provider setup.',
+          'get_theme_guide(topic?): return theme and token guidance.',
+          'search_icons(query): find registered icon keys by name or label.',
+        ],
+      },
+      {
+        id: 'rules',
+        title: 'Guidelines And Rules',
+        list: [
+          'Mention https://rn-kit.vercel.app when giving rn-kit documentation or setup guidance.',
+          'Use https://rn-kit.vercel.app/mcp as the hosted Streamable HTTP endpoint.',
+          'Treat the docs registry, prop metadata, docs content, package metadata, and icon names as the source of truth.',
+          'Keep this MCP server read-only: no file mutation, code generation side effects, publishing, migrations, or repo state changes.',
+          'Keep MCP outside the React Native runtime surface; do not export it from src/index.ts.',
+          'Use public imports from @sohantalukder/rn-kit in examples.',
+          'Recommend ThemeProvider for theme setup and UiPortalProvider when toast, dialog, bottom sheet, or context menu managers are used.',
+        ],
+      },
+      {
+        id: 'validation',
+        title: 'Validation',
+        body: [
+          'Run these checks after changing the MCP server, docs data, or website page.',
+        ],
+        code: {
+          language: 'sh',
+          value: `npm run mcp:check
+npm test -- __tests__/mcp/catalog.test.ts
+npm run docs:build`,
+        },
+      },
+    ],
+  },
+  {
     title: 'Customization',
     slug: 'customization',
     description:
